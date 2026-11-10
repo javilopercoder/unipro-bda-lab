@@ -15,7 +15,7 @@ const source={
   ],
   "logic": [
     "Los bits solo pueden valer 0 o 1. Las puertas lógicas aplican reglas a cada bit de entrada; AND exige ambos a 1 y XOR exige que sean diferentes.",
-    "AND de 0101 y 0011.|Calcula bit a bit: (0∧0,1∧0,0∧1,1∧1).|El resultado es 0001; en decimal, 1.",
+    "Empieza con dos números binarios de cuatro bits: A=0101 y B=0011.|Calcula bit a bit: (0∧0,1∧0,0∧1,1∧1).|El resultado es 0001; en decimal, 1.",
     "No confundas OR con XOR: OR acepta 1 y 1; XOR devuelve 0 en ese caso.",
     "¿Qué le ocurre a un bit al aplicar NOT dos veces?",
     "Convierte A y B a binario.",
@@ -26,7 +26,7 @@ const source={
   ],
   "circuit": [
     "La ley de Ohm relaciona voltaje, corriente y resistencia: V=I·R. La potencia disipada es P=V·I.",
-    "Una fuente de 12 V alimenta una resistencia de 6 Ω.|I=V/R=12/6=2 A.|P=V·I=12·2=24 W.",
+    "Una fuente de 12 V alimenta una resistencia de 6 Ω.|Aplica la ley de Ohm y divide: I=V/R=12/6=2 amperios.|Después usa potencia eléctrica: P=V·I=12·2=24 vatios.",
     "En paralelo se suman conductancias (1/R), no resistencias directamente.",
     "¿Por qué baja la resistencia equivalente al añadir una rama en paralelo?",
     "Averigua si el montaje es serie o paralelo.",
@@ -59,7 +59,7 @@ const source={
   ],
   "roots": [
     "La bisección encuentra una raíz de una función continua cuando esta cambia de signo en un intervalo. En cada paso conserva la mitad que contiene el cambio de signo.",
-    "f(x)=x³−x−2: f(1)=-2 y f(2)=4.|Mitad m=1,5; f(1,5)=-0,125.|Como el cambio de signo persiste entre 1,5 y 2, el nuevo intervalo es [1,5;2].",
+    "f(x)=x³−x−2: f(1)=-2 y f(2)=4.|Calcula la mitad m=1,5 y evalúa la función: f(1,5)=-0,125.|Como el cambio de signo persiste entre 1,5 y 2, el nuevo intervalo es [1,5;2].",
     "No se descarta el tramo que contiene el cambio de signo.",
     "¿Qué relación hay entre el número de iteraciones y el ancho del intervalo?",
     "Calcula el punto medio (a+b)/2.",
@@ -70,7 +70,7 @@ const source={
   ],
   "statistics": [
     "Una muestra es un conjunto de observaciones. La media describe su centro y la desviación típica cuánto se alejan los valores del centro.",
-    "Observaciones 2, 4, 6.|Media=(2+4+6)/3=4.|Varianza poblacional=(4+0+4)/3=8/3; desviación ≈1,633.",
+    "Empieza con tres observaciones ordenadas: 2, 4 y 6.|Calcula la media sumando y dividiendo entre tres: (2+4+6)/3=4.|Varianza poblacional=(4+0+4)/3=8/3; desviación ≈1,633.",
     "Una muestra grande no garantiza por sí sola ausencia de sesgo.",
     "¿Por qué cambian la media y la desviación de una muestra generada aleatoriamente?",
     "Primero observa el tamaño de la muestra.",
@@ -92,7 +92,7 @@ const source={
   ],
   "regression": [
     "La regresión lineal ajusta una recta a puntos (x,y). R² indica qué proporción de la variabilidad queda explicada por ese ajuste en la muestra.",
-    "Datos (1,2), (2,4), (3,6).|La recta y=2x pasa exactamente por los tres puntos.|El error es cero y, si existe variabilidad, R²=1.",
+    "Tienes tres parejas de puntos: (1,2), (2,4) y (3,6).|La recta y=2x pasa exactamente por los tres puntos.|El error es cero y, si existe variabilidad, R²=1.",
     "R² alto no demuestra causalidad ni garantiza predicciones futuras.",
     "¿Por qué suele bajar R² cuando se añade mucho ruido a una relación lineal?",
     "Mira la pendiente real de los puntos.",
@@ -114,7 +114,7 @@ const source={
   ],
   "sorting": [
     "Ordenar consiste en colocar una secuencia según una relación, por ejemplo de menor a mayor. Burbuja compara vecinos; inserción coloca cada elemento en la parte ya ordenada.",
-    "Ordena [3,1,2] con burbuja.|Compara 3 y 1, intercambia: [1,3,2].|Compara 3 y 2, intercambia: [1,2,3].",
+    "La secuencia inicial que quieres ordenar con burbuja es [3,1,2].|Compara 3 y 1, intercambia: [1,3,2].|Compara 3 y 2, intercambia: [1,2,3].",
     "Contar intercambios no es lo mismo que contar comparaciones.",
     "¿Qué algoritmo realiza menos movimientos cuando los datos ya están casi ordenados?",
     "Observa qué barras se comparan.",
@@ -125,7 +125,7 @@ const source={
   ],
   "structures": [
     "Una pila retira el último dato que entró (LIFO); una cola retira el primero que entró (FIFO).",
-    "Pila: introduce A y luego B.|Haz pop: sale B.|En una cola, con las mismas entradas, al extraer sale A.",
+    "Pila: introduce A y luego B.|Si haces pop sobre esa pila, se extrae B porque fue el último en entrar.|En una cola, con las mismas entradas, al extraer sale A.",
     "En una pila, pop no elimina el primer elemento insertado.",
     "¿Qué estructura usarías para deshacer acciones y cuál para una fila de espera?",
     "Selecciona pila o cola.",
@@ -158,7 +158,7 @@ const source={
   ],
   "network": [
     "Una subred IPv4 se define por dirección y máscara CIDR. Un prefijo /24 deja ocho bits para direcciones dentro de esa red.",
-    "192.168.10.42/24.|La máscara es 255.255.255.0 y la red 192.168.10.0.|Broadcast 192.168.10.255; en una red /24 convencional hay 254 hosts utilizables.",
+    "Ejemplo con una dirección de host 192.168.10.42 y máscara /24.|La máscara es 255.255.255.0 y la red 192.168.10.0.|Broadcast 192.168.10.255; en una red /24 convencional hay 254 hosts utilizables.",
     "/26 no significa 26 equipos: significa 26 bits de prefijo.",
     "¿Cuántas direcciones quedan disponibles al pasar de /24 a /26?",
     "Calcula cuántos bits faltan hasta 32.",
@@ -202,7 +202,7 @@ const source={
   ],
   "flow": [
     "Un bucle repite instrucciones mientras se cumpla una condición. Para entenderlo, conviene seguir valores de las variables paso a paso.",
-    "suma=0; para i=1..3: suma+=i.|Tras i=1, suma=1; tras i=2, suma=3.|Tras i=3, suma=6.",
+    "suma=0; para i=1..3: suma+=i.|Tras i=1, suma=1; tras i=2, suma=3.|Después de completar la tercera iteración, la suma acumulada es 6.",
     "La variable acumuladora no se reinicia en cada iteración.",
     "¿Cómo se calcula la suma de 1 a N sin recorrer todos los números?",
     "Localiza la variable que cambia.",
@@ -323,7 +323,7 @@ const source={
   ],
   "dataset": [
     "Filtrar selecciona filas que cumplen condiciones. Agrupar resume un conjunto grande de filas por categoría; exportar CSV facilita trabajar con los resultados.",
-    "Ventas: A=50, A=30, B=20.|Filtrar A deja 50 y 30.|Agrupar por categoría da A=80 y B=20.",
+    "Observa estas tres ventas ficticias: A=50, A=30 y B=20.|Aplicar un filtro por la categoría A deja los importes 50 y 30.|Agrupar por categoría da A=80 y B=20.",
     "Agrupar antes o después de filtrar no siempre produce el mismo conjunto.",
     "¿Qué volumen de datos sigue siendo manejable en tu equipo?",
     "Genera un dataset ficticio.",
@@ -356,10 +356,10 @@ const source={
   ],
   "http": [
     "HTTP utiliza métodos y códigos de respuesta para intercambiar recursos. GET consulta, POST suele crear, PUT reemplaza y DELETE solicita eliminar.",
-    "GET /api/estudiantes/2.|Si existe el estudiante, la respuesta puede ser 200 con datos.|Si no existe, 404 indica que el recurso no se encontró.",
+    "El cliente envía una petición GET a la ruta /api/estudiantes/2.|Si existe el estudiante, la respuesta puede ser 200 con datos.|Si no existe, 404 indica que el recurso no se encontró.",
     "Un 200 no significa que la operación lógica sea correcta en todos sus detalles.",
     "¿Qué código esperarías normalmente al crear un recurso?",
-    "Elige método.",
+    "Elige el método HTTP que quieres enviar.",
     "Indica una ruta válida.",
     "Observa cuerpo y código de respuesta.",
     "Selecciona POST y envía la petición de ejemplo.",
@@ -378,10 +378,10 @@ const source={
   ],
   "kmeans": [
     "K-means agrupa puntos por cercanía a K centroides. Repite dos pasos: asignar cada punto y recalcular el centro del grupo.",
-    "Puntos en 1D: 1,2,9,10 con K=2.|Los grupos naturales son {1,2} y {9,10}.|Sus centros son 1,5 y 9,5.",
+    "Puntos en 1D: 1,2,9,10 con K=2.|Los grupos naturales son {1,2} y {9,10}.|Al calcular los promedios de cada grupo, los centroides quedan en 1,5 y 9,5.",
     "K-means no descubre automáticamente el número correcto de grupos.",
     "¿Qué cambia si empiezas con K=5 en lugar de K=2?",
-    "Elige K.",
+    "Configura el número de grupos K que quieres calcular.",
     "Ejecuta una iteración.",
     "Mira centroides y reasignaciones.",
     "Selecciona K=4 y ejecuta dos iteraciones.",
@@ -422,7 +422,7 @@ const source={
   ],
   "breakeven": [
     "El punto muerto es el nivel de ventas necesario para cubrir costes fijos y variables. Se calcula con el margen de contribución unitario.",
-    "Precio 50 €, coste variable 20 € y costes fijos 1.000 €.|Margen unitario=50−20=30 €.|Unidades mínimas=techo(1000/30)=34.",
+    "Precio 50 €, coste variable 20 € y costes fijos 1.000 €.|Resta coste variable al precio para el margen unitario: 50−20=30 €.|Unidades mínimas=techo(1000/30)=34.",
     "Si el coste variable supera el precio, vender más no resuelve el problema.",
     "¿Cómo cambia el umbral al aumentar el precio manteniendo el resto igual?",
     "Calcula el margen unitario.",
@@ -444,7 +444,7 @@ const source={
   ],
   "investment": [
     "El VAN compara un desembolso inicial con el valor actual de los flujos futuros. Una tasa de descuento mayor reduce el valor de cobros lejanos.",
-    "Inviertes 100 €; cobras 60 € cada año durante dos años con tasa 0 %.|VAN=-100+60+60.|Resultado 20 €; con tasa positiva será menor.",
+    "Inviertes 100 €; cobras 60 € cada año durante dos años con tasa 0 %.|Sustituye los valores del ejemplo y suma: VAN=-100+60+60.|Resultado 20 €; con tasa positiva será menor.",
     "Un VAN positivo depende de supuestos y no garantiza rentabilidad real.",
     "¿Cómo cambia el VAN si la tasa de descuento pasa del 0 % al 15 %?",
     "Identifica inversión y flujos.",
@@ -510,7 +510,7 @@ const source={
   ],
   "meeting": [
     "Una reunión necesita objetivo, agenda, tiempo para decidir y seguimiento. Un reparto equilibrado no garantiza buenos acuerdos, pero evita consumir todo el tiempo en contexto.",
-    "Reunión de 60 min: 20 de contexto, 25 de debate, 10 de decisiones y 5 de próximos pasos.|La suma es 60 minutos.|Si aumentas el debate a 35, te pasas 10 min y necesitas redistribuir.",
+    "Reunión de 60 min: 20 de contexto, 25 de debate, 10 de decisiones y 5 de próximos pasos.|Al sumar los cuatro bloques de la agenda obtienes exactamente 60 minutos.|Si aumentas el debate a 35, te pasas 10 min y necesitas redistribuir.",
     "Más tiempo de reunión no garantiza mejores decisiones.",
     "¿Cuánto reservarías a acuerdos y próximos pasos?",
     "Suma los minutos de todas las fases.",
