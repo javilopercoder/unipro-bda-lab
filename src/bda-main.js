@@ -6,6 +6,7 @@ import {runMongo,evaluateMongo,mongoData,MONGO_DATA_COUNT} from './mongo.js';
 import {executeXPath,evaluateXPath} from './xml.js';
 import {RedisSim} from './redis.js';
 import {renderBdaGuide,BDA_GUIDES} from './campus/bda-guides.js';
+import {createCodeCoach,REDIS_MISSIONS} from './campus/code-coach.js';
 import {BankSim} from './transactions.js';
 import {rollup,segments,distributed,PURCHASE_COUNT} from './analytics.js';
 
@@ -42,8 +43,25 @@ function renderNav(){
  const nav=$('#nav');nav.replaceChildren();
  for(const mod of MODULES){const b=create('button','nav-item'+(mod.id===state.module?' active':''));b.type='button';b.append(create('span','nav-icon',mod.icon),create('span','',mod.name));b.onclick=()=>{state.module=mod.id;history.replaceState(null,'','#'+mod.id);render()};nav.append(b)}
 }
-function editUI({title,description,task=true,placeholder='Escribe aquí...',buttons=[]}={}){
- $('#main').innerHTML=heading(title,description,MODULES.find(m=>m.id===state.module).label)+'<div class="main-columns"><div><section class="panel"><h2 id="exercise-title">Práctica</h2><p id="goal" class="muted"></p><div id="task-buttons" class="task-list"></div></section><section class="panel"><h2>Editor</h2><textarea id="code" class="editor" spellcheck="false" aria-label="Editor de práctica" placeholder="'+placeholder+'"></textarea><div class="toolbar" id="buttons"></div><p id="state" class="status" role="status"></p></section><section class="panel"><h2>Resultados</h2><div id="results" class="result-scroll"><p class="muted">Ejecuta la consulta para ver su resultado.</p></div></section></div><aside><section class="panel"><h2>Datos y pistas</h2><div id="help" class="muted small"></div></section></aside></div>';
+function editUI({title,description,placeholder='Escribe tu consulta aquí…'}={}){
+ $('#main').innerHTML=heading(title,description,MODULES.find(m=>m.id===state.module).label)+
+ '<div class="main-columns"><div class="code-column">'+
+ '<section class="panel exercise-panel"><h2 id="exercise-title">Tu reto</h2><p id="goal" class="muted"></p><div id="task-buttons" class="task-list"></div></section>'+
+ '<section class="panel editor-panel"><div class="editor-panel-head"><div><h2>Escribe y ejecuta</h2><p>Empieza en blanco. Puedes resolver el reto o probar otra consulta por tu cuenta.</p></div><span class="editor-local-badge">● Solo en este navegador</span></div>'+
+ '<div class="code-editor-shell"><div class="code-editor-top"><span>● ● ●</span><label for="code">Editor · '+title+'</label><kbd>Ctrl + Enter</kbd></div>'+
+ '<textarea id="code" class="editor code-editor" spellcheck="false" autocapitalize="off" autocomplete="off" aria-label="Editor de práctica" placeholder="'+placeholder+'"></textarea>'+
+ '<div class="toolbar code-toolbar" id="buttons"></div>'+
+ '<div class="code-result-head"><b>Salida</b><span>El resultado aparece aquí al ejecutar</span></div>'+
+ '<div id="results" class="result-scroll code-results"><p class="muted">Escribe una consulta y pulsa Ejecutar.</p></div></div>'+
+ '<p id="state" class="status" role="status"></p></section></div>'+
+ '<aside><section class="panel code-help-panel"><h2>Ayuda a tu ritmo</h2><div id="help"></div></section></aside></div>';
+ const editor=$('#code');
+ editor.addEventListener('keydown',event=>{
+   if(event.key==='Enter'&&(event.ctrlKey||event.metaKey)){
+     event.preventDefault();$('#buttons button')?.click();
+   }
+   if(event.key==='Tab'&&!event.shiftKey){event.preventDefault();editor.setRangeText('  ',editor.selectionStart,editor.selectionEnd,'end')}
+ });
 }
 function createButton(text,fn,cls='btn'){const b=create('button',cls,text);b.type='button';b.onclick=fn;return b}
 function pickTasks(tasks,selected,onSelect){const box=$('#task-buttons');box.replaceChildren();for(const [index,task]of tasks.entries()){const btn=createButton(task.label,()=>onSelect(index),'task'+(index===selected?' active':''));box.append(btn)}}
