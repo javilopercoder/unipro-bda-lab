@@ -462,3 +462,29 @@ html[data-theme=dark] .flow-hint-box button{background:#29435f;color:#dbefff;bor
 html[data-theme=dark] #flow-hint-result p{background:#243f5f;color:#e1f2ff}
 html[data-theme=dark] .flow-var{background:#264461;border-color:#456789;color:#edf8ff}
 @media(max-width:620px){.flow-editor-frame textarea{min-height:180px;padding:14px;font-size:12px}.flow-editor-actions .btn{flex:1}.flow-hint-box{padding:11px}}
+
+/* Clases y herencia: objetos interactivos + método editable */
+.oop-lab{display:grid;gap:13px}
+.oop-lab .lab-intro{line-height:1.7;color:#526e90;font-size:13px}
+.oop-lab .lab-intro code{background:#e7f1fc;padding:2px 5px;border-radius:5px}
+.oop-inheritance{display:flex;align-items:center;justify-content:center;gap:10px;background:#edf4fe;border:1px solid #d7e7f8;border-radius:13px;padding:14px;flex-wrap:wrap}
+.oop-inheritance span{padding:11px 15px;background:#fff;border:1px solid #c9daee;border-radius:10px;font-size:12px;font-weight:800;color:#325c98}
+.oop-inheritance b{font-size:15px;color:#6094ce}
+.oop-code-frame{border-radius:14px;border:1px solid #304967;background:#0d1a2b;overflow:hidden}
+.oop-code-frame header{display:flex;justify-content:space-between;align-items:center;gap:10px;background:#20344d;color:#c6daf1;padding:11px 14px;font:600 11px 'JetBrains Mono',monospace}
+.oop-code-frame header small{color:#90afd0}
+.oop-code-frame textarea{display:block;background:#0d1c2e!important;color:#e6f2ff!important;border:0!important;outline:0!important;box-shadow:none!important;width:100%;min-height:154px;resize:vertical;padding:17px;font:500 13px/1.75 'JetBrains Mono',monospace;tab-size:2;caret-color:#a4f2d8}
+.oop-code-frame textarea::placeholder{color:#8ca9c8}
+.oop-code-actions{display:flex;gap:8px;flex-wrap:wrap;padding:11px 13px;background:#1c3047;border-top:1px solid #3c5672}
+.oop-code-actions .btn{font-size:11px;padding:9px 12px}
+.oop-code-actions #oop-hint,.oop-code-actions #oop-insert{background:#294664;color:#dceeff;border:1px solid #446688}
+.oop-code-actions #oop-insert[hidden]{display:none}
+.oop-hint-result{display:grid;gap:9px;background:#0d1c2f;padding:0 14px}
+.oop-hint-result:empty{display:none}
+.oop-hint-result p{background:#223b57;color:#d4e7fc;margin:10px 0;font-size:12px;line-height:1.65;border-radius:8px;padding:12px}
+.oop-hint-result code{display:block;white-space:pre-wrap;font:500 12px/1.7 'JetBrains Mono',monospace;color:#b6f4db;padding:9px;margin-top:8px;border-radius:7px;background:#152b40}
+html[data-theme=dark] .oop-lab .lab-intro{color:#bdd0e8}
+html[data-theme=dark] .oop-inheritance{background:#223953;border-color:#3d597a}
+html[data-theme=dark] .oop-inheritance span{background:#274564;color:#e6f4ff;border-color:#557595}
+html[data-theme=dark] .oop-lab .lab-intro code{background:#2b4665;color:#e4f1ff}
+@media(max-width:640px){.oop-inheritance{gap:5px}.oop-inheritance span{padding:9px;font-size:11px}.oop-code-actions .btn{flex:1}.oop-code-frame textarea{font-size:12px}}
