@@ -1,0 +1,60 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {createTerminalMachine,tokenize} from '../src/campus/terminal.js';
+import {fragmentOf,REDIS_MISSIONS} from '../src/campus/code-coach.js';
+import {RedisSim} from '../src/redis.js';
+
+test('Consola libre: rutas, archivos y comandos sin ejecutar el sistema real',()=>{
+ const t=createTerminalMachine();
+ assert.equal(t.getPath(),'/home/alumno');
+ assert.equal(t.execute('pwd').output,'/home/alumno');
+ assert.ok(t.execute('ls').output.includes('leeme.txt'));
+ assert.ok(t.execute('help').output.includes('mkdir'));
+ assert.ok(t.execute('mkdir proyectos').output.includes('Creado'));
+ assert.ok(t.execute('touch proyectos/notas.txt').output.includes('Creado'));
+ assert.ok(t.execute('write proyectos/notas.txt "hola mundo"').output.includes('10'));
+ assert.equal(t.execute('cat proyectos/notas.txt').output,'hola mundo');
+ assert.ok(t.execute('cp proyectos/notas.txt copia.txt').output.includes('completada'));
+ assert.equal(t.execute('cat copia.txt').output,'hola mundo');
+ assert.ok(t.execute('mv copia.txt final.txt').output.includes('completada'));
+ assert.equal(t.execute('cat final.txt').output,'hola mundo');
+ assert.ok(t.execute('rm final.txt').output.includes('Eliminado'));
+ assert.ok(t.execute('cd proyectos').output.includes('/home/alumno/proyectos'));
+ assert.ok(t.execute('cd ..').output.includes('/home/alumno'));
+ assert.ok(t.execute('tree /home/alumno').output.includes('notas.txt'));
+ assert.ok(t.getHistory().length>=10);
+ t.execute('clear');
+ assert.ok(t.execute('ls').output.includes('proyectos'));
+ t.reset();
+ assert.ok(!t.execute('ls').output.includes('proyectos'));
+});
+test('Terminal: comillas, rutas inválidas y eco con redirección',()=>{
+ const t=createTerminalMachine();
+ assert.deepEqual(tokenize('write "notas de clase.txt" "hola mundo"'),['write','notas de clase.txt','hola mundo']);
+ assert.ok(t.execute('cd inexistente').output.includes('No existe'));
+ assert.ok(t.execute('touch').output.includes('Uso'));
+ assert.ok(t.execute('mkdir ..').output.includes('Ya existe')||t.execute('mkdir ..').output.includes('Ruta'));
+ assert.ok(t.execute('echo "consulta libre" > ejemplo.txt').output.includes('Guardado'));
+ assert.equal(t.execute('cat ejemplo.txt').output,'consulta libre');
+ assert.ok(t.execute('sudo rm -rf /').output.includes('no reconocido'));
+ assert.ok(t.execute('help').output.includes('Sistema')===false||t.execute('help').output.length>0);
+});
+test('Pistas de SQL, Mongo y XPath se generan por fragmentos',()=>{
+ const sql='SELECT nombre\nFROM clientes\nWHERE ciudad = \'Madrid\';';
+ assert.ok(fragmentOf(sql,'sql',1).startsWith('SELECT'));
+ assert.ok(fragmentOf(sql,'sql',1).length<sql.length);
+ assert.equal(fragmentOf(sql,'sql',3),sql);
+ const mongo='db.clientes.find({"ciudad":"Madrid"})';
+ assert.equal(fragmentOf(mongo,'mongo',1),'db.clientes.find(');
+ assert.ok(fragmentOf(mongo,'mongo',2).length<fragmentOf(mongo,'mongo',3).length);
+ assert.equal(fragmentOf('//paciente[@codigo="P002"]/nombre/text()','xpath',1),'//');
+ assert.equal(REDIS_MISSIONS.length,5);
+});
+test('Redis simulado acepta HELP y sigue interpretando comandos',()=>{
+ const r=new RedisSim();
+ assert.ok(r.execute('HELP').includes('GET'));
+ assert.equal(r.execute('SET alumno Ana'),'OK');
+ assert.equal(r.execute('GET alumno'),'Ana');
+ assert.equal(r.execute('DEL alumno'),'(integer) 1');
+ assert.equal(r.execute('GET alumno'),'(nil)');
+});

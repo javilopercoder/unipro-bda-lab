@@ -6,6 +6,7 @@ import {runMongo,evaluateMongo,mongoData,MONGO_DATA_COUNT} from './mongo.js';
 import {executeXPath,evaluateXPath} from './xml.js';
 import {RedisSim} from './redis.js';
 import {renderBdaGuide,BDA_GUIDES} from './campus/bda-guides.js';
+import {createCodeCoach,REDIS_MISSIONS} from './campus/code-coach.js';
 import {BankSim} from './transactions.js';
 import {rollup,segments,distributed,PURCHASE_COUNT} from './analytics.js';
 
@@ -42,55 +43,162 @@ function renderNav(){
  const nav=$('#nav');nav.replaceChildren();
  for(const mod of MODULES){const b=create('button','nav-item'+(mod.id===state.module?' active':''));b.type='button';b.append(create('span','nav-icon',mod.icon),create('span','',mod.name));b.onclick=()=>{state.module=mod.id;history.replaceState(null,'','#'+mod.id);render()};nav.append(b)}
 }
-function editUI({title,description,task=true,placeholder='Escribe aquí...',buttons=[]}={}){
- $('#main').innerHTML=heading(title,description,MODULES.find(m=>m.id===state.module).label)+'<div class="main-columns"><div><section class="panel"><h2 id="exercise-title">Práctica</h2><p id="goal" class="muted"></p><div id="task-buttons" class="task-list"></div></section><section class="panel"><h2>Editor</h2><textarea id="code" class="editor" spellcheck="false" aria-label="Editor de práctica" placeholder="'+placeholder+'"></textarea><div class="toolbar" id="buttons"></div><p id="state" class="status" role="status"></p></section><section class="panel"><h2>Resultados</h2><div id="results" class="result-scroll"><p class="muted">Ejecuta la consulta para ver su resultado.</p></div></section></div><aside><section class="panel"><h2>Datos y pistas</h2><div id="help" class="muted small"></div></section></aside></div>';
+function editUI({title,description,placeholder='Escribe tu consulta aquí…'}={}){
+ $('#main').innerHTML=heading(title,description,MODULES.find(m=>m.id===state.module).label)+
+ '<div class="main-columns"><div class="code-column">'+
+ '<section class="panel exercise-panel"><h2 id="exercise-title">Tu reto</h2><p id="goal" class="muted"></p><div id="task-buttons" class="task-list"></div></section>'+
+ '<section class="panel editor-panel"><div class="editor-panel-head"><div><h2>Escribe y ejecuta</h2><p>Empieza en blanco. Puedes resolver el reto o probar otra consulta por tu cuenta.</p></div><span class="editor-local-badge">● Solo en este navegador</span></div>'+
+ '<div class="code-editor-shell"><div class="code-editor-top"><span>● ● ●</span><label for="code">Editor · '+title+'</label><kbd>Ctrl + Enter</kbd></div>'+
+ '<textarea id="code" class="editor code-editor" spellcheck="false" autocapitalize="off" autocomplete="off" aria-label="Editor de práctica" placeholder="'+placeholder+'"></textarea>'+
+ '<div class="toolbar code-toolbar" id="buttons"></div>'+
+ '<div class="code-result-head"><b>Salida</b><span>El resultado aparece aquí al ejecutar</span></div>'+
+ '<div id="results" class="result-scroll code-results"><p class="muted">Escribe una consulta y pulsa Ejecutar.</p></div></div>'+
+ '<p id="state" class="status" role="status"></p></section></div>'+
+ '<aside><section class="panel code-help-panel"><h2>Ayuda a tu ritmo</h2><div id="help"></div></section></aside></div>';
+ const editor=$('#code');
+ editor.addEventListener('keydown',event=>{
+   if(event.key==='Enter'&&(event.ctrlKey||event.metaKey)){
+     event.preventDefault();$('#buttons button')?.click();
+   }
+   if(event.key==='Tab'&&!event.shiftKey){event.preventDefault();editor.setRangeText('  ',editor.selectionStart,editor.selectionEnd,'end')}
+ });
 }
 function createButton(text,fn,cls='btn'){const b=create('button',cls,text);b.type='button';b.onclick=fn;return b}
-function pickTasks(tasks,selected,onSelect){const box=$('#task-buttons');box.replaceChildren();for(const [index,task]of tasks.entries()){const btn=createButton(task.label,()=>onSelect(index),'task'+(index===selected?' active':''));box.append(btn)}}
+function pickTasks(tasks,selected,onSelect){
+ const box=$('#task-buttons');box.replaceChildren();
+ const free=createButton('✦ Explorar sin reto',()=>onSelect(-1),'task'+(selected===-1?' active':''));
+ box.append(free);
+ for(const [index,task]of tasks.entries()){
+  const btn=createButton(task.label,()=>onSelect(index),'task'+(index===selected?' active':''));
+  box.append(btn);
+ }
+}
 function renderSQL(plan=false){
  state.module=plan?'plans':'sql';
  editUI({title:plan?'Planes de ejecución':'SQL y PostgreSQL',description:plan?'Observa un plan de PostgreSQL sobre datos ficticios. EXPLAIN es real, aunque este conjunto de datos es pequeño.':'Escribe consultas y comprueba el resultado. Aceptamos soluciones diferentes si devuelven las filas correctas.'});
+ const coach=createCodeCoach({host:$('#help'),editor:$('#code'),language:'sql'});
  if(plan){
   $('#exercise-title').textContent='Tarea: leer el plan';
   $('#goal').textContent='Ejecuta EXPLAIN para los pedidos de más de 100 €. Observa los operadores y el coste estimado.';
   $('#task-buttons').replaceChildren();
-  $('#code').value='EXPLAIN SELECT * FROM pedidos WHERE importe > 100;';
-  $('#help').textContent='Una tabla pequeña puede requerir Seq Scan incluso con índices. EXPLAIN muestra estimaciones; no simula una carga masiva.';
+  $('#code').value='';
+  coach.setTask({starter:'EXPLAIN SELECT * FROM pedidos WHERE importe > 100;',hint:'EXPLAIN va delante de una consulta SELECT. El motor mostrará un plan estimado.'});
+  $('#help').insertAdjacentHTML('beforeend','<p class="coach-data-note">Los planes de una tabla pequeña pueden usar Seq Scan sin que eso sea necesariamente un error.</p>');
  }else{
-  const onSelect=index=>{state.task.sql=index;const x=SQL_TASKS[index];$('#exercise-title').textContent=x.label+' · '+x.topic;$('#goal').textContent=x.goal;$('#code').value=x.starter;$('#help').textContent=x.hint+' · Datos: '+SQL_DATA_COUNTS.clientes+' clientes, '+SQL_DATA_COUNTS.pedidos+' pedidos, '+SQL_DATA_COUNTS.productos+' productos y '+SQL_DATA_COUNTS.ventas+' ventas ficticias.';$('#results').textContent='Ejecuta la consulta o comprueba la solución.';status('');pickTasks(SQL_TASKS,index,onSelect)};
+  const onSelect=index=>{
+   state.task.sql=index;
+   const x=SQL_TASKS[index]||{label:'Exploración libre',topic:'Sin objetivo fijo',goal:'Prueba SELECT, filtros, JOIN, agrupaciones o EXPLAIN. Aquí no hay una única respuesta correcta.',starter:'SELECT nombre FROM clientes LIMIT 10;',hint:'Puedes comenzar con SELECT nombre FROM clientes y limitar resultados con LIMIT.'};
+   $('#exercise-title').textContent=x.label+' · '+x.topic;$('#goal').textContent=x.goal;
+   $('#code').value='';
+   coach.setTask(x);
+   $('#results').textContent='Escribe una consulta y ejecútala cuando quieras.';
+   status('');pickTasks(SQL_TASKS,index,onSelect);
+  };
   onSelect(state.task.sql);
  }
  const run=async(grade=false)=>{const code=$('#code').value;const b=$('#buttons');b.querySelectorAll('button').forEach(x=>x.disabled=true);status('Cargando PostgreSQL / ejecutando…');
  try{const result=await runSQL(code);output($('#results'),result.rows);status('Consulta ejecutada en '+result.duration+' ms · '+result.rows.length+' filas','good');
-  if(grade&&!plan){const task=SQL_TASKS[state.task.sql];if(task.expected){const check=await evaluateSQL(code,task.expected);status(check.pass?'✓ Resultado correcto. ¡Bien!':'No coincide con el resultado esperado. Prueba otra consulta o mira la pista.',check.pass?'good':'warn')}
+  if(grade&&!plan){const task=SQL_TASKS[state.task.sql];if(!task)status('Modo libre: la consulta se ha ejecutado. Explora los resultados y prueba otra.','good');else if(task.expected){const check=await evaluateSQL(code,task.expected);status(check.pass?'✓ Resultado correcto. ¡Bien!':'No coincide con el resultado esperado. Prueba otra consulta o mira la pista.',check.pass?'good':'warn')}
   else status('Plan mostrado. Comprueba los operadores y sus costes; este reto no lleva nota.','good')}
  }catch(e){status(e.message||String(e),'bad');$('#results').replaceChildren(create('p','muted','No se ejecutó la consulta.'))}finally{b.querySelectorAll('button').forEach(x=>x.disabled=false)}};
  const b=$('#buttons');b.append(createButton('▶ Ejecutar',()=>run(false)),createButton('✓ Comprobar',()=>run(true),'btn secondary'),createButton('↻ Reiniciar base',async()=>{status('Reiniciando…');try{await resetSQL();status('Base de datos reiniciada','good')}catch(e){status(e.message,'bad')}},'btn secondary'));
  if(plan)b.querySelectorAll('button')[1].disabled=true;
 }
 function renderMongo(){
- editUI({title:'MongoDB · Documentos',description:'Practica consultas de estilo MongoDB sobre una colección JSON ficticia. Es un intérprete parcial, no un servidor MongoDB real.'});
- const select=index=>{state.task.mongo=index;const task=MONGO_TASKS[index];$('#exercise-title').textContent=task.label;$('#goal').textContent=task.goal;$('#code').value=task.starter;$('#help').textContent=task.hint+' Colección: '+MONGO_DATA_COUNT.toLocaleString('es-ES')+' documentos ficticios. Ejemplo: '+JSON.stringify(mongoData()[0]);status('');$('#results').textContent='Ejecuta una consulta.';pickTasks(MONGO_TASKS,index,select)};select(state.task.mongo);
- const execute=grade=>{try{const q=$('#code').value;const result=runMongo(q);output($('#results'),result);const pass=grade?evaluateMongo(q,MONGO_TASKS[state.task.mongo].id):null;status(grade?(pass?'✓ Resultado correcto':'Revisa el filtro, la proyección o la agrupación'):'Consulta interpretada: '+result.length+' documentos',grade?(pass?'good':'warn'):'good')}catch(e){status(e.message,'bad')}};
+ editUI({title:'MongoDB · Documentos',description:'Interpreta consultas sobre documentos JSON ficticios. Puedes explorar sin resolver un reto; no hay conexión con un servidor MongoDB.'});
+ const coach=createCodeCoach({host:$('#help'),editor:$('#code'),language:'mongo'});
+ const select=index=>{
+  state.task.mongo=index;
+  const task=MONGO_TASKS[index]||{label:'Exploración libre',goal:'Prueba find, proyecciones y aggregate. Puedes consultar todos los documentos de ejemplo.',starter:'db.clientes.find({})',hint:'El punto de partida más sencillo es find con un filtro vacío.'};
+  $('#exercise-title').textContent=task.label;$('#goal').textContent=task.goal;
+  $('#code').value='';coach.setTask(task);
+  $('#results').textContent='Escribe una consulta y ejecútala.';
+  status('');pickTasks(MONGO_TASKS,index,select);
+ };
+ select(state.task.mongo);
+ const execute=grade=>{
+  try{
+   const q=$('#code').value,result=runMongo(q);
+   output($('#results'),result);
+   const selected=MONGO_TASKS[state.task.mongo];
+   const pass=grade&&selected?evaluateMongo(q,selected.id):null;
+   status(grade?(selected?(pass?'✓ Coincide con el resultado del reto':'Revisa el filtro, proyección o agrupación; puedes usar una pista.'):'Modo libre: revisa los documentos devueltos.'):'Consulta ejecutada: '+result.length+' documentos',grade&&selected?(pass?'good':'warn'):'good');
+  }catch(e){status(e.message,'bad')}
+ };
  $('#buttons').append(createButton('▶ Ejecutar',()=>execute(false)),createButton('✓ Comprobar',()=>execute(true),'btn secondary'));
 }
 function renderXML(){
- editUI({title:'XML y XPath',description:'El navegador analiza XML y ejecuta XPath de verdad. Este módulo no valida DTD ni implementa XQuery.'});
- const dataBox=create('div','panel');dataBox.append(create('h2','','Documento XML de práctica'));
- const xml=create('textarea','editor');xml.value=SAMPLE_XML;xml.style.minHeight='205px';xml.setAttribute('aria-label','Documento XML');dataBox.append(xml);
- $('#main .main-columns > div').prepend(dataBox);
- const select=index=>{state.task.xml=index;const task=XML_TASKS[index];$('#exercise-title').textContent=task.label;$('#goal').textContent=task.goal;$('#code').value=task.xpath;$('#help').textContent=task.hint;status('');$('#results').textContent='Ejecuta XPath.';pickTasks(XML_TASKS,index,select)};select(state.task.xml);
- const run=grade=>{try{const values=executeXPath(xml.value,$('#code').value);output($('#results'),values.map((v,i)=>({numero:i+1,valor:v})));const pass=grade?evaluateXPath(xml.value,$('#code').value,XML_TASKS[state.task.xml].id):null;status(grade?(pass?'✓ Consulta correcta':'No se ha obtenido la selección esperada'):'XPath ejecutado: '+values.length+' resultados',grade?(pass?'good':'warn'):'good')}catch(e){status(e.message,'bad')}};
- $('#buttons').append(createButton('▶ Ejecutar',()=>run(false)),createButton('✓ Comprobar',()=>run(true),'btn secondary'));
+ editUI({title:'XML y XPath',description:'El navegador ejecuta XPath sobre XML real. Cambia el documento de ejemplo o escribe tus propias rutas; no implementa XQuery.'});
+ const doc=create('div','panel xml-document-panel');
+ doc.append(create('h2','','Documento XML (editable)'));
+ const docEditor=create('textarea','editor');docEditor.value=SAMPLE_XML;docEditor.style.minHeight='205px';docEditor.setAttribute('aria-label','Documento XML');
+ doc.append(docEditor);
+ $('#main .main-columns > div').prepend(doc);
+ const coach=createCodeCoach({host:$('#help'),editor:$('#code'),language:'xpath'});
+ const select=index=>{
+  state.task.xml=index;
+  const task=XML_TASKS[index]||{label:'Exploración libre',goal:'Explora nodos, textos y atributos XPath en el documento editable.',xpath:'//paciente/nombre/text()',hint:'Las rutas XPath pueden empezar por // para buscar en todo el documento.'};
+  $('#exercise-title').textContent=task.label;$('#goal').textContent=task.goal;
+  $('#code').value='';coach.setTask(task);status('');
+  $('#results').textContent='Escribe una expresión XPath y ejecútala.';
+  pickTasks(XML_TASKS,index,select);
+ };
+ select(state.task.xml);
+ const execute=grade=>{
+  try{
+   const query=$('#code').value,values=executeXPath(docEditor.value,query);
+   output($('#results'),values.map((v,i)=>({numero:i+1,valor:v})));
+   const selected=XML_TASKS[state.task.xml],pass=grade&&selected?evaluateXPath(docEditor.value,query,selected.id):null;
+   status(grade?(selected?(pass?'✓ XPath correcto':'La selección no coincide. Revisa la ruta o utiliza las pistas.'):'Modo libre: XPath ejecutado.'):'XPath ejecutado: '+values.length+' resultados',grade&&selected?(pass?'good':'warn'):'good');
+  }catch(e){status(e.message,'bad')}
+ };
+ $('#buttons').append(createButton('▶ Ejecutar',()=>execute(false)),createButton('✓ Comprobar',()=>execute(true),'btn secondary'));
 }
 function renderRedis(){
- editUI({title:'Redis · Clave-valor',description:'Simula un almacén clave-valor local. Prueba SET, GET, DEL, EXISTS, INCR, EXPIRE, TTL y KEYS *.'});
- $('#exercise-title').textContent='Consola clave-valor';
- $('#goal').textContent='Crea una clave alumno con tu nombre, recupérala con GET, y después elimínala con DEL.';
- $('#task-buttons').replaceChildren();$('#code').value='SET alumno Ana';$('#help').textContent='Los datos solo viven en la sesión de esta pestaña. Es un simulador educativo de Redis.';
- const log=[];$('#results').replaceChildren(create('pre','output','Aún no se han ejecutado comandos.'));
- const exec=()=>{try{const input=$('#code').value.trim(),out=state.redis.execute(input);log.push('> '+input+'\n'+out);$('#results').replaceChildren(create('pre','output',log.slice(-30).join('\n\n')));status('Comando interpretado','good')}catch(e){status(e.message,'bad')}};
- $('#buttons').append(createButton('▶ Ejecutar',exec),createButton('↻ Limpiar',()=>{state.redis=new RedisSim;log.length=0;$('#results').replaceChildren(create('pre','output','Memoria reiniciada.'));status('')} ,'btn secondary'));
+ $('#main').innerHTML=heading('Redis · Clave-valor','Escribe directamente en una consola Redis ficticia. Los comandos modifican una memoria local y puedes explorar sin seguir retos.','Simulador')+
+ '<div class="main-columns redis-layout"><div><section class="panel redis-panel"><div class="redis-panel-heading"><h2>Consola interactiva</h2><span>Memoria ficticia · Sin servidores</span></div>'+
+ '<div class="redis-terminal" role="region" aria-label="Consola de Redis"><div class="redis-terminal-top"><span class="redis-dots">● ● ●</span><span>redis-cli · simulador local</span></div>'+
+ '<div id="results" class="redis-console-output" role="log" aria-live="polite"><div class="redis-welcome">Listo. Escribe HELP para consultar los comandos o empieza a experimentar.</div></div>'+
+ '<div class="redis-command-row"><label for="code">redis&gt;</label><input id="code" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Comando dentro de la consola Redis" placeholder="Escribe un comando…"/><div class="toolbar" id="buttons"></div></div></div>'+
+ '<p id="state" class="status" role="status"></p></section></div>'+
+ '<aside><section class="panel"><h2>Reto opcional</h2><label for="redis-mission" class="muted">Elige qué practicar</label><select id="redis-mission" class="field">'+REDIS_MISSIONS.map((m,i)=>'<option value="'+i+'">'+m.label+'</option>').join('')+'</select><p id="goal" class="muted"></p></section>'+
+ '<section class="panel code-help-panel"><h2>Pistas por partes</h2><div id="help"></div></section></aside></div>';
+ const command=$('#code'),output=$('#results'),coach=createCodeCoach({host:$('#help'),editor:command,language:'redis'});
+ let entries=[],historyIndex=0;
+ const select=()=>{
+   const task=REDIS_MISSIONS[Number($('#redis-mission').value)];
+   $('#goal').textContent=task.goal;coach.setTask(task);command.value='';status('');
+ };
+ const log=(input,response,isError=false)=>{
+   const entry=document.createElement('div');entry.className='redis-log-entry';
+   const prompt=document.createElement('p');prompt.className='redis-log-command';prompt.textContent='redis> '+input;
+   const result=document.createElement('pre');result.className='redis-log-response'+(isError?' redis-error':'');result.textContent=response;
+   entry.append(prompt,result);output.append(entry);
+   while(output.children.length>90)output.firstChild.remove();
+   output.scrollTop=output.scrollHeight;
+ };
+ const run=()=>{
+   const input=command.value.trim();if(!input){command.focus();return}
+   entries.push(input);if(entries.length>100)entries.shift();historyIndex=entries.length;
+   try{
+     const response=state.redis.execute(input);
+     log(input,String(response));status('Comando interpretado correctamente.','good');
+   }catch(e){log(input,e.message||String(e),true);status('Comprueba el comando o pide una pista.','warn')}
+   command.value='';command.focus();
+ };
+ const restart=()=>{
+  state.redis=new RedisSim;entries=[];historyIndex=0;output.replaceChildren(create('div','redis-welcome','Memoria reiniciada. Puedes crear claves desde cero.'));
+  command.value='';status('Datos de ejemplo reiniciados.','good');command.focus();
+ };
+ $('#buttons').append(createButton('▶ Ejecutar',run),createButton('↻ Reiniciar',restart,'btn secondary'));
+ command.addEventListener('keydown',event=>{
+  if(event.key==='Enter'){event.preventDefault();run()}
+  if(event.key==='ArrowUp'||event.key==='ArrowDown'){
+   event.preventDefault();historyIndex=Math.max(0,Math.min(entries.length,historyIndex+(event.key==='ArrowUp'?-1:1)));
+   command.value=entries[historyIndex]||'';command.setSelectionRange(command.value.length,command.value.length);
+  }
+ });
+ $('#redis-mission').onchange=select;select();
 }
 function renderTransactions(){
  $('#main').innerHTML=heading('Transacciones bancarias','Simula operaciones sobre dos cuentas. SAVEPOINT y ROLLBACK modifican una copia temporal; COMMIT confirma.', 'Simulador')+'<section class="panel"><h2>Dos cuentas de prueba</h2><p class="muted">Empieza una transacción, transfiere dinero, guarda un punto de control y prueba cómo se revierten los cambios.</p><div id="balances" class="grid"></div><div class="toolbar" id="buttons"></div><p class="status" id="state" role="status"></p></section><section class="panel"><h2>Registro de operaciones</h2><pre id="history" class="output"></pre></section><div class="pill warn">Simulación pedagógica. No son transacciones PostgreSQL reales ni un WAL real.</div>';

@@ -1,3 +1,5 @@
+import {renderFlowEditor} from './pseudocode.js';
+import {renderTerminal} from './terminal.js';
 // Sistemas, algoritmos y estructuras de datos. Modelos locales, sin shell ni red real.
 const $=(root,selector)=>selector===undefined?document.querySelector(root):root.querySelector(selector);
 const n=(r,s)=>Number($(r,s).value);
@@ -82,32 +84,9 @@ export function renderComputing(root,lab){
  let step=0;const instructions=[['Hilo A','leer x=0'],['Hilo B','leer x=0'],['Hilo A','escribir x=1'],['Hilo B','escribir x=1']];function draw(){const lock=$('#mutex').checked,number=lock?Math.min(step,2):step>=4?1:step>=3?1:0;$out.innerHTML='<strong>Contador compartido: '+number+'</strong><p>'+ (lock?'Con bloqueo, los dos incrementos terminan en x=2.':'Sin bloqueo, dos lecturas de x=0 pueden causar una actualización perdida.')+'</p>';$viz.innerHTML='<div class="timeline">'+Array.from({length:lock?2:4},(_,i)=>'<div class="timeline-step '+(i<step?'done':'')+'">'+(lock?'Hilo '+(i?'B':'A')+' incrementa de forma atómica':instructions[i].join(': '))+'</div>').join('')+'</div>'}
  $('#mutex').onchange=()=>{step=0;draw()};$('#next').onclick=()=>{step=Math.min(step+1,$('#mutex').checked?2:4);draw()};$('#restart').onclick=()=>{step=0;draw()};draw();return;
  }
- if(t==='flow'){
- const { $out,$viz }=base(root,'Ejecuta un algoritmo paso a paso y observa cómo cambian sus variables.',slider('max','Límite de iteraciones',2,20,6)+action('next','Ejecutar instrucción')+action('reset','Reiniciar'));
- let step=0,total=0;const draw=()=>{$out.innerHTML='<strong>Iteración '+step+' · suma acumulada '+total+'</strong><p>Algoritmo: suma de los enteros de 1 a N; resultado esperado = N(N+1)/2.</p>';$viz.innerHTML='<pre class="code-block">suma = 0\npara i desde 1 hasta '+n(root,'#max')+':\n    suma = suma + i\nimprimir(suma)</pre>'};$('#next').onclick=()=>{if(step<n(root,'#max')){step++;total+=step}draw()};$('#reset').onclick=()=>{step=0;total=0;draw()};$('#max').oninput=()=>{step=0;total=0;draw()};draw();return;
- }
- if(t==='terminal'){
- const { $out,$viz }=base(root,'Sistema de archivos ficticio en memoria. Los comandos no ejecutan una terminal real. Crea, lee, copia y mueve archivos sin riesgo.', '<label class="control terminal-input">Comando <input id="command" autocomplete="off" value="help"></label>'+action('run','Ejecutar')+action('clear','Reiniciar'));
- const initialTree={type:'dir',children:{home:{type:'dir',children:{alumno:{type:'dir',children:{'leeme.txt':{type:'file',data:'Bienvenido al laboratorio'}}}}}}};let tree=structuredClone(initialTree),cwd=['home','alumno'],log=[];
- const normPath=p=>{const path=p.startsWith('/')?[]:[...cwd];for(const seg of p.split('/')){if(!seg||seg==='.')continue;if(seg==='..')path.pop();else path.push(seg)}return path};
- const lookup=path=>path.reduce((x,name)=>x?.type==='dir'?x.children[name]:null,tree);
- const getParent=p=>{const path=normPath(p);return {path,parent:lookup(path.slice(0,-1)),name:path.at(-1)}};
- const command=input=>{const parts=input.trim().match(/"[^"]*"|'[^']*'|\S+/g)?.map(x=>x.replace(/^["']|["']$/g,''))||[];if(!parts.length)return'';const [op,...args]=parts;let a=args[0]||'.',node=lookup(normPath(a));
- if(op==='help')return 'Comandos: pwd, ls, cd, mkdir, touch, cat, write, cp, mv, rm, tree, help';
- if(op==='pwd')return '/'+cwd.join('/');
- if(op==='ls')return node?.type==='dir'?Object.keys(node.children).join('  '):node?.type==='file'?a:'Ruta no encontrada';
- if(op==='cd'){if(node?.type!=='dir')return 'No existe ese directorio';cwd=normPath(a);return '/'+cwd.join('/')}
- if(op==='mkdir'||op==='touch'){const {parent,name}=getParent(a);if(!parent||parent.type!=='dir'||!name)return'Ruta inválida';if(parent.children[name])return'Ya existe';parent.children[name]=op==='mkdir'?{type:'dir',children:{}}:{type:'file',data:''};return'Creado: '+name}
- if(op==='cat')return node?.type==='file'?node.data:'No es un archivo';
- if(op==='write'){const p=args[0],data=args.slice(1).join(' ');if(!p||!data)return'Uso: write archivo.txt texto';const file=lookup(normPath(p));if(file?.type!=='file')return'Archivo inexistente';file.data=data.slice(0,500);return'Escritos '+file.data.length+' caracteres'}
- if(op==='cp'||op==='mv'){const dest=args[1];if(!dest)return'Uso: '+op+' origen destino';if(node?.type!=='file')return'Solo se permiten archivos';const {parent,name}=getParent(dest);if(parent?.type!=='dir'||!name)return'Destino inválido';parent.children[name]={type:'file',data:node.data};if(op==='mv'){const old=getParent(a);delete old.parent.children[old.name]}return'Operación completada'}
- if(op==='rm'){const {parent,name}=getParent(a);if(node?.type!=='file'||!parent)return'Solo se pueden eliminar archivos';delete parent.children[name];return'Archivo eliminado'}
- if(op==='tree'){const list=(o,d=0)=>Object.entries(o.children||{}).map(([k,v])=>'  '.repeat(d)+k+(v.type==='dir'?'/\n'+list(v,d+1):'')).join('\n');return list(tree)}
- return'Comando no reconocido';
- };
- const draw=()=>{$out.innerHTML='<strong>alumno@lab:'+'/'+cwd.join('/')+'$</strong><p>Sin ejecución real en el sistema operativo.</p>';$viz.innerHTML='<pre class="code-block terminal-log">'+escape(log.join('\n'))+'</pre>'};
- $('#run').onclick=()=>{const input=$('#command').value;const result=command(input);log.push('$ '+input+'\n'+result);log=log.slice(-50);draw()};$('#command').onkeydown=e=>{if(e.key==='Enter')$('#run').click()};$('#clear').onclick=()=>{tree=structuredClone(initialTree);log=[];cwd=['home','alumno'];draw()};draw();return;
- }
+ if(t==='flow')return renderFlowEditor(root);
+ if(t==='terminal')return renderTerminal(root);
+
 }
 export const COMPUTING_TYPES=new Set(['graph','sorting','structures','scheduler','memory','network','packet','architecture','threads','flow','terminal']);
 export {shortest};
