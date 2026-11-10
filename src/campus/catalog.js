@@ -41,7 +41,7 @@ export const SUBJECTS = original.map(([id,name,year,source,topics,list])=>({
 }));
 export const YEARS = [{id:1,label:'Primer curso'},{id:2,label:'Segundo curso'},{id:3,label:'Tercer curso'},{id:4,label:'Optativas'}];
 export const TOTAL_LABS=SUBJECTS.reduce((sum,s)=>sum+s.labs.length,0);
-// La hoja de UniPRO Quiz usa otros códigos en siete materias. Conservar las rutas antiguas evita perder enlaces y progreso.
+// Compatibilidad con identificadores previos: conservar rutas para que sigan funcionando los enlaces compartidos y el progreso.
 export const QUIZ_CODE_ALIASES=Object.freeze({FPR:'FPG',AYC:'ALC',EDD:'EDA',PRA:'PAD',EDC:'ESC',IGV:'IGR',AMD2:'AAM'});
 export const quizToLabSubject=id=>QUIZ_CODE_ALIASES[id]||id;
 export const getSubject=(id)=>SUBJECTS.find(s=>s.id===quizToLabSubject(id));
