@@ -7,8 +7,15 @@ const schema = [
   "CREATE TABLE dim_producto(id integer primary key,nombre text,categoria text)",
   "INSERT INTO dim_producto VALUES(1,'Teclado','Informática'),(2,'Ratón','Informática'),(3,'Libro','Lectura'),(4,'Cuaderno','Papelería')",
   "CREATE TABLE fact_ventas(id integer primary key,producto_id integer references dim_producto(id),monto numeric(10,2))",
-  "INSERT INTO fact_ventas VALUES (1,1,45),(2,2,25),(3,3,60),(4,1,80),(5,4,20),(6,3,30)"
+  "INSERT INTO fact_ventas VALUES (1,1,45),(2,2,25),(3,3,60),(4,1,80),(5,4,20),(6,3,30)"  ,
+  // Datos sintéticos deterministas: 1.205 clientes, 6.007 pedidos, 64 productos, 8.006 ventas.
+  "INSERT INTO clientes SELECT s, 'Cliente ' || lpad(s::text,4,'0'), (ARRAY['Madrid','Sevilla','Valencia','Bilbao','Zaragoza','Málaga','Granada','Vigo'])[1+(s % 8)] FROM generate_series(6,1205) s",
+  "INSERT INTO pedidos SELECT s, 1+(s * 17 % 1205), (10+(s * 37 % 900))::numeric(10,2), date '2026-01-01' + (s % 300) FROM generate_series(8,6007) s",
+  "INSERT INTO dim_producto SELECT s, 'Producto ' || s, (ARRAY['Informática','Lectura','Papelería','Hogar'])[1+(s % 4)] FROM generate_series(5,64) s",
+  "INSERT INTO fact_ventas SELECT s, 1+(s * 11 % 64), (15+(s * 29 % 800))::numeric(10,2) FROM generate_series(7,8006) s"
+
 ];
+export const SQL_DATA_COUNTS=Object.freeze({clientes:1205,pedidos:6007,productos:64,ventas:8006});
 let dbPromise;
 export async function connect(){
   if(!dbPromise)dbPromise=(async()=>{const db=new PGlite();for(const line of schema)await db.exec(line);return db})().catch(e=>{dbPromise=null;throw e});
