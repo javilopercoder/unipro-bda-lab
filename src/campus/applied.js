@@ -1,6 +1,6 @@
 // Laboratorios aplicados: interacción real del alumno con modelos ficticios.
 // Sin llamadas de red a terceros ni evaluación de JavaScript arbitrario.
-const $=(root,selector)=>root.querySelector(selector);
+const $=(root,selector)=>selector===undefined?document.querySelector(root):root.querySelector(selector);
 const val=(root,selector)=>Number($(root,selector).value);
 const esc=x=>String(x).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
 const fmt=(x,p=2)=>Number(x).toFixed(p);
