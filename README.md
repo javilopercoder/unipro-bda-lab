@@ -1,92 +1,45 @@
-# UniPRO Lab · Campus interactivo
+# Laboratorio interactivo
 
-**Proyecto no oficial de prácticas del Bachelor en Informática (UniPRO).**
+Un espacio independiente para aprender informática practicando, con motores y datos sintéticos ejecutados en el navegador.
 
-30 asignaturas del plan de estudios, 180 laboratorios de interacción directa, sin cuestionarios tipo test ni calificaciones. Excluye solo el Trabajo Final de Bachelor. Las tres optativas técnicas están incluidas, sujetas a oferta académica.
+## Recorrido
 
-## Arquitectura
+El catálogo ofrece 30 áreas de estudio y 180 prácticas. Cada práctica comienza con una idea breve, un ejemplo resuelto paso a paso y un reto. Incluye pistas progresivas, comprobación interactiva y explicaciones ampliadas si las necesitas.
 
-- Portada: \`index.html\` → \`src/main.js\` → \`src/campus/*\`.
-- BDA original: \`bda.html\` → \`src/bda-main.js\` (se conserva el laboratorio anterior).
-- PostgreSQL: PGlite (WebAssembly) únicamente al abrir BDA.
-- Resto: motores locales JavaScript y SVG, sin cuentas, claves ni servidor de datos.
-- Progreso: localStorage del navegador. Se distingue entre actividad explorada y misión interactiva realizada; no es una calificación, no se sincroniza entre dispositivos y no se envía a Sheets.
+La interfaz está diseñada para no exigir conocimientos previos ni obligar a leer grandes bloques antes de probar. El aprendizaje se construye desde ejemplos hasta experimentos autónomos. El progreso se guarda localmente y distingue entre exploración y misión realizada. No son calificaciones ni certificados.
 
-## Qué se puede practicar
+## Bases de datos
 
-Fundamentos de empresa (punto muerto, caja y VAN), gestión de proyectos (camino crítico, valor ganado y riesgos), comunicación y liderazgo (canal de comunicación, coordinación y reuniones), deontología (protección de datos, licencias y respuesta a incidentes), Álgebra (matrices, lógica), tecnología (ALU, jerarquía de caché), física (circuitos y campos), programación (trazas, estructuras, objetos y concurrencia), cálculo (derivadas, integrales, bisección), estadística (muestreo y Monte Carlo), UX (Fitts y accesibilidad), algoritmos (ordenación, BFS y Dijkstra), sistemas operativos (planificación, memoria, sistema de archivos virtual), redes (subredes y latencia), IA (reglas y búsqueda), bases de datos (PGlite, consultas, XML, documento, OLAP y datos sintéticos), requisitos (trazabilidad), ingeniería (Kanban y CI/CD), seguridad (SHA-256 y permisos), visualización (transformaciones 2D) y aprendizaje automático (K-means, regresión).
+La página \`bda.html\` incluye PostgreSQL en PGlite (ejecución local real) y módulos didácticos de XML/XPath, documentos, clave-valor, transacciones, planes de ejecución, OLAP y distribución. Los simuladores están identificados; no son servidores externos ni sistemas de producción.
 
-Todas las simulaciones sin infraestructura real se identifican como tales. Los ejercicios son originales. Los documentos privados de Drive no se han copiado al código.
+PostgreSQL incluye 15.282 filas entre clientes, pedidos, productos y ventas ficticias. El módulo documental utiliza 2.505 documentos sintéticos y el módulo OLAP 4.007 operaciones.
 
-### Base académica
+## Organización
 
-Plan del Bachelor: https://www.universidadunipro.com/bachelor-en-ingenieria-informatica-B21.html
+- \`src/campus/catalog.js\`: materias, prácticas, rutas y alias.
+- \`src/campus/curriculum.js\`: objetivos específicos de cada experiencia.
+- \`src/campus/lessons.js\`: conceptos, ejemplos y pistas.
+- \`src/campus/academy.js\`: interfaz de aprendizaje y comprobación de misiones.
+- \`src/campus/matrix-lab.js\`: taller visual de matrices 3×3 con Sarrus.
+- \`src/campus/math.js\`, \`computing.js\`, \`applied.js\` y \`management.js\`: motores de simulación.
+- \`src/campus/bda-guides.js\`: guías interactivas para los ocho modos de bases de datos.
 
-Para las materias con apuntes disponibles en el proyecto se han usado sus áreas temáticas verificadas; para las demás, la guía pública orienta los ejemplos provisionales. Programación Avanzada utiliza como referencia provisional una guía de otro bachelor: https://cms.unir.net/upbcida10_programacion_avanzada
+## Ejecutar
 
-Estas prácticas no sustituyen el material oficial ni certifican el aprendizaje.
+Con Node.js 22 o superior:
 
-## Desarrollar
+\`\`\`bash
+npm install
+npm test
+npm run build
+npx playwright install chromium
+npm run test:e2e
+\`\`\`
 
-Node.js 22 o superior:
+Vite compila \`index.html\` y \`bda.html\` en \`dist\`. Se puede desplegar en cualquier hosting estático con rutas relativas.
 
-    npm install
-    npm test
-    npm run build
-    npm run dev
+## Alcance y limitaciones
 
-Las pruebas de navegador requieren Playwright:
+Los ejemplos son originales y no están vinculados a ninguna institución. Algunos contenidos se apoyan en la estructura temática de planes académicos públicos, pero no reproducen documentos docentes. Las actividades son didácticas: una simulación de seguridad, cumplimiento, redes o arquitectura no sustituye sistemas reales ni asesoramiento profesional. El progreso no se sincroniza entre dispositivos.
 
-    npx playwright install chromium
-    npm run test:e2e
-
-El build produce \`dist/index.html\` (campus) y \`dist/bda.html\` (laboratorio BDA anterior). Vercel debe usar framework Vite, comando \`npm run build\` y directorio \`dist\`.
-
-## Privacidad y seguridad
-
-El repositorio puede ser privado, pero el sitio desplegado en Vercel será públicamente accesible salvo que se configure protección. No insertar información privada en el código ni en los datasets. Ningún formulario ejecuta shell real ni consulta datos de producción.
-
-## Limitaciones
-
-Los simuladores de procesos, red, criptografía aplicada, sistemas distribuidos, caché y minería son didácticos, no sustituyen sistemas reales. Estadísticas y modelos se basan en datos sintéticos. Un laboratorio se marca como practicado al interactuar con él; no implica haberlo dominado ni corregido.
-
-
-## Apariencia y volúmenes de datos
-
-- 🌞/🌙 El selector permite alternar entre modo claro y oscuro desde cualquier página, incluido \`bda.html\`. Se recuerda la elección en el navegador y, sin elección previa, se utiliza la preferencia del sistema.
-- **PostgreSQL real (PGlite):** 1.205 clientes, 6.007 pedidos, 64 productos y 8.006 ventas sintéticas (15.282 filas en total).
-- **MongoDB simulado:** 2.505 documentos ficticios en la colección \`clientes\`.
-- **OLAP y distribución:** 4.007 operaciones de venta, con agrupaciones y simulaciones de traslado de filas.
-- **Generador de ventas del campus:** hasta 20.000 registros filtrables y exportables a CSV.
-- **Otras actividades:** K-means (150 puntos iniciales), regresión (100 observaciones), estadística (hasta 20.000 observaciones), algoritmos y procesos con ejemplos de tamaño didáctico.
-- Los datos ampliados son reproducibles y nunca proceden de sistemas reales. El editor SQL solo admite consultas permitidas. Los simuladores de MongoDB/Redis no son servidores reales.
-
-
-## Integración con UniPRO Quiz
-
-Se puede entrar a cada asignatura mediante `/#/asignatura/ID`. El banco de UniPRO Quiz utiliza IDs diferentes en siete materias: `FPR→FPG`, `AYC→ALC`, `EDD→EDA`, `PRA→PAD`, `EDC→ESC`, `IGV→IGR`, `AMD2→AAM`. El catálogo mantiene estas rutas como alias y no cambia los identificadores de progreso antiguos. La V7.4.6 del proyecto UniPRO Quiz integra todos los enlaces, pero debe instalarse y probarse por separado en Apps Script.
-
-## Materias transversales añadidas
-
-- **Fundamentos de la empresa:** costes y umbral de rentabilidad (tema 8), tesorería y finanzas (tema 9), VAN e inversiones (tema 10).
-- **Deontología y legislación:** privacidad y principios de tratamiento (temas 2 y 3), licencias y contratos informáticos (tema 7), respuesta operativa a brechas (temas 3 y 8).
-- **Comunicación y liderazgo:** elección de canales y mensajes (temas 4 y 5), coordinación de equipos (temas 3 y 6), preparación de reuniones y seguimiento (temas 4 y 7).
-- **Gestión de proyectos:** cronogramas y camino crítico (tema 6), valor ganado (tema 7), simulación de riesgos (tema 8).
-
-Los ejemplos son originales. Las reglas de decisión de licencias, protección de datos o gestión de personas son modelos didácticos; **no proporcionan dictámenes legales, evaluaciones psicológicas ni certificaciones profesionales**.
-
-Guías oficiales de estas materias:
-- https://cms.unir.net/upbinfo05_fundempresa
-- https://cms.unir.net/upbinfo13_deontologia
-- https://cms.unir.net/upbinfo15_comu_y_liderazgo
-- https://cms.unir.net/upbinfo18_gestionproyectos
-
-## Itinerarios guiados para principiantes
-
-Cada una de las **180 prácticas** incluye una introducción con lenguaje sencillo, un ejemplo resuelto en tres pasos, una misión concreta, tres pistas que se revelan de manera progresiva, un error habitual y una pregunta para razonar sobre el resultado. Los **48 tipos de motor** tienen una microlección propia; el BDA independiente incorpora guías para sus ocho modos.
-
-El objetivo es que un estudiante que nunca ha abierto los apuntes sepa qué está viendo y qué debe hacer antes de manipular controles. La misión se valida mediante estados y acciones observables, sin pretender certificar comprensión conceptual; se distingue expresamente de las calificaciones.
-
-La ampliación añade 115 prácticas a las 65 anteriores y conserva todos sus identificadores, rutas y progreso. Hay **seis prácticas por asignatura**, excluyendo el TFG. Las prácticas basadas solo en guías públicas siguen marcadas como provisionales hasta disponer de los apuntes originales.
-
-**Nuevos archivos:** `src/campus/curriculum.js` (retos), `src/campus/lessons.js` (explicaciones y ejemplos), `src/campus/academy.js` (pistas, comprobación y recorrido), `src/campus/bda-guides.js` (ayudas de los ocho módulos de BDA). Las prácticas se ejecutan localmente en el navegador; no es necesario migrar Apps Script para utilizarlas.
+Licencias de terceros: consultar \`package.json\` y sus dependencias.
