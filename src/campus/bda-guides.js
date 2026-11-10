@@ -125,9 +125,28 @@ const escapeHTML=x=>String(x).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>'
 export const BDA_GUIDES=GUIDES;
 export function renderBdaGuide(main,mode){
  const guide=GUIDES[mode];if(!guide)return;
- const el=document.createElement('section');el.className='bda-guide';el.setAttribute('aria-label','Primeros pasos para aprender');
- const example=guide.steps.map((x,i)=>'<li><b>'+(i+1)+'.</b> '+escapeHTML(x)+'</li>').join('');
- el.innerHTML='<div class="bda-guide-heading"><span>PRIMERO, ENTIENDE ESTO</span><h2>'+escapeHTML(guide.title)+'</h2></div><p>'+escapeHTML(guide.what)+'</p><div class="bda-guide-example"><h3>Ejemplo guiado</h3><ol>'+example+'</ol></div><div class="bda-guide-actions"><button id="bda-hint-next" type="button" class="btn secondary">💡 Necesito una pista</button></div><div id="bda-guide-hints" aria-live="polite"></div><details><summary>⚠️ Error típico</summary><p>'+escapeHTML(guide.mistake)+'</p></details>';
+ const el=document.createElement('section');el.className='bda-guide';el.setAttribute('aria-label','Aprende con un ejemplo');
+ const example=guide.steps.map((x,i)=>'<li data-guide-step="'+i+'" class="'+(i===0?'is-current':'')+'"><b>'+(i+1)+'.</b> '+escapeHTML(x)+'</li>').join('');
+ el.innerHTML='<div class="bda-guide-heading"><span>UNA IDEA, UN EJEMPLO</span><h2>'+escapeHTML(guide.title)+'</h2></div><p>'+escapeHTML(guide.what)+'</p>'+
+ '<div class="bda-guide-example"><div class="bda-example-head"><h3>Así funciona</h3><span id="bda-guide-counter">1 / 3</span></div><ol>'+example+'</ol><nav class="bda-example-nav" aria-label="Pasos del ejemplo"><button id="bda-step-prev" type="button" class="btn secondary">← Anterior</button><button id="bda-step-next" type="button" class="btn">Siguiente paso →</button></nav></div>'+
+ '<div class="bda-guide-actions"><button id="bda-hint-next" type="button" class="btn secondary">Necesito una pista</button></div><div id="bda-guide-hints" aria-live="polite"></div>'+
+ '<details><summary>Lo que suele confundirse</summary><p>'+escapeHTML(guide.mistake)+'</p></details>';
  const heading=main.querySelector('.heading');if(heading)heading.insertAdjacentElement('afterend',el);else main.prepend(el);
- let hintCount=0;el.querySelector('#bda-hint-next').onclick=()=>{if(hintCount>=guide.hints.length)return;const p=document.createElement('p');p.textContent='Pista '+(hintCount+1)+': '+guide.hints[hintCount];el.querySelector('#bda-guide-hints').append(p);hintCount++;if(hintCount>=guide.hints.length)el.querySelector('#bda-hint-next').disabled=true};
+ let active=0,hintCount=0;
+ const steps=[...el.querySelectorAll('[data-guide-step]')],previous=el.querySelector('#bda-step-prev'),next=el.querySelector('#bda-step-next');
+ const draw=()=>{
+  steps.forEach((x,i)=>{x.classList.toggle('is-current',i===active);x.setAttribute('aria-hidden',String(i!==active))});
+  el.querySelector('#bda-guide-counter').textContent=(active+1)+' / '+steps.length;
+  previous.disabled=active===0;
+  next.textContent=active===steps.length-1?'Volver al principio ↻':'Siguiente paso →';
+ };
+ previous.onclick=()=>{active=Math.max(0,active-1);draw()};
+ next.onclick=()=>{active=(active+1)%steps.length;draw()};
+ draw();
+ el.querySelector('#bda-hint-next').onclick=()=>{
+  if(hintCount>=guide.hints.length)return;
+  const p=document.createElement('p');p.textContent='Pista '+(hintCount+1)+': '+guide.hints[hintCount];
+  el.querySelector('#bda-guide-hints').append(p);hintCount++;
+  if(hintCount>=guide.hints.length)el.querySelector('#bda-hint-next').disabled=true;
+ };
 }
