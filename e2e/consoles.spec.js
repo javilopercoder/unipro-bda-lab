@@ -91,7 +91,7 @@ test('deslizadores: escritura manual y arrastre se sincronizan',async({page})=>{
  await expect(typed).toHaveValue('12');
  await typed.fill('24');
  await expect(range).toHaveValue('24');
- await expect(page.locator('#lab-output')).toContainText('24');
+ await expect(page.locator('#lab-output')).toContainText('I total = 0.480');
  await range.evaluate(el=>{el.value='18';el.dispatchEvent(new Event('input',{bubbles:true}))});
  await expect(typed).toHaveValue('18');
  await page.goto('/#/practica/so1-1');
