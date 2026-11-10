@@ -28,7 +28,7 @@ test('transacciones y OLAP',async({page})=>{
  await page.getByRole('button',{name:'COMMIT'}).click();
  await expect(page.locator('#balances')).toContainText('900 €');
  await page.getByRole('button',{name:/OLAP y minería/}).click();
- await expect(page.locator('#olap-table tbody tr')).toHaveCount(3);
+ await expect(page.locator('#olap-table tbody tr')).toHaveCount(4);
 });
 test('pantalla móvil sin desbordamiento horizontal',async({page})=>{
  await page.setViewportSize({width:390,height:844});
