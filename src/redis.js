@@ -5,6 +5,7 @@ export class RedisSim{
   if(!args.length)throw Error('Escribe un comando.');if(args.length>5||args.some(x=>x.length>300))throw Error('Comando demasiado largo.');
   const [raw,key,value]=args,op=raw.toUpperCase();
   const entry=()=>{const e=this.data.get(key);if(e?.expires&&e.expires<=Date.now()){this.data.delete(key);return null}return e||null};
+  if(op==='HELP'){if(args.length!==1)throw Error('Uso: HELP');return 'Comandos disponibles: SET clave valor, GET clave, DEL clave, EXISTS clave, INCR clave, EXPIRE clave segundos, TTL clave, KEYS *, FLUSHDB.\nEjemplo: SET alumno Ana\nPuedes escribir lo que quieras: los datos viven solo en esta sesión.'}
   if(op==='SET'){if(args.length!==3)throw Error('Uso: SET clave valor');this.data.set(key,{value,expires:null});return'OK'}
   if(op==='GET'){if(args.length!==2)throw Error('Uso: GET clave');return entry()?.value??'(nil)'}
   if(op==='DEL'){if(args.length!==2)throw Error('Uso: DEL clave');const was=!!entry();this.data.delete(key);return was?'(integer) 1':'(integer) 0'}
