@@ -1,4 +1,5 @@
 import './campus/campus.css';
+import {mountThemeToggle} from './theme.js';
 import {SUBJECTS,YEARS,TOTAL_LABS,getSubject,getLab} from './campus/catalog.js';
 import {MATH_TYPES,renderMath} from './campus/math.js';
 import {COMPUTING_TYPES,renderComputing} from './campus/computing.js';
@@ -14,6 +15,7 @@ const page=()=>document.querySelector('#content-inner');
 const route=()=>{const p=(location.hash||'#/').slice(1).split('/');return{view:p[1]||'home',id:p[2]}};
 app.innerHTML='<a class="skip-link" href="#content">Saltar al contenido</a><header class="app-header"><div class="head-inner"><a class="identity" href="#/"><span class="identity-icon">U</span><span><b>UniPRO Lab</b><small>Campus de prácticas interactivas</small></span></a><div class="head-side"><span>'+SUBJECTS.length+' asignaturas · '+TOTAL_LABS+' laboratorios</span><a href="https://javilopercoder.github.io/unipro-quiz/" target="_blank" rel="noopener noreferrer">UniPRO Quiz ↗</a></div></div></header><div class="app-layout"><aside class="app-aside"><div class="aside-top"><span class="eyebrow">EXPLORA</span><a class="aside-home" href="#/">⌂ &nbsp; Todas las asignaturas</a><input id="aside-search" aria-label="Buscar asignaturas" placeholder="Buscar asignaturas…" autocomplete="off"><div id="aside-list"></div></div><p class="aside-foot">Prácticas originales y no oficiales. El progreso se guarda solo en este navegador.</p></aside><main id="content" tabindex="-1"><div id="content-inner"></div></main></div><footer>UniPRO Lab · Recursos de práctica · Datos ficticios</footer>';
 document.querySelector('#aside-search').oninput=renderAside;
+mountThemeToggle(document.querySelector('.head-side'));
 function renderAside(){const q=document.querySelector('#aside-search').value.toLocaleLowerCase('es'),r=route(),active=r.view==='asignatura'?r.id:r.view==='practica'?getLab(r.id)?.subjectId:null;
  document.querySelector('#aside-list').innerHTML=YEARS.map(y=>{const list=SUBJECTS.filter(s=>s.year===y.id&&(s.name+' '+s.id).toLocaleLowerCase('es').includes(q));return list.length?'<section class="aside-group"><h3>'+y.label+'</h3>'+list.map(s=>'<a class="aside-subject '+(active===s.id?'active':'')+'" href="#/asignatura/'+s.id+'"><span>'+symbol(s.labs[0].type)+'</span>'+esc(s.name)+'</a>').join('')+'</section>':''}).join('')||'<p class="small-muted">Sin resultados</p>'}
 const subjectCard=s=>'<a class="subject-card" href="#/asignatura/'+s.id+'"><span class="subject-icon">'+symbol(s.labs[0].type)+'</span><span class="subject-card-copy"><small>'+(s.year===4?'OPTATIVA':'CURSO '+s.year)+' · '+s.id+'</small><h3>'+esc(s.name)+'</h3><p>'+esc(s.topics.join(' · '))+'</p><span class="subject-meta">'+s.labs.length+' laboratorios · '+count(s)+' practicados</span></span><span class="card-arrow">↗</span></a>';
