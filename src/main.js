@@ -6,6 +6,7 @@ import {COMPUTING_TYPES,renderComputing} from './campus/computing.js';
 import {APPLIED_TYPES,renderApplied} from './campus/applied.js';
 import {MANAGEMENT_TYPES,renderManagement} from './campus/management.js';
 import {lessonIntro,missionMarkup,mountMission,mountExampleStepper} from './campus/academy.js';
+import {enhanceNumericRanges} from './campus/numeric-ranges.js';
 const app=document.querySelector('#app'),KEY='unipro-lab-progress-v1';
 let progress={};try{progress=JSON.parse(localStorage.getItem(KEY)||'{}')||{}}catch{}
 const MISSION_KEY='unipro-lab-completed-v2';let completed={};try{completed=JSON.parse(localStorage.getItem(MISSION_KEY)||'{}')||{}}catch{}
@@ -63,6 +64,7 @@ function renderLab(id){
   else if(APPLIED_TYPES.has(lab.type))renderApplied(root,lab);
   else if(MANAGEMENT_TYPES.has(lab.type))renderManagement(root,lab);
   else throw Error('Sin motor asociado al laboratorio: '+lab.type);
+  enhanceNumericRanges(root);
   mountMission(root,lab,completeMission);
  }catch(err){console.error(err);root.innerHTML='<div class="error-box"><b>Error en el laboratorio</b><p>'+esc(err.message||err)+'</p></div>'}
 }
