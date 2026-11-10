@@ -1,10 +1,17 @@
-const data=[
+const base=[
  {_id:1,nombre:'Ana',ciudad:'Madrid',edad:27,gasto:170},
  {_id:2,nombre:'Luis',ciudad:'Sevilla',edad:31,gasto:120},
  {_id:3,nombre:'Marta',ciudad:'Madrid',edad:40,gasto:200},
  {_id:4,nombre:'Eva',ciudad:'Valencia',edad:24,gasto:0},
  {_id:5,nombre:'Pablo',ciudad:'Madrid',edad:35,gasto:240}
 ];
+// Ampliación reproducible. El simulador sigue sin ejecutar un servidor MongoDB.
+const cities=['Madrid','Sevilla','Valencia','Bilbao','Zaragoza','Málaga','Granada','Vigo'];
+export const MONGO_DATA_COUNT=2505;
+const data=base.concat(Array.from({length:MONGO_DATA_COUNT-base.length},(_,k)=>{
+ const id=k+6;
+ return {_id:id,nombre:'Cliente '+String(id).padStart(4,'0'),ciudad:cities[(id*7)%cities.length],edad:18+(id%52),gasto:(id*37)%1800};
+}));
 const columns=new Set(['_id','nombre','ciudad','edad','gasto']);
 function object(x){if(!x||typeof x!=='object'||Array.isArray(x))throw Error('Se esperaba un objeto JSON.');return x}
 function match(x,f){return Object.entries(object(f)).every(([k,v])=>{
@@ -51,4 +58,19 @@ export function runMongo(input){
  }
  return results;
 }
-export function evaluateMongo(command,id){const r=runMongo(command);if(id==='m1')return r.length===3&&r.every(x=>x.ciudad==='Madrid');if(id==='m2')return r.length===3&&r.every(x=>Object.keys(x).length===1&&x.nombre)&&r.map(x=>x.nombre).sort().join(',')==='Ana,Marta,Pablo';if(id==='m3')return r.length===3&&r.some(x=>x._id==='Madrid'&&x.total===3);return null}
+const sortedIds=rows=>rows.map(x=>x._id).sort((a,b)=>a-b);
+const same=(a,b)=>a.length===b.length&&a.every((x,i)=>x===b[i]);
+export function evaluateMongo(command,id){
+ const results=runMongo(command),madrid=data.filter(x=>x.ciudad==='Madrid');
+ if(id==='m1')return same(sortedIds(results),sortedIds(madrid));
+ if(id==='m2'){
+  const got=results.map(x=>x.nombre).sort(),expected=madrid.map(x=>x.nombre).sort();
+  return results.every(x=>Object.keys(x).length===1&&typeof x.nombre==='string')&&same(got,expected);
+ }
+ if(id==='m3'){
+  const counts=new Map;
+  for(const row of data)counts.set(row.ciudad,(counts.get(row.ciudad)||0)+1);
+  return results.length===counts.size&&results.every(row=>Object.keys(row).length===2&&row.total===counts.get(row._id));
+ }
+ return null;
+}

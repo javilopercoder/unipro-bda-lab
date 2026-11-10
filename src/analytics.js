@@ -7,6 +7,15 @@ export const PURCHASES=[
  {cliente:'Ana',region:'Centro',categoria:'Papelería',importe:40,mes:3},
  {cliente:'Luis',region:'Sur',categoria:'Informática',importe:90,mes:3}
 ];
+// 4.000 operaciones adicionales, generadas siempre con la misma semilla.
+export const PURCHASE_COUNT=4007;
+const names=Array.from({length:400},(_,i)=>'Cliente '+String(i+1).padStart(3,'0'));
+const regions=['Centro','Sur','Este'],categories=['Informática','Lectura','Papelería','Hogar'];
+for(let i=0;i<4000;i++)PURCHASES.push({
+ cliente:names[(i*17)%names.length],region:regions[(i*7)%regions.length],
+ categoria:categories[(i*11)%categories.length],importe:Math.round((25+((i*37)%970))*100)/100,
+ mes:1+(i%12)
+});
 export function rollup(key='categoria'){
  if(!['categoria','region','mes','cliente'].includes(key))throw Error('Dimensión inválida');
  const map=new Map;for(const row of PURCHASES){const k=String(row[key]);map.set(k,(map.get(k)||0)+row.importe)}

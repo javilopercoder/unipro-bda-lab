@@ -49,3 +49,14 @@ El repositorio puede ser privado, pero el sitio desplegado en Vercel será públ
 ## Limitaciones
 
 Los simuladores de procesos, red, criptografía aplicada, sistemas distribuidos, caché y minería son didácticos, no sustituyen sistemas reales. Estadísticas y modelos se basan en datos sintéticos. Un laboratorio se marca como practicado al interactuar con él; no implica haberlo dominado ni corregido.
+
+
+## Apariencia y volúmenes de datos
+
+- 🌞/🌙 El selector permite alternar entre modo claro y oscuro desde cualquier página, incluido \`bda.html\`. Se recuerda la elección en el navegador y, sin elección previa, se utiliza la preferencia del sistema.
+- **PostgreSQL real (PGlite):** 1.205 clientes, 6.007 pedidos, 64 productos y 8.006 ventas sintéticas (15.282 filas en total).
+- **MongoDB simulado:** 2.505 documentos ficticios en la colección \`clientes\`.
+- **OLAP y distribución:** 4.007 operaciones de venta, con agrupaciones y simulaciones de traslado de filas.
+- **Generador de ventas del campus:** hasta 20.000 registros filtrables y exportables a CSV.
+- **Otras actividades:** K-means (150 puntos iniciales), regresión (100 observaciones), estadística (hasta 20.000 observaciones), algoritmos y procesos con ejemplos de tamaño didáctico.
+- Los datos ampliados son reproducibles y nunca proceden de sistemas reales. El editor SQL solo admite consultas permitidas. Los simuladores de MongoDB/Redis no son servidores reales.
