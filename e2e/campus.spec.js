@@ -7,7 +7,8 @@ test('portada con 30 asignaturas y acceso BDA',async({page})=>{
  await page.locator('a[href="#/asignatura/BDA"]').first().click();
  await expect(page.getByRole('heading',{name:'Bases de datos avanzadas'})).toBeVisible();
  await page.locator('a[href="#/practica/bda-1"]').click();
- await expect(page.getByRole('link',{name:/Abrir el laboratorio original/})).toBeVisible();
+ await expect(page.locator('.lab-shell a.primary-button')).toBeVisible();
+ await expect(page.locator('.lab-shell a.primary-button')).toHaveAttribute('href','./bda.html#sql');
  expect(errors).toEqual([]);
 });
 test('cada laboratorio técnico abre sin error y responde',async({page})=>{
