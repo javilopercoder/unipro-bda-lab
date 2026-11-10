@@ -31,3 +31,27 @@ html[data-theme="dark"] .pill.good{background:#193d31;color:#c0eed4;border-color
 html[data-theme="dark"] .node{background:#213855;color:#e4efff;border-color:#456484}
 html[data-theme="dark"] .node p{color:#b5c9df}
 html[data-theme="dark"] .logo{background:#366de9}
+
+
+/* Guía didáctica de la consola SQL y simuladores BDA */
+.bda-guide{background:#fff;border:1px solid #d7e4fa;border-radius:17px;padding:22px 24px;margin:0 0 20px;box-shadow:0 7px 20px rgba(29,63,114,.04);line-height:1.7;color:#4f6584}
+.bda-guide-heading span{font-size:11px;font-weight:800;letter-spacing:.13em;color:#2564d4}
+.bda-guide-heading h2{font-size:20px;letter-spacing:-.025em;margin:5px 0 10px;color:#233d61}
+.bda-guide>p{font-size:14px;margin:0 0 14px}
+.bda-guide-example{border:1px solid #d6e7fb;background:#eff6ff;border-radius:11px;padding:14px 18px;margin-bottom:12px}
+.bda-guide-example h3{font-size:14px;color:#225cbd;margin:0 0 7px}
+.bda-guide-example ol{margin:0;padding-left:22px}
+.bda-guide-example li{padding:4px 0;font-size:13px}
+.bda-guide-actions{display:flex;gap:9px;margin:12px 0}
+#bda-guide-hints{display:grid;gap:7px}
+#bda-guide-hints p{background:#f0f5ff;border-left:3px solid #84b0f1;padding:10px 12px;border-radius:5px;font-size:13px;margin:0}
+.bda-guide details{border-top:1px solid #e1ebf8;padding-top:12px;margin-top:14px;font-size:13px}
+.bda-guide summary{cursor:pointer;font-weight:750}
+html[data-theme="dark"] .bda-guide{background:#16263d;border-color:#375473;color:#d4e3f7;box-shadow:none}
+html[data-theme="dark"] .bda-guide-heading h2{color:#f0f5ff}
+html[data-theme="dark"] .bda-guide-heading span{color:#a2c9ff}
+html[data-theme="dark"] .bda-guide-example{background:#203b5a;border-color:#436384;color:#dceafd}
+html[data-theme="dark"] .bda-guide-example h3{color:#b7d7ff}
+html[data-theme="dark"] #bda-guide-hints p{background:#243d5b;color:#d9eaff;border-color:#7cb0f0}
+html[data-theme="dark"] .bda-guide details{border-color:#3c536f}
+@media(max-width:680px){.bda-guide{padding:16px}.bda-guide-heading h2{font-size:18px}.bda-guide-example{padding:11px}}
