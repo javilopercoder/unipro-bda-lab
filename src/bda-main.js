@@ -5,6 +5,7 @@ import {runSQL,evaluateSQL,resetSQL,SQL_DATA_COUNTS} from './postgres.js';
 import {runMongo,evaluateMongo,mongoData,MONGO_DATA_COUNT} from './mongo.js';
 import {executeXPath,evaluateXPath} from './xml.js';
 import {RedisSim} from './redis.js';
+import {renderBdaGuide,BDA_GUIDES} from './campus/bda-guides.js';
 import {BankSim} from './transactions.js';
 import {rollup,segments,distributed,PURCHASE_COUNT} from './analytics.js';
 
@@ -24,7 +25,8 @@ mountThemeToggle(document.querySelector('.top-right'));
 const $=selector=>document.querySelector(selector);
 const create=(tag,cls,text)=>{const el=document.createElement(tag);if(cls)el.className=cls;if(text!==undefined)el.textContent=String(text);return el};
 const qs=(element,selector)=>element.querySelector(selector);
-const state={module:'sql',task:{sql:0,mongo:0,xml:0},redis:new RedisSim,bank:new BankSim};
+const startMode=decodeURIComponent((location.hash||'').slice(1)).toLowerCase();
+const state={module:BDA_GUIDES[startMode]?startMode:'sql',task:{sql:0,mongo:0,xml:0},redis:new RedisSim,bank:new BankSim};
 const fmt=value=>value==null?'NULL':value instanceof Date?value.toISOString().slice(0,10):typeof value==='object'?JSON.stringify(value):String(value);
 function status(message,type=''){
  const el=$('#state');if(el){el.className='status '+type;el.textContent=message}
@@ -38,7 +40,7 @@ function output(node,rows){node.replaceChildren(table(rows))}
 function heading(name,description,tag){return '<div class="heading"><div><span class="eyebrow">LABORATORIO INTERACTIVO</span><h1>'+name+'</h1><p>'+description+'</p></div><span class="tag">'+tag+'</span></div>'}
 function renderNav(){
  const nav=$('#nav');nav.replaceChildren();
- for(const mod of MODULES){const b=create('button','nav-item'+(mod.id===state.module?' active':''));b.type='button';b.append(create('span','nav-icon',mod.icon),create('span','',mod.name));b.onclick=()=>{state.module=mod.id;render()};nav.append(b)}
+ for(const mod of MODULES){const b=create('button','nav-item'+(mod.id===state.module?' active':''));b.type='button';b.append(create('span','nav-icon',mod.icon),create('span','',mod.name));b.onclick=()=>{state.module=mod.id;history.replaceState(null,'','#'+mod.id);render()};nav.append(b)}
 }
 function editUI({title,description,task=true,placeholder='Escribe aquí...',buttons=[]}={}){
  $('#main').innerHTML=heading(title,description,MODULES.find(m=>m.id===state.module).label)+'<div class="main-columns"><div><section class="panel"><h2 id="exercise-title">Práctica</h2><p id="goal" class="muted"></p><div id="task-buttons" class="task-list"></div></section><section class="panel"><h2>Editor</h2><textarea id="code" class="editor" spellcheck="false" aria-label="Editor de práctica" placeholder="'+placeholder+'"></textarea><div class="toolbar" id="buttons"></div><p id="state" class="status" role="status"></p></section><section class="panel"><h2>Resultados</h2><div id="results" class="result-scroll"><p class="muted">Ejecuta la consulta para ver su resultado.</p></div></section></div><aside><section class="panel"><h2>Datos y pistas</h2><div id="help" class="muted small"></div></section></aside></div>';
@@ -110,6 +112,8 @@ function render(){
  renderNav();
  try{
  if(state.module==='sql')renderSQL();else if(state.module==='plans')renderSQL(true);else if(state.module==='mongo')renderMongo();else if(state.module==='xml')renderXML();else if(state.module==='redis')renderRedis();else if(state.module==='transactions')renderTransactions();else if(state.module==='analytics')renderAnalytics();else if(state.module==='distributed')renderDistributed();
+  renderBdaGuide($('#main'),state.module);
  }catch(error){$('#main').replaceChildren(create('div','panel','Error de interfaz: '+(error.message||String(error))))}
 }
+window.addEventListener('hashchange',()=>{const requested=decodeURIComponent((location.hash||'').slice(1)).toLowerCase();if(BDA_GUIDES[requested]&&requested!==state.module){state.module=requested;render()}});
 render();

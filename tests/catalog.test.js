@@ -7,13 +7,13 @@ import {COMPUTING_TYPES,shortest} from '../src/campus/computing.js';
 import {APPLIED_TYPES} from '../src/campus/applied.js';
 test('30 asignaturas del plan sin TFG; todas con motores',()=>{
  assert.equal(SUBJECTS.length,30);
- assert.equal(TOTAL_LABS,65);
+ assert.equal(TOTAL_LABS,180);
  const subjectIds=SUBJECTS.map(x=>x.id),labIds=SUBJECTS.flatMap(x=>x.labs.map(l=>l.id));
  assert.equal(new Set(subjectIds).size,30);
- assert.equal(new Set(labIds).size,65);
+ assert.equal(new Set(labIds).size,180);
  assert.ok(!SUBJECTS.some(x=>/trabajo final|tfg/i.test(x.name)));
  for(const s of SUBJECTS){
-  assert.ok(s.labs.length>=2,s.id);
+  assert.equal(s.labs.length,6,s.id);
   assert.ok(getSubject(s.id),s.id);
   assert.ok(YEARS.some(y=>y.id===s.year),s.id);
   for(const lab of s.labs){
@@ -36,4 +36,14 @@ test('Los siete IDs distintos de Google Sheets tienen ruta válida',()=>{
  assert.deepEqual(QUIZ_CODE_ALIASES,keys);
  for(const [quiz,lab] of Object.entries(keys))assert.equal(getSubject(quiz).id,lab);
  for(const code of ['FEM','DYL','CYL','GDP'])assert.ok(getSubject(code));
+});
+
+test('Los primeros IDs se conservan, sin romper el progreso ya guardado',()=>{
+ const originalCounts={AMD:3,FEM:3,DYL:3,CYL:3,GDP:3,BDA:2};
+ for(const s of SUBJECTS){
+  const n=originalCounts[s.id]||2;
+  for(let i=1;i<=n;i++)assert.ok(s.labs.some(l=>l.id===s.id.toLowerCase()+'-'+i),s.id+' '+i);
+  const last=s.labs.at(-1);
+  assert.equal(last.id,s.id.toLowerCase()+'-6');
+ }
 });

@@ -72,3 +72,68 @@ html[data-theme="dark"] .gantt-timeline>span{background:#5a8cda}
 html[data-theme="dark"] .gantt-timeline>span.critical{background:#dc9169}
 html[data-theme="dark"] .plan-days,html[data-theme="dark"] .plan-deps{background:#152841;color:#edf5ff;border-color:#496589}
 @media(max-width:700px){.mg-bars>div{grid-template-columns:80px minmax(0,1fr) 72px;gap:8px}.mg-risk>div{grid-template-columns:80px minmax(0,1fr) 65px}.mg-notes{padding-left:18px}.plan-deps{width:75px}}
+
+
+/* Itinerarios guiados. La explicación ocupa su propio espacio: no tapa el motor. */
+.lesson-panel,.mission-panel{background:#fff;border:1px solid #e1e8f4;border-radius:20px;padding:26px 30px;margin-bottom:21px;box-shadow:0 8px 25px rgba(32,67,108,.04)}
+.lesson-panel-head{display:flex;align-items:start;gap:14px;justify-content:space-between}
+.lesson-panel h2,.mission-panel h2{font-size:21px;letter-spacing:-.02em;margin:7px 0 16px;line-height:1.3}
+.lesson-kicker{font-size:11px;letter-spacing:.13em;color:#2467dc;font-weight:800}
+.lesson-time{font-size:11px;color:#54729b;border-radius:22px;padding:7px 10px;background:#eaf2fe;white-space:nowrap}
+.lesson-concept{font-size:15px;color:#485f7f;line-height:1.78;margin:0 0 20px;max-width:940px}
+.lesson-example{background:#edf5ff;border:1px solid #d8e8fd;border-radius:15px;padding:18px 22px;margin-bottom:14px}
+.lesson-example h3{margin:0 0 12px;font-size:15px;color:#2159b4}
+.lesson-example ol{list-style:none;margin:0;padding:0;display:grid;gap:9px}
+.lesson-example li{display:flex;align-items:start;gap:11px;line-height:1.6;color:#415a7d;font-size:13px}
+.lesson-example li p{margin:0;min-width:0;overflow-wrap:anywhere}
+.lesson-step-number{flex-shrink:0;display:grid;place-items:center;width:26px;height:26px;background:#fff;border:1px solid #bfd5fc;color:#2563ce;border-radius:50%;font-weight:800;font-size:12px}
+.lesson-basis{font-size:12px;color:#7185a2;line-height:1.6;margin:0}
+.lab-stage{color:#2a63c2;font-size:13px;letter-spacing:.12em;margin:0 0 19px;font-weight:800}
+.mission-panel{border-color:#c9dbf5}
+.mission-title h2{margin:6px 0 11px}
+.mission-challenge{font-size:16px;line-height:1.7;color:#294a74;background:#f0f6ff;border-left:4px solid #2e73e7;border-radius:4px 10px 10px 4px;padding:16px 19px;margin:0 0 18px;font-weight:650}
+.mission-actions{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.mission-secondary{background:#fff;border-color:#ccdaf0;color:#315da3}
+.mission-feedback{font-size:13px;color:#58728f;background:#f6f9fd;border:1px solid #e2eaf6;padding:13px 15px;border-radius:11px;line-height:1.6}
+.mission-feedback.mission-warning{background:#fff6e9;color:#946321;border-color:#f1d6ab}
+.mission-feedback.mission-success{background:#ebf8f0;color:#176e45;border-color:#b6e4c8}
+.mission-hints{display:grid;gap:9px;margin:12px 0}
+.mission-hints:empty{display:none}
+.mission-hints p{background:#f2f6fd;color:#405d82;border-left:3px solid #9cbce9;padding:12px 14px;border-radius:5px;margin:0;line-height:1.6;font-size:13px}
+.mission-details{border-top:1px solid #e6edf7;padding:15px 2px 5px;font-size:13px;color:#536c8c;margin-top:9px}
+.mission-details summary{cursor:pointer;font-weight:750;color:#3d6096}
+.mission-details p{line-height:1.7}
+html[data-theme="dark"] .lesson-panel,html[data-theme="dark"] .mission-panel{background:#131e30;border-color:#304461;color:#e1edff;box-shadow:none}
+html[data-theme="dark"] .lesson-panel h2,html[data-theme="dark"] .mission-panel h2{color:#edf5ff}
+html[data-theme="dark"] .lesson-concept,html[data-theme="dark"] .lesson-example li,html[data-theme="dark"] .mission-details{color:#c5d6ed}
+html[data-theme="dark"] .lesson-example,html[data-theme="dark"] .mission-challenge{background:#1b304e;border-color:#395d89;color:#e4efff}
+html[data-theme="dark"] .lesson-example h3,html[data-theme="dark"] .lab-stage,html[data-theme="dark"] .lesson-kicker{color:#a2c6ff}
+html[data-theme="dark"] .lesson-time,html[data-theme="dark"] .lesson-step-number{background:#233e63;color:#d8e9ff;border-color:#5679a7}
+html[data-theme="dark"] .lesson-basis{color:#9db3cf}
+html[data-theme="dark"] .mission-secondary{background:#243951;border-color:#476489;color:#e0eaff}
+html[data-theme="dark"] .mission-feedback{background:#20324b;border-color:#344e70;color:#c6d7eb}
+html[data-theme="dark"] .mission-feedback.mission-warning{background:#403017;border-color:#785a30;color:#ffddad}
+html[data-theme="dark"] .mission-feedback.mission-success{background:#193d30;border-color:#34735b;color:#b9eccf}
+html[data-theme="dark"] .mission-hints p{background:#233951;color:#cfe2ff;border-color:#6c9bdb}
+html[data-theme="dark"] .mission-details{border-color:#324b6c}
+html[data-theme="dark"] .mission-details summary{color:#b3d2ff}
+@media(max-width:760px){.lesson-panel,.mission-panel{padding:18px 16px;border-radius:15px}.lesson-time{display:none}.lesson-concept{font-size:14px}.lesson-example{padding:14px}.lesson-panel h2,.mission-panel h2{font-size:19px}.mission-challenge{font-size:14px;padding:13px}.mission-actions .btn{flex:1}}
+
+/* Primeros pasos y misión visible antes de abrir el motor */
+.getting-started{margin:18px 0 36px}
+.getting-started h2{font-size:21px;letter-spacing:-.02em;color:#263d5f;margin-bottom:14px}
+.getting-started-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.getting-started-grid>div{background:#fff;border:1px solid #e0e9f5;border-radius:14px;padding:17px 19px;min-width:0}
+.getting-started-grid span{font-size:13px;font-weight:800;color:#2d69d9}
+.getting-started-grid h3{margin:9px 0 7px;font-size:15px}
+.getting-started-grid p{font-size:12px;color:#637791;line-height:1.7;margin:0}
+.lesson-preflight{border-radius:12px;background:#e8f7f0;border:1px solid #c7e9d7;padding:14px 17px;color:#286348;margin-top:13px}
+.lesson-preflight b{font-size:13px}
+.lesson-preflight p{margin:6px 0 0;font-size:14px;line-height:1.65}
+html[data-theme="dark"] .getting-started h2{color:#e4efff}
+html[data-theme="dark"] .getting-started-grid>div{background:#142239;border-color:#304765}
+html[data-theme="dark"] .getting-started-grid h3{color:#e7f1ff}
+html[data-theme="dark"] .getting-started-grid p{color:#b4c9df}
+html[data-theme="dark"] .getting-started-grid span{color:#a2c9ff}
+html[data-theme="dark"] .lesson-preflight{background:#153c32;border-color:#326b55;color:#c3eed8}
+@media(max-width:850px){.getting-started-grid{grid-template-columns:1fr}.getting-started-grid>div{padding:14px 16px}.getting-started{margin-bottom:26px}}
