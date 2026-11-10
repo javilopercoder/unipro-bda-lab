@@ -518,7 +518,7 @@ const rows = {
       "logic",
       "Operación NAND en ALU",
       "CPU",
-      "Aplica NAND a A=85 y B=15.",
+      "Aplica NAND a los valores A=85 y B=15, y observa los ocho bits resultantes.",
       "op=NAND&a=85&b=15"
     ],
     [
@@ -811,7 +811,7 @@ const rows = {
       "graphics",
       "Rotación de un triángulo",
       "Transformaciones 2D",
-      "Gira la figura 90 grados.",
+      "Gira la figura 90 grados y observa cómo cambian sus coordenadas.",
       "angle=90"
     ],
     [
@@ -848,7 +848,7 @@ const rows = {
       "regression",
       "Regresión con ruido bajo",
       "Regresión supervisada",
-      "Fija ruido 0 y observa R².",
+      "Fija el ruido en cero y comprueba si el ajuste alcanza R²=1.",
       "noise=0"
     ],
     [
