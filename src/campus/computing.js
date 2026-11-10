@@ -1,3 +1,4 @@
+import {renderFlowEditor} from './pseudocode.js';
 import {renderTerminal} from './terminal.js';
 // Sistemas, algoritmos y estructuras de datos. Modelos locales, sin shell ni red real.
 const $=(root,selector)=>selector===undefined?document.querySelector(root):root.querySelector(selector);
@@ -83,10 +84,7 @@ export function renderComputing(root,lab){
  let step=0;const instructions=[['Hilo A','leer x=0'],['Hilo B','leer x=0'],['Hilo A','escribir x=1'],['Hilo B','escribir x=1']];function draw(){const lock=$('#mutex').checked,number=lock?Math.min(step,2):step>=4?1:step>=3?1:0;$out.innerHTML='<strong>Contador compartido: '+number+'</strong><p>'+ (lock?'Con bloqueo, los dos incrementos terminan en x=2.':'Sin bloqueo, dos lecturas de x=0 pueden causar una actualización perdida.')+'</p>';$viz.innerHTML='<div class="timeline">'+Array.from({length:lock?2:4},(_,i)=>'<div class="timeline-step '+(i<step?'done':'')+'">'+(lock?'Hilo '+(i?'B':'A')+' incrementa de forma atómica':instructions[i].join(': '))+'</div>').join('')+'</div>'}
  $('#mutex').onchange=()=>{step=0;draw()};$('#next').onclick=()=>{step=Math.min(step+1,$('#mutex').checked?2:4);draw()};$('#restart').onclick=()=>{step=0;draw()};draw();return;
  }
- if(t==='flow'){
- const { $out,$viz }=base(root,'Ejecuta un algoritmo paso a paso y observa cómo cambian sus variables.',slider('max','Límite de iteraciones',2,20,6)+action('next','Ejecutar instrucción')+action('reset','Reiniciar'));
- let step=0,total=0;const draw=()=>{$out.innerHTML='<strong>Iteración '+step+' · suma acumulada '+total+'</strong><p>Algoritmo: suma de los enteros de 1 a N; resultado esperado = N(N+1)/2.</p>';$viz.innerHTML='<pre class="code-block">suma = 0\npara i desde 1 hasta '+n(root,'#max')+':\n    suma = suma + i\nimprimir(suma)</pre>'};$('#next').onclick=()=>{if(step<n(root,'#max')){step++;total+=step}draw()};$('#reset').onclick=()=>{step=0;total=0;draw()};$('#max').oninput=()=>{step=0;total=0;draw()};draw();return;
- }
+ if(t==='flow')return renderFlowEditor(root);
  if(t==='terminal')return renderTerminal(root);
 
 }
