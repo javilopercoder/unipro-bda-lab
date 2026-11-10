@@ -155,13 +155,50 @@ function renderXML(){
  $('#buttons').append(createButton('▶ Ejecutar',()=>execute(false)),createButton('✓ Comprobar',()=>execute(true),'btn secondary'));
 }
 function renderRedis(){
- editUI({title:'Redis · Clave-valor',description:'Simula un almacén clave-valor local. Prueba SET, GET, DEL, EXISTS, INCR, EXPIRE, TTL y KEYS *.'});
- $('#exercise-title').textContent='Consola clave-valor';
- $('#goal').textContent='Crea una clave alumno con tu nombre, recupérala con GET, y después elimínala con DEL.';
- $('#task-buttons').replaceChildren();$('#code').value='SET alumno Ana';$('#help').textContent='Los datos solo viven en la sesión de esta pestaña. Es un simulador educativo de Redis.';
- const log=[];$('#results').replaceChildren(create('pre','output','Aún no se han ejecutado comandos.'));
- const exec=()=>{try{const input=$('#code').value.trim(),out=state.redis.execute(input);log.push('> '+input+'\n'+out);$('#results').replaceChildren(create('pre','output',log.slice(-30).join('\n\n')));status('Comando interpretado','good')}catch(e){status(e.message,'bad')}};
- $('#buttons').append(createButton('▶ Ejecutar',exec),createButton('↻ Limpiar',()=>{state.redis=new RedisSim;log.length=0;$('#results').replaceChildren(create('pre','output','Memoria reiniciada.'));status('')} ,'btn secondary'));
+ $('#main').innerHTML=heading('Redis · Clave-valor','Escribe directamente en una consola Redis ficticia. Los comandos modifican una memoria local y puedes explorar sin seguir retos.','Simulador')+
+ '<div class="main-columns redis-layout"><div><section class="panel redis-panel"><div class="redis-panel-heading"><h2>Consola interactiva</h2><span>Memoria ficticia · Sin servidores</span></div>'+
+ '<div class="redis-terminal" role="region" aria-label="Consola de Redis"><div class="redis-terminal-top"><span class="redis-dots">● ● ●</span><span>redis-cli · simulador local</span></div>'+
+ '<div id="results" class="redis-console-output" role="log" aria-live="polite"><div class="redis-welcome">Listo. Escribe HELP para consultar los comandos o empieza a experimentar.</div></div>'+
+ '<div class="redis-command-row"><label for="code">redis&gt;</label><input id="code" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Comando dentro de la consola Redis" placeholder="Escribe un comando…"/><div class="toolbar" id="buttons"></div></div></div>'+
+ '<p id="state" class="status" role="status"></p></section></div>'+
+ '<aside><section class="panel"><h2>Reto opcional</h2><label for="redis-mission" class="muted">Elige qué practicar</label><select id="redis-mission" class="field">'+REDIS_MISSIONS.map((m,i)=>'<option value="'+i+'">'+m.label+'</option>').join('')+'</select><p id="goal" class="muted"></p></section>'+
+ '<section class="panel code-help-panel"><h2>Pistas por partes</h2><div id="help"></div></section></aside></div>';
+ const command=$('#code'),output=$('#results'),coach=createCodeCoach({host:$('#help'),editor:command,language:'redis'});
+ let entries=[],historyIndex=0;
+ const select=()=>{
+   const task=REDIS_MISSIONS[Number($('#redis-mission').value)];
+   $('#goal').textContent=task.goal;coach.setTask(task);command.value='';status('');
+ };
+ const log=(input,response,isError=false)=>{
+   const entry=document.createElement('div');entry.className='redis-log-entry';
+   const prompt=document.createElement('p');prompt.className='redis-log-command';prompt.textContent='redis> '+input;
+   const result=document.createElement('pre');result.className='redis-log-response'+(isError?' redis-error':'');result.textContent=response;
+   entry.append(prompt,result);output.append(entry);
+   while(output.children.length>90)output.firstChild.remove();
+   output.scrollTop=output.scrollHeight;
+ };
+ const run=()=>{
+   const input=command.value.trim();if(!input){command.focus();return}
+   entries.push(input);if(entries.length>100)entries.shift();historyIndex=entries.length;
+   try{
+     const response=state.redis.execute(input);
+     log(input,String(response));status('Comando interpretado correctamente.','good');
+   }catch(e){log(input,e.message||String(e),true);status('Comprueba el comando o pide una pista.','warn')}
+   command.value='';command.focus();
+ };
+ const restart=()=>{
+  state.redis=new RedisSim;entries=[];historyIndex=0;output.replaceChildren(create('div','redis-welcome','Memoria reiniciada. Puedes crear claves desde cero.'));
+  command.value='';status('Datos de ejemplo reiniciados.','good');command.focus();
+ };
+ $('#buttons').append(createButton('▶ Ejecutar',run),createButton('↻ Reiniciar',restart,'btn secondary'));
+ command.addEventListener('keydown',event=>{
+  if(event.key==='Enter'){event.preventDefault();run()}
+  if(event.key==='ArrowUp'||event.key==='ArrowDown'){
+   event.preventDefault();historyIndex=Math.max(0,Math.min(entries.length,historyIndex+(event.key==='ArrowUp'?-1:1)));
+   command.value=entries[historyIndex]||'';command.setSelectionRange(command.value.length,command.value.length);
+  }
+ });
+ $('#redis-mission').onchange=select;select();
 }
 function renderTransactions(){
  $('#main').innerHTML=heading('Transacciones bancarias','Simula operaciones sobre dos cuentas. SAVEPOINT y ROLLBACK modifican una copia temporal; COMMIT confirma.', 'Simulador')+'<section class="panel"><h2>Dos cuentas de prueba</h2><p class="muted">Empieza una transacción, transfiere dinero, guarda un punto de control y prueba cómo se revierten los cambios.</p><div id="balances" class="grid"></div><div class="toolbar" id="buttons"></div><p class="status" id="state" role="status"></p></section><section class="panel"><h2>Registro de operaciones</h2><pre id="history" class="output"></pre></section><div class="pill warn">Simulación pedagógica. No son transacciones PostgreSQL reales ni un WAL real.</div>';
