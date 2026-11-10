@@ -60,7 +60,7 @@ test('el BDA mantiene su motor e incorpora explicaciones en todos los modos',asy
  }
  await page.goto('/#/practica/bda-4');
  await expect(page.locator('.lesson-example li')).toHaveCount(3);
- await expect(page.getByRole('link',{name:/Abrir MongoDB/})).toHaveAttribute('href','./bda.html#mongo');
+ await expect(page.locator('.bda-bridge a.primary-button')).toHaveAttribute('href','./bda.html#mongo');
 });
 
 test('180 prácticas: modo oscuro legible en ejemplos y objetivos',async({page})=>{
