@@ -1,5 +1,5 @@
 // Sistemas, algoritmos y estructuras de datos. Modelos locales, sin shell ni red real.
-const $=(r,s)=>r.querySelector(s);
+const $=(root,selector)=>selector===undefined?document.querySelector(root):root.querySelector(selector);
 const n=(r,s)=>Number($(r,s).value);
 const f=(x,d=2)=>Number(x).toFixed(d);
 function base(root,description,controls=''){root.innerHTML='<p class="lab-intro">'+description+'</p><div class="controls">'+controls+'</div><div class="output-card" id="lab-output"></div><div class="visual-card" id="lab-viz"></div>';return{$out:$('#lab-output'),$viz:$('#lab-viz')}}
