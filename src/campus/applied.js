@@ -2,7 +2,7 @@
 // Sin llamadas de red a terceros ni evaluación de JavaScript arbitrario.
 const $=(root,selector)=>root.querySelector(selector);
 const val=(root,selector)=>Number($(root,selector).value);
-const esc=x=>String(x).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;':'&quot;',"'":'&#39;'}[c]));
+const esc=x=>String(x).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
 const fmt=(x,p=2)=>Number(x).toFixed(p);
 const slider=(id,label,min,max,v,step=1)=>'<label class="control">'+label+' <b>'+v+'</b><input id="'+id+'" type="range" min="'+min+'" max="'+max+'" step="'+step+'" value="'+v+'"></label>';
 const btn=(id,label)=>'<button class="btn" type="button" id="'+id+'">'+label+'</button>';
