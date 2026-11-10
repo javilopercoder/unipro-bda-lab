@@ -82,7 +82,8 @@ export function renderFlowEditor(root){
    if(!executed){$('lab-output').innerHTML='<strong>Programa sin ejecutar</strong><p>Escribe instrucciones y pulsa ejecutar. Si no sabes cómo empezar, abre la primera pista.</p>';$('lab-viz').textContent='Todavía no hay instrucciones ejecutadas.';return}
    const steps=executed.trace,selected=steps[Math.min(position,steps.length-1)],vars=selected?.variables||{N:Number($('max').value)};
    const rows=Object.entries(vars).map(([key,value])=>'<div class="flow-var"><span>'+key+'</span><b>'+value+'</b></div>').join('');
-   $('lab-output').innerHTML='<strong>'+(!steps.length?'Sin pasos':'Paso '+Math.min(position+1,steps.length)+' de '+steps.length)+'</strong><p>'+ (selected?.label||'Programa terminado') +' · iteraciones: '+Math.min(executed.iterations,position+1)+'</p><p>'+(executed.output.length?'Salida: '+executed.output.join(' · '):'Ejecuta un paso para ver las variables.')+'</p>';
+   const doneSteps=steps.slice(0,position+1),iterationsDone=doneSteps.filter(x=>x.label.startsWith('Iteración ')).length,printed=selected?.label?.startsWith('Salida:');
+   $('lab-output').innerHTML='<strong>'+(!steps.length?'Sin pasos':'Paso '+Math.min(position+1,steps.length)+' de '+steps.length)+'</strong><p>'+ (selected?.label||'Programa terminado') +' · iteraciones: '+iterationsDone+'</p><p>'+(printed&&executed.output.length?'Salida: '+executed.output.join(' · '):'Observa cómo cambian las variables en cada paso.')+'</p>';
    $('lab-viz').innerHTML='<div class="flow-variable-grid">'+rows+'</div><p class="subtle">La traza muestra el estado de las variables tras cada instrucción.</p>';
  };
  const evaluate=()=>{try{executed=runPseudocode(editor.value,Number($('max').value));position=0;display();return true}catch(e){executed=null;$('lab-output').innerHTML='<strong>Revisa el código</strong><p>'+e.message.replace(/[<>&]/g,'')+'</p>';$('lab-viz').textContent='El código no se ha ejecutado.';return false}};
