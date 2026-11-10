@@ -11,12 +11,15 @@ test('portada con 30 asignaturas y acceso BDA',async({page})=>{
  expect(errors).toEqual([]);
 });
 test('cada laboratorio técnico abre sin error y responde',async({page})=>{
+ test.setTimeout(180000);
  const errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.goto('/');
  const all=await page.evaluate(async()=>{const m=await import('/src/campus/catalog.js');return m.SUBJECTS.flatMap(s=>s.labs.filter(l=>l.type!=='bda').map(l=>l.id))});
  for(const id of all){
    await page.goto('/#/practica/'+id);
    await expect(page.locator('#lab-root')).toBeVisible();
+   await expect(page.locator('.lesson-example li')).toHaveCount(3);
+   await expect(page.locator('.mission-challenge')).not.toBeEmpty();
    await expect(page.locator('#lab-root')).not.toContainText('No se pudo abrir el laboratorio');
    await expect(page.locator('#lab-root')).not.toContainText('Motor pendiente');
  }
