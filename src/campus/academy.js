@@ -31,14 +31,53 @@ export function lessonFor(lab){
  if(!base)throw Error('Falta microlección del motor '+lab.type);
  return {...base,challenge:lab.challenge||base.challenge,verify:lab.verify??base.verify};
 }
+function exampleStep(step,index,type){
+  if(type==='matrix'&&index===0){
+    const values=[1,2,0,0,1,3,2,0,1];
+    return '<li class="lesson-step is-current" data-example-step="0"><div class="lesson-step-visual"><div class="lesson-step-minihead">Matriz A · Ejemplo resuelto</div><div class="lesson-matrix-demo"><span class="lesson-matrix-bracket"></span><div class="lesson-matrix-values">'+values.map(x=>'<span>'+x+'</span>').join('')+'</div><span class="lesson-matrix-bracket end"></span></div><p>Los nueve valores están organizados en tres filas y tres columnas.</p></div></li>';
+  }
+  return '<li class="lesson-step '+(index===0?'is-current':'')+'" data-example-step="'+index+'"><span class="lesson-step-index">'+(index+1).toString().padStart(2,'0')+'</span><p>'+escapeHTML(step)+'</p></li>';
+}
 export function lessonIntro(lab,subject){
  const lesson=lessonFor(lab);
- const steps=lesson.workedExample.map((step,i)=>'<li><span class="lesson-step-number">'+(i+1)+'</span><p>'+escapeHTML(step)+'</p></li>').join('');
- return '<section class="lesson-panel" aria-label="Aprender antes de practicar"><div class="lesson-panel-head"><div><span class="lesson-kicker">01 · ENTENDER</span><h2>Primero, entiende lo que estás haciendo</h2></div><span class="lesson-time">≈ 2 minutos</span></div><p class="lesson-concept">'+escapeHTML(lesson.concept)+'</p><div class="lesson-example"><h3>💡 Ejemplo resuelto, paso a paso</h3><ol>'+steps+'</ol></div><p class="lesson-basis"><b>Contexto:</b> '+escapeHTML(subject.name)+' · '+escapeHTML(lab.topic)+'. '+(subject.source==='apuntes'?'Práctica original orientada por los materiales disponibles.':'Práctica provisional inspirada en la guía docente; se revisará con los apuntes originales.')+'</p><div class="lesson-preflight"><b>🎯 Tu objetivo en este laboratorio</b><p>'+escapeHTML(lesson.challenge)+'</p></div></section>';
+ const steps=lesson.workedExample.map((step,i)=>exampleStep(step,i,lab.type)).join('');
+ return '<section class="lesson-panel" aria-label="Aprende con un ejemplo">'+
+  '<div class="lesson-panel-head"><span class="lesson-kicker">LA IDEA EN 20 SEGUNDOS</span><span class="lesson-time">'+escapeHTML(lab.topic)+'</span></div>'+
+  '<p class="lesson-concept">'+escapeHTML(lesson.concept)+'</p>'+
+  '<div class="lesson-grid"><div class="lesson-example">'+
+  '<div class="lesson-example-head"><h2>Así funciona. Mira este ejemplo.</h2><span class="example-progress" id="example-progress">1 / 3</span></div>'+
+  '<ol class="example-steps">'+steps+'</ol>'+
+  '<div class="example-controls"><button type="button" id="example-prev" class="example-button" disabled>← Anterior</button><span class="example-dots" id="example-dots" aria-hidden="true"><i class="active"></i><i></i><i></i></span><button type="button" id="example-next" class="example-button primary">Siguiente paso →</button></div>'+
+  '</div><div class="lesson-preflight"><span class="lesson-kicker">DESPUÉS, INTÉNTALO</span><h3>Tu siguiente movimiento</h3><p>'+escapeHTML(lesson.challenge)+'</p><div class="lesson-preflight-foot"><span>✓ Experimenta</span><span>✓ Comprueba</span><span>✓ Comprende</span></div></div></div>'+
+  '</section>';
 }
 export function missionMarkup(lab){
  const lesson=lessonFor(lab);
- return '<section class="mission-panel" aria-label="Misión guiada"><div class="mission-title"><span class="lesson-kicker">03 · TU MISIÓN</span><h2>Ahora te toca a ti</h2></div><p class="mission-challenge">'+escapeHTML(lesson.challenge)+'</p><div class="mission-actions"><button type="button" id="mission-check" class="btn">✓ Comprobar mi misión</button><button type="button" id="mission-hint" class="btn mission-secondary">💡 Dame una pista</button></div><div id="mission-feedback" role="status" class="mission-feedback" aria-live="polite">Los controles de arriba son interactivos. Cambia sus valores y comprueba tu objetivo. Esto no es un examen.</div><div id="mission-hints" class="mission-hints" aria-live="polite"></div><details class="mission-details"><summary>⚠️ Error típico y por qué importa</summary><p>'+escapeHTML(lesson.pitfall)+'</p></details><details class="mission-details"><summary>🧠 Para entenderlo de verdad</summary><p>'+escapeHTML(lesson.reflection)+'</p><p>Intenta explicarlo con tus palabras antes de mirar la solución del ejemplo.</p></details></section>';
+ return '<section class="mission-panel" aria-label="Misión guiada"><div class="mission-title"><span class="lesson-kicker">TU MISIÓN</span><h2>Ponlo a prueba</h2></div>'+
+  '<p class="mission-challenge">'+escapeHTML(lesson.challenge)+'</p>'+
+  '<p class="mission-coach">El objetivo es explorar los controles y entender por qué cambia el resultado. No hay límite de intentos.</p>'+
+  '<div class="mission-actions"><button type="button" id="mission-check" class="btn">Comprobar resultado</button><button type="button" id="mission-hint" class="btn mission-secondary">Dame una pista</button></div>'+
+  '<div id="mission-feedback" role="status" class="mission-feedback" aria-live="polite">Cuando lo tengas, comprueba tu resultado. Puedes usar las pistas cuando quieras.</div>'+
+  '<div id="mission-hints" class="mission-hints" aria-live="polite"></div>'+
+  '<details class="mission-details"><summary>Lo que suele confundirse</summary><p>'+escapeHTML(lesson.pitfall)+'</p></details>'+
+  '<details class="mission-details"><summary>Una pregunta para ir un paso más allá</summary><p>'+escapeHTML(lesson.reflection)+'</p></details></section>';
+}
+export function mountExampleStepper(container){
+ if(!container)return;
+ const steps=[...container.querySelectorAll('[data-example-step]')];
+ if(steps.length===0)return;
+ const previous=container.querySelector('#example-prev'),next=container.querySelector('#example-next'),counter=container.querySelector('#example-progress'),dots=container.querySelector('#example-dots');
+ let current=0;
+ const draw=()=>{
+   steps.forEach((step,index)=>{step.classList.toggle('is-current',index===current);step.setAttribute('aria-hidden',String(index!==current))});
+   counter.textContent=(current+1)+' / '+steps.length;
+   previous.disabled=current===0;
+   next.textContent=current===steps.length-1?'Volver al principio ↻':'Siguiente paso →';
+   dots.innerHTML=steps.map((_,index)=>'<i class="'+(index===current?'active':'')+'"></i>').join('');
+ };
+ previous.onclick=()=>{current=Math.max(0,current-1);draw()};
+ next.onclick=()=>{current=(current+1)%steps.length;draw()};
+ draw();
 }
 export function mountMission(root,lab,complete){
  const lesson=lessonFor(lab),hintBox=document.querySelector('#mission-hints'),feedback=document.querySelector('#mission-feedback');
