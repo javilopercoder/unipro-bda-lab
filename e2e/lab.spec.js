@@ -2,6 +2,8 @@ import {test,expect} from '@playwright/test';
 test('inicio y PostgreSQL en navegador',async({page})=>{
  await page.goto('/bda.html');
  await expect(page.getByRole('heading',{name:'SQL y PostgreSQL'})).toBeVisible();
+ await expect(page.locator('#code')).toBeEmpty();
+ await page.locator('#code').fill("SELECT nombre, ciudad FROM clientes WHERE ciudad = 'Madrid';");
  await page.getByRole('button',{name:'▶ Ejecutar'}).click();
  await expect(page.locator('#results tbody tr')).toHaveCount(100,{timeout:60000});
  await page.getByRole('button',{name:'✓ Comprobar'}).click();
@@ -10,13 +12,19 @@ test('inicio y PostgreSQL en navegador',async({page})=>{
 test('MongoDB, XML y Redis responden',async({page})=>{
  await page.goto('/bda.html');
  await page.getByRole('button',{name:/Documentos \/ MongoDB/}).click();
+ await expect(page.locator('#code')).toBeEmpty();
+ await page.locator('#code').fill('db.clientes.find({"ciudad":"Madrid"})');
  await page.getByRole('button',{name:'▶ Ejecutar'}).click();
  await expect(page.locator('#results tbody tr')).toHaveCount(100);
  await page.getByRole('button',{name:/XML y XPath/}).click();
+ await expect(page.locator('#code')).toBeEmpty();
+ await page.locator('#code').fill('//nombre/text()');
  await page.getByRole('button',{name:'▶ Ejecutar'}).click();
  await expect(page.locator('#results tbody tr')).toHaveCount(3);
  await page.getByRole('button',{name:/Redis \/ clave-valor/}).click();
- await page.getByRole('button',{name:'▶ Ejecutar'}).click();
+ await expect(page.locator('#code')).toBeEmpty();
+ await page.locator('#code').fill('SET alumno Ana');
+ await page.getByRole('button',{name:/Ejecutar ↵/}).click();
  await expect(page.locator('#results')).toContainText('OK');
 });
 test('transacciones y OLAP',async({page})=>{
