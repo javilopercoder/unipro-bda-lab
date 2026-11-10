@@ -488,3 +488,11 @@ html[data-theme=dark] .oop-inheritance{background:#223953;border-color:#3d597a}
 html[data-theme=dark] .oop-inheritance span{background:#274564;color:#e6f4ff;border-color:#557595}
 html[data-theme=dark] .oop-lab .lab-intro code{background:#2b4665;color:#e4f1ff}
 @media(max-width:640px){.oop-inheritance{gap:5px}.oop-inheritance span{padding:9px;font-size:11px}.oop-code-actions .btn{flex:1}.oop-code-frame textarea{font-size:12px}}
+
+/* Ayuda contextual de variables: aparece solo bajo petición. */
+.range-duo .range-info{flex:0 0 27px;width:27px;height:27px;border-radius:50%;background:#e5f0fd;border:1px solid #bcd4f0;color:#3066ad;font-size:12px;font-weight:800;padding:0;display:grid;place-items:center;align-self:center;line-height:1}
+.range-duo .range-info:hover,.range-duo .range-info[aria-expanded=true]{background:#cfe5ff}
+.range-explanation{display:block;margin-top:9px;border-left:3px solid #7ba7db;border-radius:5px;background:#edf5ff;padding:9px 11px;font-size:11px;line-height:1.6;color:#44668b}
+.range-explanation[hidden]{display:none}
+html[data-theme=dark] .range-duo .range-info{background:#2b496c;border-color:#53779c;color:#e5f3ff}
+html[data-theme=dark] .range-explanation{background:#203b58;border-color:#6b9bdb;color:#d5e8fa}
