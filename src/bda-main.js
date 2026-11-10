@@ -6,6 +6,7 @@ import {runMongo,evaluateMongo,mongoData,MONGO_DATA_COUNT} from './mongo.js';
 import {executeXPath,evaluateXPath} from './xml.js';
 import {RedisSim} from './redis.js';
 import {renderBdaGuide,BDA_GUIDES} from './campus/bda-guides.js';
+import {attachCodeHints} from './code-guidance.js';
 import {BankSim} from './transactions.js';
 import {rollup,segments,distributed,PURCHASE_COUNT} from './analytics.js';
 
@@ -42,8 +43,31 @@ function renderNav(){
  const nav=$('#nav');nav.replaceChildren();
  for(const mod of MODULES){const b=create('button','nav-item'+(mod.id===state.module?' active':''));b.type='button';b.append(create('span','nav-icon',mod.icon),create('span','',mod.name));b.onclick=()=>{state.module=mod.id;history.replaceState(null,'','#'+mod.id);render()};nav.append(b)}
 }
-function editUI({title,description,task=true,placeholder='Escribe aquí...',buttons=[]}={}){
- $('#main').innerHTML=heading(title,description,MODULES.find(m=>m.id===state.module).label)+'<div class="main-columns"><div><section class="panel"><h2 id="exercise-title">Práctica</h2><p id="goal" class="muted"></p><div id="task-buttons" class="task-list"></div></section><section class="panel"><h2>Editor</h2><textarea id="code" class="editor" spellcheck="false" aria-label="Editor de práctica" placeholder="'+placeholder+'"></textarea><div class="toolbar" id="buttons"></div><p id="state" class="status" role="status"></p></section><section class="panel"><h2>Resultados</h2><div id="results" class="result-scroll"><p class="muted">Ejecuta la consulta para ver su resultado.</p></div></section></div><aside><section class="panel"><h2>Datos y pistas</h2><div id="help" class="muted small"></div></section></aside></div>';
+function editUI({title,description,placeholder='Escribe tu solución aquí…'}={}){
+ $('#main').innerHTML=heading(title,description,MODULES.find(m=>m.id===state.module).label)+
+ '<div class="main-columns"><div>'+
+ '<section class="panel"><h2 id="exercise-title">Práctica</h2><p id="goal" class="muted"></p><div id="task-buttons" class="task-list"></div></section>'+
+ '<section class="panel code-workbench"><div class="code-console">'+
+ '<div class="code-console-bar"><span class="code-console-dots"><i></i><i></i><i></i></span><strong id="code-console-title">EDITOR · PRÁCTICA LIBRE</strong><span class="code-console-local">Local</span></div>'+
+ '<textarea id="code" class="editor" spellcheck="false" autocomplete="off" aria-label="Editor de práctica. Empieza con la entrada vacía" placeholder="'+placeholder+'"></textarea></div>'+
+ '<div class="toolbar" id="buttons"></div><p class="editor-hotkey">Ctrl + Intro para ejecutar · Puedes probar consultas distintas de las misiones</p>'+
+ '<p id="state" class="status" role="status"></p></section>'+
+ '<section class="panel"><h2>Resultados</h2><div id="results" class="result-scroll"><p class="muted">Cuando ejecutes una instrucción, verás aquí los resultados.</p></div></section></div>'+
+ '<aside><section class="panel code-side-guide"><h2>Datos disponibles</h2><div id="help" class="muted small"></div>'+
+ '<div id="hint-mount"></div></section></aside></div>';
+}
+function guideEditor({example,concept,label}){
+ const mount=$('#hint-mount');if(!mount)return;
+ mount.replaceChildren();
+ return attachCodeHints({container:mount,editor:$('#code'),example,concept,label});
+}
+function bindEditorShortcut(callback){
+ const input=$('#code');if(!input)return;
+ input.addEventListener('keydown',event=>{
+  if(event.key==='Enter'&&(event.ctrlKey||event.metaKey)){event.preventDefault();callback()}
+  if(event.key==='Tab'){event.preventDefault();const start=input.selectionStart,end=input.selectionEnd;
+    input.setRangeText('  ',start,end,'end');}
+ });
 }
 function createButton(text,fn,cls='btn'){const b=create('button',cls,text);b.type='button';b.onclick=fn;return b}
 function pickTasks(tasks,selected,onSelect){const box=$('#task-buttons');box.replaceChildren();for(const [index,task]of tasks.entries()){const btn=createButton(task.label,()=>onSelect(index),'task'+(index===selected?' active':''));box.append(btn)}}
@@ -54,10 +78,11 @@ function renderSQL(plan=false){
   $('#exercise-title').textContent='Tarea: leer el plan';
   $('#goal').textContent='Ejecuta EXPLAIN para los pedidos de más de 100 €. Observa los operadores y el coste estimado.';
   $('#task-buttons').replaceChildren();
-  $('#code').value='EXPLAIN SELECT * FROM pedidos WHERE importe > 100;';
+  $('#code').value='';
+  guideEditor({example:'EXPLAIN SELECT * FROM pedidos WHERE importe > 100;',concept:'EXPLAIN muestra el plan estimado de ejecución. Se escribe delante de la consulta que quieres analizar.',label:'consulta SQL'});
   $('#help').textContent='Una tabla pequeña puede requerir Seq Scan incluso con índices. EXPLAIN muestra estimaciones; no simula una carga masiva.';
  }else{
-  const onSelect=index=>{state.task.sql=index;const x=SQL_TASKS[index];$('#exercise-title').textContent=x.label+' · '+x.topic;$('#goal').textContent=x.goal;$('#code').value=x.starter;$('#help').textContent=x.hint+' · Datos: '+SQL_DATA_COUNTS.clientes+' clientes, '+SQL_DATA_COUNTS.pedidos+' pedidos, '+SQL_DATA_COUNTS.productos+' productos y '+SQL_DATA_COUNTS.ventas+' ventas ficticias.';$('#results').textContent='Ejecuta la consulta o comprueba la solución.';status('');pickTasks(SQL_TASKS,index,onSelect)};
+  const onSelect=index=>{state.task.sql=index;const x=SQL_TASKS[index];$('#exercise-title').textContent=x.label+' · '+x.topic;$('#goal').textContent=x.goal;$('#code').value='';$('#help').textContent='Tablas disponibles y datos de ejemplo. Puedes escribir SELECT y experimentar con varias soluciones.'+' · Datos: '+SQL_DATA_COUNTS.clientes+' clientes, '+SQL_DATA_COUNTS.pedidos+' pedidos, '+SQL_DATA_COUNTS.productos+' productos y '+SQL_DATA_COUNTS.ventas+' ventas ficticias.';$('#results').textContent='Ejecuta la consulta o comprueba la solución.';status('');guideEditor({example:x.starter,concept:x.hint,label:'consulta SQL'});pickTasks(SQL_TASKS,index,onSelect)};
   onSelect(state.task.sql);
  }
  const run=async(grade=false)=>{const code=$('#code').value;const b=$('#buttons');b.querySelectorAll('button').forEach(x=>x.disabled=true);status('Cargando PostgreSQL / ejecutando…');
@@ -67,21 +92,24 @@ function renderSQL(plan=false){
  }catch(e){status(e.message||String(e),'bad');$('#results').replaceChildren(create('p','muted','No se ejecutó la consulta.'))}finally{b.querySelectorAll('button').forEach(x=>x.disabled=false)}};
  const b=$('#buttons');b.append(createButton('▶ Ejecutar',()=>run(false)),createButton('✓ Comprobar',()=>run(true),'btn secondary'),createButton('↻ Reiniciar base',async()=>{status('Reiniciando…');try{await resetSQL();status('Base de datos reiniciada','good')}catch(e){status(e.message,'bad')}},'btn secondary'));
  if(plan)b.querySelectorAll('button')[1].disabled=true;
+ bindEditorShortcut(()=>run(false));
 }
 function renderMongo(){
  editUI({title:'MongoDB · Documentos',description:'Practica consultas de estilo MongoDB sobre una colección JSON ficticia. Es un intérprete parcial, no un servidor MongoDB real.'});
- const select=index=>{state.task.mongo=index;const task=MONGO_TASKS[index];$('#exercise-title').textContent=task.label;$('#goal').textContent=task.goal;$('#code').value=task.starter;$('#help').textContent=task.hint+' Colección: '+MONGO_DATA_COUNT.toLocaleString('es-ES')+' documentos ficticios. Ejemplo: '+JSON.stringify(mongoData()[0]);status('');$('#results').textContent='Ejecuta una consulta.';pickTasks(MONGO_TASKS,index,select)};select(state.task.mongo);
+ const select=index=>{state.task.mongo=index;const task=MONGO_TASKS[index];$('#exercise-title').textContent=task.label;$('#goal').textContent=task.goal;$('#code').value='';$('#help').textContent='La colección contiene registros de clientes ficticios. Intenta una consulta find o aggregate.'+' Colección: '+MONGO_DATA_COUNT.toLocaleString('es-ES')+' documentos ficticios. Ejemplo: '+JSON.stringify(mongoData()[0]);status('');$('#results').textContent='Ejecuta una consulta.';guideEditor({example:task.starter,concept:task.hint,label:'consulta MongoDB'});pickTasks(MONGO_TASKS,index,select)};select(state.task.mongo);
  const execute=grade=>{try{const q=$('#code').value;const result=runMongo(q);output($('#results'),result);const pass=grade?evaluateMongo(q,MONGO_TASKS[state.task.mongo].id):null;status(grade?(pass?'✓ Resultado correcto':'Revisa el filtro, la proyección o la agrupación'):'Consulta interpretada: '+result.length+' documentos',grade?(pass?'good':'warn'):'good')}catch(e){status(e.message,'bad')}};
  $('#buttons').append(createButton('▶ Ejecutar',()=>execute(false)),createButton('✓ Comprobar',()=>execute(true),'btn secondary'));
+ bindEditorShortcut(()=>execute(false));
 }
 function renderXML(){
  editUI({title:'XML y XPath',description:'El navegador analiza XML y ejecuta XPath de verdad. Este módulo no valida DTD ni implementa XQuery.'});
  const dataBox=create('div','panel');dataBox.append(create('h2','','Documento XML de práctica'));
  const xml=create('textarea','editor');xml.value=SAMPLE_XML;xml.style.minHeight='205px';xml.setAttribute('aria-label','Documento XML');dataBox.append(xml);
  $('#main .main-columns > div').prepend(dataBox);
- const select=index=>{state.task.xml=index;const task=XML_TASKS[index];$('#exercise-title').textContent=task.label;$('#goal').textContent=task.goal;$('#code').value=task.xpath;$('#help').textContent=task.hint;status('');$('#results').textContent='Ejecuta XPath.';pickTasks(XML_TASKS,index,select)};select(state.task.xml);
+ const select=index=>{state.task.xml=index;const task=XML_TASKS[index];$('#exercise-title').textContent=task.label;$('#goal').textContent=task.goal;$('#code').value='';$('#help').textContent='Explora el documento XML de la izquierda. XPath selecciona elementos, atributos o textos.';guideEditor({example:task.xpath,concept:task.hint,label:'expresión XPath'});status('');$('#results').textContent='Ejecuta XPath.';pickTasks(XML_TASKS,index,select)};select(state.task.xml);
  const run=grade=>{try{const values=executeXPath(xml.value,$('#code').value);output($('#results'),values.map((v,i)=>({numero:i+1,valor:v})));const pass=grade?evaluateXPath(xml.value,$('#code').value,XML_TASKS[state.task.xml].id):null;status(grade?(pass?'✓ Consulta correcta':'No se ha obtenido la selección esperada'):'XPath ejecutado: '+values.length+' resultados',grade?(pass?'good':'warn'):'good')}catch(e){status(e.message,'bad')}};
  $('#buttons').append(createButton('▶ Ejecutar',()=>run(false)),createButton('✓ Comprobar',()=>run(true),'btn secondary'));
+ bindEditorShortcut(()=>run(false));
 }
 function renderRedis(){
  editUI({title:'Redis · Clave-valor',description:'Simula un almacén clave-valor local. Prueba SET, GET, DEL, EXISTS, INCR, EXPIRE, TTL y KEYS *.'});
