@@ -88,6 +88,7 @@ export function mountMission(root,lab,complete){
   const id=ev.target.id||'(sin-id)';
   if(!touchedFields.has(id)){touchedFields.add(id);increment('input')}
   if(ev.target.id)increment('input:'+ev.target.id);
+  if(ev.target.dataset?.forRange)increment('input:'+ev.target.dataset.forRange);
  };
  const recordClick=ev=>{
   if(!ev.isTrusted)return;
