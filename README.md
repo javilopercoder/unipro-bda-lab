@@ -2,7 +2,7 @@
 
 **Proyecto no oficial de prácticas del Bachelor en Informática (UniPRO).**
 
-30 asignaturas del plan de estudios, 65 laboratorios de interacción directa, sin cuestionarios tipo test ni calificaciones. Excluye solo el Trabajo Final de Bachelor. Las tres optativas técnicas están incluidas, sujetas a oferta académica.
+30 asignaturas del plan de estudios, 180 laboratorios de interacción directa, sin cuestionarios tipo test ni calificaciones. Excluye solo el Trabajo Final de Bachelor. Las tres optativas técnicas están incluidas, sujetas a oferta académica.
 
 ## Arquitectura
 
@@ -10,7 +10,7 @@
 - BDA original: \`bda.html\` → \`src/bda-main.js\` (se conserva el laboratorio anterior).
 - PostgreSQL: PGlite (WebAssembly) únicamente al abrir BDA.
 - Resto: motores locales JavaScript y SVG, sin cuentas, claves ni servidor de datos.
-- Progreso: localStorage del navegador. No se sincroniza entre dispositivos ni se envía a Google Sheets.
+- Progreso: localStorage del navegador. Se distingue entre actividad explorada y misión interactiva realizada; no es una calificación, no se sincroniza entre dispositivos y no se envía a Sheets.
 
 ## Qué se puede practicar
 
@@ -80,3 +80,13 @@ Guías oficiales de estas materias:
 - https://cms.unir.net/upbinfo13_deontologia
 - https://cms.unir.net/upbinfo15_comu_y_liderazgo
 - https://cms.unir.net/upbinfo18_gestionproyectos
+
+## Itinerarios guiados para principiantes
+
+Cada una de las **180 prácticas** incluye una introducción con lenguaje sencillo, un ejemplo resuelto en tres pasos, una misión concreta, tres pistas que se revelan de manera progresiva, un error habitual y una pregunta para razonar sobre el resultado. Los **48 tipos de motor** tienen una microlección propia; el BDA independiente incorpora guías para sus ocho modos.
+
+El objetivo es que un estudiante que nunca ha abierto los apuntes sepa qué está viendo y qué debe hacer antes de manipular controles. La misión se valida mediante estados y acciones observables, sin pretender certificar comprensión conceptual; se distingue expresamente de las calificaciones.
+
+La ampliación añade 115 prácticas a las 65 anteriores y conserva todos sus identificadores, rutas y progreso. Hay **seis prácticas por asignatura**, excluyendo el TFG. Las prácticas basadas solo en guías públicas siguen marcadas como provisionales hasta disponer de los apuntes originales.
+
+**Nuevos archivos:** `src/campus/curriculum.js` (retos), `src/campus/lessons.js` (explicaciones y ejemplos), `src/campus/academy.js` (pistas, comprobación y recorrido), `src/campus/bda-guides.js` (ayudas de los ocho módulos de BDA). Las prácticas se ejecutan localmente en el navegador; no es necesario migrar Apps Script para utilizarlas.
