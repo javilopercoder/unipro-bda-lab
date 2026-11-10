@@ -2,7 +2,7 @@
 
 **Proyecto no oficial de prácticas del Bachelor en Informática (UniPRO).**
 
-26 asignaturas técnicas, 53 laboratorios de interacción directa, sin cuestionarios tipo test ni calificaciones. Excluye el TFG y materias no técnicas. Las tres optativas técnicas están incluidas, sujetas a oferta académica.
+30 asignaturas del plan de estudios, 65 laboratorios de interacción directa, sin cuestionarios tipo test ni calificaciones. Excluye solo el Trabajo Final de Bachelor. Las tres optativas técnicas están incluidas, sujetas a oferta académica.
 
 ## Arquitectura
 
@@ -14,7 +14,7 @@
 
 ## Qué se puede practicar
 
-Álgebra (matrices, lógica), tecnología (ALU, jerarquía de caché), física (circuitos y campos), programación (trazas, estructuras, objetos y concurrencia), cálculo (derivadas, integrales, bisección), estadística (muestreo y Monte Carlo), UX (Fitts y accesibilidad), algoritmos (ordenación, BFS y Dijkstra), sistemas operativos (planificación, memoria, sistema de archivos virtual), redes (subredes y latencia), IA (reglas y búsqueda), bases de datos (PGlite, consultas, XML, documento, OLAP y datos sintéticos), requisitos (trazabilidad), ingeniería (Kanban y CI/CD), seguridad (SHA-256 y permisos), visualización (transformaciones 2D) y aprendizaje automático (K-means, regresión).
+Fundamentos de empresa (punto muerto, caja y VAN), gestión de proyectos (camino crítico, valor ganado y riesgos), comunicación y liderazgo (canal de comunicación, coordinación y reuniones), deontología (protección de datos, licencias y respuesta a incidentes), Álgebra (matrices, lógica), tecnología (ALU, jerarquía de caché), física (circuitos y campos), programación (trazas, estructuras, objetos y concurrencia), cálculo (derivadas, integrales, bisección), estadística (muestreo y Monte Carlo), UX (Fitts y accesibilidad), algoritmos (ordenación, BFS y Dijkstra), sistemas operativos (planificación, memoria, sistema de archivos virtual), redes (subredes y latencia), IA (reglas y búsqueda), bases de datos (PGlite, consultas, XML, documento, OLAP y datos sintéticos), requisitos (trazabilidad), ingeniería (Kanban y CI/CD), seguridad (SHA-256 y permisos), visualización (transformaciones 2D) y aprendizaje automático (K-means, regresión).
 
 Todas las simulaciones sin infraestructura real se identifican como tales. Los ejercicios son originales. Los documentos privados de Drive no se han copiado al código.
 
@@ -60,3 +60,23 @@ Los simuladores de procesos, red, criptografía aplicada, sistemas distribuidos,
 - **Generador de ventas del campus:** hasta 20.000 registros filtrables y exportables a CSV.
 - **Otras actividades:** K-means (150 puntos iniciales), regresión (100 observaciones), estadística (hasta 20.000 observaciones), algoritmos y procesos con ejemplos de tamaño didáctico.
 - Los datos ampliados son reproducibles y nunca proceden de sistemas reales. El editor SQL solo admite consultas permitidas. Los simuladores de MongoDB/Redis no son servidores reales.
+
+
+## Integración con UniPRO Quiz
+
+Se puede entrar a cada asignatura mediante `/#/asignatura/ID`. El banco de UniPRO Quiz utiliza IDs diferentes en siete materias: `FPR→FPG`, `AYC→ALC`, `EDD→EDA`, `PRA→PAD`, `EDC→ESC`, `IGV→IGR`, `AMD2→AAM`. El catálogo mantiene estas rutas como alias y no cambia los identificadores de progreso antiguos. La V7.4.6 del proyecto UniPRO Quiz integra todos los enlaces, pero debe instalarse y probarse por separado en Apps Script.
+
+## Materias transversales añadidas
+
+- **Fundamentos de la empresa:** costes y umbral de rentabilidad (tema 8), tesorería y finanzas (tema 9), VAN e inversiones (tema 10).
+- **Deontología y legislación:** privacidad y principios de tratamiento (temas 2 y 3), licencias y contratos informáticos (tema 7), respuesta operativa a brechas (temas 3 y 8).
+- **Comunicación y liderazgo:** elección de canales y mensajes (temas 4 y 5), coordinación de equipos (temas 3 y 6), preparación de reuniones y seguimiento (temas 4 y 7).
+- **Gestión de proyectos:** cronogramas y camino crítico (tema 6), valor ganado (tema 7), simulación de riesgos (tema 8).
+
+Los ejemplos son originales. Las reglas de decisión de licencias, protección de datos o gestión de personas son modelos didácticos; **no proporcionan dictámenes legales, evaluaciones psicológicas ni certificaciones profesionales**.
+
+Guías oficiales de estas materias:
+- https://cms.unir.net/upbinfo05_fundempresa
+- https://cms.unir.net/upbinfo13_deontologia
+- https://cms.unir.net/upbinfo15_comu_y_liderazgo
+- https://cms.unir.net/upbinfo18_gestionproyectos
