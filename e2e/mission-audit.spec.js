@@ -19,6 +19,7 @@ test('auditoría: todos los retos presentan los controles que piden',async({page
    if(!root)return['Sin motor'];
    return requirement.split('&').filter(Boolean).flatMap(condition=>{
     const k=condition.split('=')[0];
+    if(k.startsWith('@input:'))return root.querySelector('#'+CSS.escape(k.slice(7)))?[]:['Sin campo para '+k];
     if(k==='@button')return root.querySelector('button')?[]:['Sin botón'];
     if(k==='@input')return root.querySelector('input,select,textarea')?[]:['Sin control editable'];
     if(k.startsWith('@'))return root.querySelector('#'+CSS.escape(k.slice(1)))?[]:['Sin acción '+k];
