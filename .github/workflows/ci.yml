@@ -1,4 +1,4 @@
-name: Tests y build
+name: Tests, navegador y build
 on:
   push:
     branches: ["feat/**", "main"]
@@ -17,3 +17,5 @@ jobs:
       - run: npm install --no-audit --no-fund
       - run: npm test
       - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e
