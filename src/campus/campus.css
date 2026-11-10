@@ -137,3 +137,114 @@ html[data-theme="dark"] .getting-started-grid p{color:#b4c9df}
 html[data-theme="dark"] .getting-started-grid span{color:#a2c9ff}
 html[data-theme="dark"] .lesson-preflight{background:#153c32;border-color:#326b55;color:#c3eed8}
 @media(max-width:850px){.getting-started-grid{grid-template-columns:1fr}.getting-started-grid>div{padding:14px 16px}.getting-started{margin-bottom:26px}}
+
+
+/* Taller de matrices · edición táctil, diagonales y resultado en tiempo real */
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
+.matrix-lab{display:grid;gap:16px}
+.mx-workbench{display:grid;grid-template-columns:minmax(240px,.8fr) minmax(320px,1.2fr);gap:17px;align-items:stretch}
+.mx-editor,.mx-explainer{border:1px solid #dce6f3;background:linear-gradient(160deg,#fff,#f9fbff);border-radius:18px;padding:20px;min-width:0}
+.mx-minihead{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:11px;letter-spacing:.12em;font-weight:800;color:#527097}
+.mx-pill{letter-spacing:0;background:#e7f1ff;color:#2b61b5;border-radius:8px;padding:5px 10px;white-space:nowrap;font-size:11px}
+.mx-caption{color:#71839e;font-size:12px;line-height:1.65;margin:10px 0 12px}
+.mx-editor-area{display:flex;align-items:stretch;justify-content:center;gap:8px;margin:22px auto 28px;max-width:340px}
+.mx-bracket-left,.mx-bracket-right{flex:0 0 10px;border:3px solid #5c82b7;min-height:195px}
+.mx-bracket-left{border-right:0;border-radius:10px 0 0 10px}
+.mx-bracket-right{border-left:0;border-radius:0 10px 10px 0}
+.mx-editor .matrix-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;width:100%;padding:1px;align-self:center;max-width:295px}
+.mx-cell{display:block;min-width:0}
+.mx-cell input{display:block;width:100%;height:57px;border:1px solid #cedcf0;background:#fff;color:#1f3b66;border-radius:12px;font-family:inherit;font-weight:800;font-size:19px;text-align:center;box-shadow:0 3px 8px #3165af0b;transition:border .15s,box-shadow .15s,background .15s;appearance:textfield;-moz-appearance:textfield}
+.mx-cell input::-webkit-outer-spin-button,.mx-cell input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.mx-cell input:hover{border-color:#91b6ea}
+.mx-cell input:focus{outline:0;border-color:#3174e3;box-shadow:0 0 0 4px #599af32d;background:#f5f9ff}
+.mx-cell input[aria-invalid=true]{border-color:#d75c5c;background:#fff5f5}
+.mx-presets{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.mx-preset{border:1px solid #d9e4f3;color:#3d5e88;background:#f7faff;border-radius:10px;padding:9px 5px;font-size:11px;font-weight:750;min-height:39px}
+.mx-preset:hover{background:#e9f2ff;border-color:#92b7e8}
+.mx-diagram{margin-top:8px}
+.mx-diagram svg{display:block;width:100%;height:auto;max-width:580px;margin:auto}
+.mx-svg-background{fill:#f0f5fb}
+.mx-svg-label{font-family:inherit;fill:#8da2bd;font-size:11px;font-weight:800;letter-spacing:1.1px;text-anchor:middle}
+.mx-svg-label:first-of-type{transform:translateX(97px)}
+.mx-svg-separator{stroke:#9ab1cb;stroke-width:2}
+.mx-svg-cell{fill:#fff;stroke:#d2e0ef;stroke-width:1.4}
+.mx-svg-copy{fill:#e5edf8;stroke:#b9cbdf;stroke-width:1.4}
+.mx-svg-active{stroke-width:1.5}
+.mx-svg-positive{fill:#d7f8f1;stroke:#5ac9b3}
+.mx-svg-negative{fill:#ffedd9;stroke:#f0a74e}
+.mx-svg-text{fill:#274368;font-family:inherit;font-weight:750;font-size:24px}
+.mx-path-positive{stroke:#16a68d;stroke-width:4;stroke-opacity:.55}
+.mx-path-negative{stroke:#df9031;stroke-width:4;stroke-opacity:.55}
+.mx-ring-positive{stroke:#069e88;stroke-width:2.5}
+.mx-ring-negative{stroke:#d78629;stroke-width:2.5}
+.mx-step{border-radius:13px;background:#f3f8ff;border:1px solid #dfebf7;padding:13px 16px}
+.mx-step-label{display:flex;gap:8px;align-items:center;font-size:13px;color:#127c70}
+.mx-step-label.mx-up{color:#ab621a}
+.mx-dot{width:9px;height:9px;border-radius:50%;background:#12a48e}
+.mx-up .mx-dot{background:#db9a41}
+.mx-multiply{font-size:20px;color:#48617e;margin:7px 0 0;font-weight:600;text-align:center}
+.mx-multiply strong{font-size:27px;color:#173f70}
+.mx-step-actions{display:flex;align-items:center;gap:8px;justify-content:space-between;margin-top:13px}
+.mx-step-actions button{min-height:38px;border:1px solid #d5e3f5;border-radius:9px;font-size:11px;font-weight:800;padding:8px 11px}
+.mx-action-subtle{background:#fff;color:#55739c}
+.mx-action-primary{background:#245fdb;color:white;border-color:#245fdb!important}
+.mx-step-actions button:disabled{opacity:.4;cursor:default}
+.mx-dots{display:flex;align-items:center;gap:5px}
+.mx-dots i{width:7px;height:7px;border-radius:100%;background:#b3c6d8}
+.mx-dots i.active{width:19px;border-radius:8px}
+.mx-dots i.active.positive{background:#0aaf92}
+.mx-dots i.active.negative{background:#e29a46}
+.mx-result{background:linear-gradient(110deg,#e7f4ff,#eefbf7);border:1px solid #cae6e8;border-radius:16px;padding:18px 23px;display:grid;gap:9px;color:#214263}
+.mx-result-main{display:flex;align-items:center;justify-content:space-between;gap:20px}
+.mx-result-main>div:first-child{display:flex;align-items:baseline;gap:14px}
+.mx-result-main>div:first-child>span{color:#54769b;letter-spacing:.12em;font-weight:800;font-size:11px}
+.mx-result-main strong{font-size:35px;color:#173e6b}
+.mx-result-status{font-size:12px;font-weight:800;border-radius:40px;padding:9px 13px}
+.mx-invertible{background:#d0f5e3;color:#087a55}
+.mx-singular{background:#fff0d8;color:#91571d}
+.mx-formula{display:flex;flex-wrap:wrap;gap:8px 20px}
+.mx-formula-line{font-size:12px;display:flex;gap:9px;align-items:center;min-width:0;flex-wrap:wrap}
+.mx-formula-line code{color:#3b587a;font-size:12px;white-space:normal}
+.mx-positive-tag{font-weight:800;color:#008b7a}
+.mx-negative-tag{font-weight:800;color:#bf7929}
+.mx-formula-final{border-top:1px solid #bbd7e5;padding-top:9px;margin:2px 0 0;font-size:13px}
+.mx-formula-final strong{font-weight:900;color:#1e53a7;font-size:17px}
+.mx-why{font-size:12px;line-height:1.6;background:#f6f9fd;border:1px solid #dfe9f4;border-radius:13px;padding:11px 15px;color:#55708f}
+.mx-why summary{font-weight:750;cursor:pointer;color:#3568a8}
+.mx-why p{margin:8px 0}
+html[data-theme=dark] .mx-editor,html[data-theme=dark] .mx-explainer{background:linear-gradient(155deg,#172940,#132238);border-color:#344e6a}
+html[data-theme=dark] .mx-minihead{color:#a5c3e7}
+html[data-theme=dark] .mx-pill{background:#254569;color:#c7e4ff}
+html[data-theme=dark] .mx-caption{color:#b4c5dc}
+html[data-theme=dark] .mx-bracket-left,html[data-theme=dark] .mx-bracket-right{border-color:#81a9dd}
+html[data-theme=dark] .mx-cell input{background:#203651!important;border-color:#416086!important;color:#f5f9ff!important}
+html[data-theme=dark] .mx-cell input:focus{background:#284567!important;box-shadow:0 0 0 4px #4b8bea43}
+html[data-theme=dark] .mx-preset{background:#1e3550;border-color:#395778;color:#d3e7ff}
+html[data-theme=dark] .mx-preset:hover{background:#294a70}
+html[data-theme=dark] .mx-svg-background{fill:#1a304a}
+html[data-theme=dark] .mx-svg-label{fill:#adbfda}
+html[data-theme=dark] .mx-svg-separator{stroke:#6380a3}
+html[data-theme=dark] .mx-svg-cell{fill:#243d5a;stroke:#486788}
+html[data-theme=dark] .mx-svg-copy{fill:#1a2d45;stroke:#344f6d}
+html[data-theme=dark] .mx-svg-positive{fill:#184c4a;stroke:#21a994}
+html[data-theme=dark] .mx-svg-negative{fill:#534027;stroke:#d69548}
+html[data-theme=dark] .mx-svg-text{fill:#f4f8ff}
+html[data-theme=dark] .mx-step{background:#1b3552;border-color:#355875}
+html[data-theme=dark] .mx-step-label{color:#79e1cd}
+html[data-theme=dark] .mx-up{color:#ffcc90}
+html[data-theme=dark] .mx-multiply,html[data-theme=dark] .mx-multiply strong{color:#e3f2ff}
+html[data-theme=dark] .mx-action-subtle{background:#25405c;color:#d4e9ff;border-color:#37597e}
+html[data-theme=dark] .mx-result{background:linear-gradient(105deg,#192f49,#173c39);border-color:#396460;color:#d8ebfa}
+html[data-theme=dark] .mx-result-main strong{color:#f5faff}
+html[data-theme=dark] .mx-result-main>div:first-child>span{color:#a8c5e3}
+html[data-theme=dark] .mx-invertible{background:#1d584a;color:#a2ffe0}
+html[data-theme=dark] .mx-singular{background:#62431e;color:#ffe3b1}
+html[data-theme=dark] .mx-formula-line code{color:#d0e1f4}
+html[data-theme=dark] .mx-formula-final{border-color:#426771}
+html[data-theme=dark] .mx-formula-final strong{color:#c0dcff}
+html[data-theme=dark] .mx-positive-tag{color:#82e6d6}
+html[data-theme=dark] .mx-negative-tag{color:#ffd39d}
+html[data-theme=dark] .mx-why{background:#182a42;border-color:#395474;color:#c4d6ea}
+html[data-theme=dark] .mx-why summary{color:#aed1ff}
+@media(max-width:1250px){.mx-workbench{grid-template-columns:1fr}.mx-editor-area{max-width:320px}.mx-presets{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(max-width:650px){.mx-editor,.mx-explainer{padding:14px;border-radius:14px}.mx-editor-area{margin:14px auto 18px;max-width:290px}.mx-cell input{height:51px;font-size:18px}.mx-presets{grid-template-columns:repeat(2,minmax(0,1fr))}.mx-step-actions button{padding:7px}.mx-result{padding:14px}.mx-result-main{flex-wrap:wrap}.mx-result-main strong{font-size:29px}.mx-multiply{font-size:17px}.mx-multiply strong{font-size:24px}}
