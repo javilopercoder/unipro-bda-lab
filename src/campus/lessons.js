@@ -54,7 +54,7 @@ const source={
     "Identifica a, b y c en ax²+bx+c.",
     "Deriva: f′(x)=2ax+b.",
     "Compara el resultado numérico con la fórmula exacta.",
-    "Pon a=2 y x=2.",
+    "Configura la parábola con a=2 y observa su pendiente en el punto x=2.",
     "a=2&x=2"
   ],
   "roots": [
@@ -76,7 +76,7 @@ const source={
     "Primero observa el tamaño de la muestra.",
     "Compara media teórica y media observada.",
     "Modifica dispersión sin alterar la media.",
-    "Genera 5.000 observaciones.",
+    "Genera 5.000 observaciones y compara media y dispersión de la muestra.",
     "size=5000"
   ],
   "montecarlo": [
@@ -98,7 +98,7 @@ const source={
     "Mira la pendiente real de los puntos.",
     "Aumenta o reduce el ruido.",
     "Observa cuánto cambia la recta estimada y R².",
-    "Aumenta el ruido a 7.",
+    "Aumenta el ruido a 7 y observa el efecto sobre la recta y el R².",
     "noise=7"
   ],
   "graph": [
@@ -120,7 +120,7 @@ const source={
     "Observa qué barras se comparan.",
     "Comprueba si hubo intercambio.",
     "Avanza y cuenta operaciones.",
-    "Avanza cinco comparaciones.",
+    "Ejecuta cinco comparaciones para observar cómo avanzan los elementos.",
     "@step=5"
   ],
   "structures": [
@@ -318,7 +318,7 @@ const source={
     "Localiza la clave de cliente.",
     "Ejecuta INNER JOIN primero.",
     "Después prueba LEFT JOIN y compara.",
-    "Selecciona LEFT JOIN.",
+    "Selecciona LEFT JOIN y observa qué ocurre con los clientes sin pedidos.",
     "join=left"
   ],
   "dataset": [
@@ -373,7 +373,7 @@ const source={
     "Localiza centro de giro.",
     "Ajusta ángulo.",
     "Compara coordenadas de los vértices.",
-    "Gira el triángulo 90 grados.",
+    "Gira el triángulo 90 grados y compara las coordenadas antes y después.",
     "angle=90"
   ],
   "kmeans": [
@@ -406,7 +406,7 @@ const source={
     "Identifica PV, EV y AC.",
     "Calcula ratios usando EV como numerador.",
     "Compara con 1.",
-    "Pon avance real en 40 %.",
+    "Cambia el avance real al 40 % y compara la desviación respecto al plan.",
     "complete=40"
   ],
   "risk": [
@@ -428,7 +428,7 @@ const source={
     "Calcula el margen unitario.",
     "Divide los costes fijos entre el margen.",
     "Redondea hacia arriba.",
-    "Sube el precio a 80 €.",
+    "Aumenta el precio de venta a 80 € y observa cómo cambia el punto muerto.",
     "price=80"
   ],
   "cashflow": [
@@ -516,7 +516,7 @@ const source={
     "Suma los minutos de todas las fases.",
     "Compara con la duración total.",
     "Ajusta el exceso o el tiempo sin asignar.",
-    "Reduce la duración a 30 min.",
+    "Reduce la reunión a 30 minutos y comprueba el reparto total del tiempo.",
     "duration=30"
   ],
   "bda": [
