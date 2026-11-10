@@ -55,6 +55,7 @@ function renderLab(id){
   '<div class="lab-footer"><a href="#/asignatura/'+subject.id+'">← Más prácticas de esta materia</a><span>Actividad interactiva, sin calificaciones</span></div>';
  mountExampleStepper(page());
  const root=document.querySelector('#lab-root');
+ root.addEventListener('input',event=>{if(event.target.matches('input[type="range"]')){const display=root.querySelector('[data-value="'+CSS.escape(event.target.id)+'"]');if(display)display.textContent=event.target.value;}});
  for(const event of ['click','input','change'])root.addEventListener(event,e=>{if(e.isTrusted&&(e.target.closest('button,input,select,textarea,svg')))mark(lab.id)});
  try{
   if(MATH_TYPES.has(lab.type))renderMath(root,lab,()=>{});
