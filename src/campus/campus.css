@@ -248,3 +248,99 @@ html[data-theme=dark] .mx-why{background:#182a42;border-color:#395474;color:#c4d
 html[data-theme=dark] .mx-why summary{color:#aed1ff}
 @media(max-width:1250px){.mx-workbench{grid-template-columns:1fr}.mx-editor-area{max-width:320px}.mx-presets{grid-template-columns:repeat(4,minmax(0,1fr))}}
 @media(max-width:650px){.mx-editor,.mx-explainer{padding:14px;border-radius:14px}.mx-editor-area{margin:14px auto 18px;max-width:290px}.mx-cell input{height:51px;font-size:18px}.mx-presets{grid-template-columns:repeat(2,minmax(0,1fr))}.mx-step-actions button{padding:7px}.mx-result{padding:14px}.mx-result-main{flex-wrap:wrap}.mx-result-main strong{font-size:29px}.mx-multiply{font-size:17px}.mx-multiply strong{font-size:24px}}
+
+
+/* Experiencia compacta: aprender -> probar -> comprobar */
+body{line-height:1.45}
+.app-header{box-shadow:0 1px 0 rgba(23,58,102,.035)}
+.identity-icon{background:linear-gradient(145deg,#365ee8,#49a1f5);border-radius:12px}
+.head-statement{color:#7187a2;font-size:11px;font-weight:700;letter-spacing:.02em}
+.hero{background:radial-gradient(circle at 80% 20%,#ddeafe 0%,#eff5ff 45%,#f8fbff 100%);border-color:#dce7f6}
+.hero h1{font-size:clamp(33px,3.5vw,52px)}
+.subject-card,.lab-card{transition:transform .18s,box-shadow .18s,border-color .18s}
+.subject-learning-strip{background:linear-gradient(115deg,#e9f3ff,#f5faff);border:1px solid #d6e6f9;display:flex;gap:18px;justify-content:space-between;align-items:center;border-radius:13px;padding:15px 20px;margin-bottom:28px}
+.subject-learning-strip b{font-size:14px;color:#2b4b75}
+.subject-learning-strip p{font-size:12px;color:#647a96;margin:5px 0 0;line-height:1.6}
+.subject-learning-strip>span{color:#527ec0;font-weight:750;font-size:11px;white-space:nowrap}
+.subject-lab-count{color:#7186a1;font-size:12px;font-weight:700}
+.lab-number{color:#537cba;font-weight:800;letter-spacing:.13em;font-size:10px;margin-top:14px}
+.lab-card h3{margin:8px 0}
+.bda-bridge h2{font-size:21px;margin:9px 0}
+.bda-bridge p{color:#617891;line-height:1.7;margin-bottom:18px}
+.lab-workspace{display:grid;grid-template-columns:minmax(0,1fr) 310px;gap:17px;align-items:start;margin-bottom:22px}
+.lab-workspace:has(.matrix-lab){grid-template-columns:1fr}
+.lab-workspace .lab-shell{margin:0;min-width:0;box-shadow:none}
+.lab-workspace .mission-panel{margin:0;position:sticky;top:91px;min-width:0;box-shadow:none}
+.lab-workspace:has(.matrix-lab) .mission-panel{position:static}
+.lab-stage{margin-bottom:12px}
+.lesson-panel{border-color:#dce6f3;background:#fff;margin-bottom:16px;padding:22px 25px;box-shadow:none}
+.lesson-panel-head{margin-bottom:9px;align-items:center}
+.lesson-panel .lesson-concept{font-size:15px;line-height:1.66;color:#415b7d;max-width:940px;margin:0 0 18px;font-weight:500}
+.lesson-grid{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(220px,.8fr);gap:13px;align-items:stretch}
+.lesson-panel .lesson-example{background:linear-gradient(115deg,#edf5ff,#f5f8ff);border:1px solid #d5e5fa;border-radius:14px;padding:17px 18px;min-width:0;margin:0}
+.lesson-example-head{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.lesson-example-head h2{font-size:15px;margin:0;color:#25518b}
+.example-progress{font-size:10px;font-weight:800;color:#5a80b1;background:#e0eeff;padding:5px 8px;border-radius:9px;white-space:nowrap}
+.lesson-panel .lesson-example ol{display:block;margin:13px 0;min-height:76px;padding:0}
+.lesson-panel .lesson-example li{display:none;min-height:64px;align-items:center;gap:13px;line-height:1.6;color:#35557e;font-size:13px}
+.lesson-panel .lesson-example li.is-current{display:flex}
+.lesson-step-index{font-size:24px;font-weight:800;letter-spacing:-.04em;color:#4f8de5;align-self:flex-start}
+.lesson-step p{margin:0;line-height:1.65}
+.example-controls{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.example-button{font-size:11px;font-weight:750;border:1px solid #c9dbf2;padding:9px 11px;border-radius:9px;color:#396399;background:white;min-height:37px;white-space:nowrap}
+.example-button.primary{background:#2c6ce0;border-color:#2c6ce0;color:white}
+.example-button:disabled{opacity:.4;cursor:default}
+.example-dots{display:flex;align-items:center;gap:5px}
+.example-dots i{width:6px;height:6px;border-radius:50%;background:#a6bfdd}
+.example-dots i.active{width:17px;background:#2d71df;border-radius:10px}
+.lesson-panel .lesson-preflight{background:linear-gradient(135deg,#e6f8f0,#f2fdf9);border:1px solid #c8eadd;border-radius:14px;padding:19px;display:flex;flex-direction:column;gap:9px;min-width:0;margin:0;color:#265b4b}
+.lesson-preflight h3{margin:0;font-size:17px;line-height:1.25;color:#1e564a}
+.lesson-panel .lesson-preflight p{margin:0;font-size:13px;line-height:1.7;font-weight:550;flex:1}
+.lesson-preflight-foot{display:flex;flex-wrap:wrap;gap:7px;font-weight:750;font-size:10px;color:#39846d}
+.lesson-preflight-foot span{background:#d4f2e4;border-radius:20px;padding:5px 7px}
+.lesson-panel .lesson-kicker{color:#288a73}
+.lesson-example .lesson-kicker{color:#2a68c2}
+.lesson-matrix-demo{display:flex;align-items:stretch;justify-content:center;gap:10px;margin:7px auto;max-width:235px}
+.lesson-matrix-values{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;width:185px}
+.lesson-matrix-values span{background:#fff;border:1px solid #cfe1f6;border-radius:6px;display:grid;place-items:center;height:32px;font-size:15px;font-weight:800;color:#345b86}
+.lesson-matrix-bracket{border:2px solid #78a0cc;border-right:0;border-radius:6px 0 0 6px;width:7px}
+.lesson-matrix-bracket.end{border-left:0;border-right:2px solid #78a0cc;border-radius:0 6px 6px 0}
+.lesson-step-minihead{font-size:11px;color:#6488b8;font-weight:800;text-align:center}
+.lesson-step-visual{width:100%;text-align:center}
+.lesson-step-visual p{font-size:12px;color:#4b6a8b}
+.lab-workspace .mission-panel{padding:21px 20px;border-color:#dce6f4}
+.lab-workspace .mission-panel h2{font-size:21px;margin:8px 0}
+.lab-workspace .mission-challenge{font-size:14px;line-height:1.65;font-weight:650;border-radius:10px;padding:12px 14px;margin:12px 0}
+.mission-coach{font-size:12px;color:#647a98;line-height:1.65;margin:0 0 15px}
+.lab-workspace .mission-actions{display:grid;grid-template-columns:1fr;gap:9px}
+.lab-workspace .mission-actions .btn{width:100%;align-self:auto;font-size:12px;min-height:44px}
+.lab-workspace .mission-feedback{font-size:12px;line-height:1.7;margin-top:7px}
+.lab-workspace .mission-details{font-size:12px}
+.lab-workspace .mission-details summary{font-size:12px;color:#4d72a5}
+.lab-workspace .mission-hints p{font-size:12px}
+.lab-root .lab-intro{color:#4f698c;font-size:12px;line-height:1.65;max-width:680px}
+.lab-workspace .controls{gap:10px;margin-bottom:15px}
+.lab-workspace .output-card{border-radius:12px}
+html[data-theme=dark] .subject-learning-strip{background:#1b304a;border-color:#365471}
+html[data-theme=dark] .subject-learning-strip b{color:#e0eeff}
+html[data-theme=dark] .subject-learning-strip p{color:#afc7e3}
+html[data-theme=dark] .subject-learning-strip>span{color:#9dcaff}
+html[data-theme=dark] .lesson-panel{background:#142236;border-color:#304969}
+html[data-theme=dark] .lesson-panel .lesson-concept{color:#d1e1f5}
+html[data-theme=dark] .lesson-panel .lesson-example{background:linear-gradient(110deg,#1a3353,#213856);border-color:#3c5e87}
+html[data-theme=dark] .lesson-example-head h2{color:#d2e7ff}
+html[data-theme=dark] .example-progress{background:#2a4e74;color:#d7e9ff}
+html[data-theme=dark] .lesson-panel .lesson-example li{color:#e1eeff}
+html[data-theme=dark] .lesson-step-index{color:#7cb0ff}
+html[data-theme=dark] .example-button{background:#294466;color:#d8e9ff;border-color:#496b90}
+html[data-theme=dark] .example-button.primary{background:#3168c3;color:#fff;border-color:#468be4}
+html[data-theme=dark] .lesson-panel .lesson-preflight{background:linear-gradient(130deg,#163b33,#244d42);border-color:#397861;color:#dbf5e8}
+html[data-theme=dark] .lesson-panel .lesson-preflight h3{color:#edfff4}
+html[data-theme=dark] .lesson-panel .lesson-kicker{color:#96e6c6}
+html[data-theme=dark] .lesson-preflight-foot span{background:#2a5b4b;color:#c9f5e3}
+html[data-theme=dark] .lesson-matrix-values span{background:#2c4968;color:#eff8ff;border-color:#4b719a}
+html[data-theme=dark] .lesson-step-visual p{color:#c2d8ee}
+html[data-theme=dark] .mission-coach{color:#b0c7df}
+@media(max-width:1450px){.lab-workspace{grid-template-columns:1fr}.lab-workspace .mission-panel{position:static}.lab-workspace .mission-actions{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:880px){.lesson-grid{grid-template-columns:1fr}.lesson-panel .lesson-preflight{min-height:0}.subject-learning-strip{align-items:start;flex-direction:column;gap:5px}.lab-workspace{display:flex;flex-direction:column}.lab-workspace .mission-panel{order:-1;width:100%}.lab-workspace .lab-shell{width:100%}}
+@media(max-width:570px){.lesson-panel{padding:16px}.lesson-panel .lesson-example{padding:14px}.lesson-example-head h2{font-size:14px}.lesson-panel .lesson-concept{font-size:14px}.lab-workspace .mission-actions{grid-template-columns:1fr}.lesson-panel .lesson-example li{font-size:12px}.example-button{font-size:10px;padding:8px}.head-statement{display:none}}
