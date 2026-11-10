@@ -27,7 +27,7 @@ test('Gestión de proyectos: CPM, valor ganado y riesgos interactivos',async({pa
 test('Empresa: ingresos, punto muerto, caja y VAN calculados',async({page})=>{
  await navigate(page,'fem-1');await expect(page.locator('#mg-out')).toContainText('Punto muerto');
  await page.locator('#price').evaluate(el=>{el.value='15';el.dispatchEvent(new Event('input',{bubbles:true}))});
- await expect(page.locator('#mg-out')).toContainText('margen unitario');
+ await expect(page.locator('#mg-out')).toContainText(/Margen unitario/i);
  await navigate(page,'fem-2');await expect(page.locator('#mg-viz tbody tr')).toHaveCount(12);
  await navigate(page,'fem-3');await expect(page.locator('#mg-out')).toContainText('VAN');
 });
