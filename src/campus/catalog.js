@@ -32,10 +32,8 @@ const original = [
   ["IGR","Informática gráfica y visualización",4,"guia","Geometría · Transformaciones · Imagen","graphics:Transformaciones 2D:Gráficos;calculus:Curvas y aproximaciones:Representación"],
   ["AAM","Aprendizaje automático y minería de datos",4,"guia","Clustering · Regresión · Evaluación","kmeans:Clustering K-means:No supervisado;regression:Regresión y error:Modelos supervisados"]
 ];
-const guide = 'https://www.universidadunipro.com/bachelor-en-ingenieria-informatica-B21.html';
-const names = {apuntes:'Basado en apuntes disponibles',guia:'Provisional según guía docente',alternativa:'Referencia de otro bachelor (provisional)'};
 export const SUBJECTS = original.map(([id,name,year,source,topics,list])=>({
- id,name,year,source,sourceLabel:names[source],topics:topics.split(' · '),guide,
+ id,name,year,source,topics:topics.split(' · '),
  labs:[
   ...list.split(';').map((row,index)=>{const [type,title,topic]=row.split(':');return {id:id.toLowerCase()+'-'+(index+1),type,title,topic,description:'Práctica original e interactiva · '+topic,level:'Primeros pasos'}}),
   ...(EXTRA_LABS[id]||[]).map((lab,index)=>({...lab,id:id.toLowerCase()+'-'+(list.split(';').length+index+1),description:lab.challenge,level:'Practicar'}))
