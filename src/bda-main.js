@@ -1,12 +1,12 @@
 import './styles.css';
 import {mountThemeToggle} from './theme.js';
 import {SQL_TASKS,MONGO_TASKS,XML_TASKS,SAMPLE_XML} from './challenges.js';
-import {runSQL,evaluateSQL,resetSQL} from './postgres.js';
-import {runMongo,evaluateMongo,mongoData} from './mongo.js';
+import {runSQL,evaluateSQL,resetSQL,SQL_DATA_COUNTS} from './postgres.js';
+import {runMongo,evaluateMongo,mongoData,MONGO_DATA_COUNT} from './mongo.js';
 import {executeXPath,evaluateXPath} from './xml.js';
 import {RedisSim} from './redis.js';
 import {BankSim} from './transactions.js';
-import {rollup,segments,distributed} from './analytics.js';
+import {rollup,segments,distributed,PURCHASE_COUNT} from './analytics.js';
 
 const MODULES=[
  {id:'sql',icon:'⌘',name:'SQL / PostgreSQL',subtitle:'Consultas reales · Tema 9',label:'Motor real'},
@@ -55,7 +55,7 @@ function renderSQL(plan=false){
   $('#code').value='EXPLAIN SELECT * FROM pedidos WHERE importe > 100;';
   $('#help').textContent='Una tabla pequeña puede requerir Seq Scan incluso con índices. EXPLAIN muestra estimaciones; no simula una carga masiva.';
  }else{
-  const onSelect=index=>{state.task.sql=index;const x=SQL_TASKS[index];$('#exercise-title').textContent=x.label+' · '+x.topic;$('#goal').textContent=x.goal;$('#code').value=x.starter;$('#help').textContent=x.hint;$('#results').textContent='Ejecuta la consulta o comprueba la solución.';status('');pickTasks(SQL_TASKS,index,onSelect)};
+  const onSelect=index=>{state.task.sql=index;const x=SQL_TASKS[index];$('#exercise-title').textContent=x.label+' · '+x.topic;$('#goal').textContent=x.goal;$('#code').value=x.starter;$('#help').textContent=x.hint+' · Datos: '+SQL_DATA_COUNTS.clientes+' clientes, '+SQL_DATA_COUNTS.pedidos+' pedidos, '+SQL_DATA_COUNTS.productos+' productos y '+SQL_DATA_COUNTS.ventas+' ventas ficticias.';$('#results').textContent='Ejecuta la consulta o comprueba la solución.';status('');pickTasks(SQL_TASKS,index,onSelect)};
   onSelect(state.task.sql);
  }
  const run=async(grade=false)=>{const code=$('#code').value;const b=$('#buttons');b.querySelectorAll('button').forEach(x=>x.disabled=true);status('Cargando PostgreSQL / ejecutando…');
@@ -68,7 +68,7 @@ function renderSQL(plan=false){
 }
 function renderMongo(){
  editUI({title:'MongoDB · Documentos',description:'Practica consultas de estilo MongoDB sobre una colección JSON ficticia. Es un intérprete parcial, no un servidor MongoDB real.'});
- const select=index=>{state.task.mongo=index;const task=MONGO_TASKS[index];$('#exercise-title').textContent=task.label;$('#goal').textContent=task.goal;$('#code').value=task.starter;$('#help').textContent=task.hint+' Colección clientes: '+JSON.stringify(mongoData()[0]);status('');$('#results').textContent='Ejecuta una consulta.';pickTasks(MONGO_TASKS,index,select)};select(state.task.mongo);
+ const select=index=>{state.task.mongo=index;const task=MONGO_TASKS[index];$('#exercise-title').textContent=task.label;$('#goal').textContent=task.goal;$('#code').value=task.starter;$('#help').textContent=task.hint+' Colección: '+MONGO_DATA_COUNT.toLocaleString('es-ES')+' documentos ficticios. Ejemplo: '+JSON.stringify(mongoData()[0]);status('');$('#results').textContent='Ejecuta una consulta.';pickTasks(MONGO_TASKS,index,select)};select(state.task.mongo);
  const execute=grade=>{try{const q=$('#code').value;const result=runMongo(q);output($('#results'),result);const pass=grade?evaluateMongo(q,MONGO_TASKS[state.task.mongo].id):null;status(grade?(pass?'✓ Resultado correcto':'Revisa el filtro, la proyección o la agrupación'):'Consulta interpretada: '+result.length+' documentos',grade?(pass?'good':'warn'):'good')}catch(e){status(e.message,'bad')}};
  $('#buttons').append(createButton('▶ Ejecutar',()=>execute(false)),createButton('✓ Comprobar',()=>execute(true),'btn secondary'));
 }
@@ -99,11 +99,11 @@ function renderTransactions(){
  $('#buttons').append(createButton('↻ Reiniciar',()=>{state.bank.reset();update()},'btn secondary'));update();
 }
 function renderAnalytics(){
- $('#main').innerHTML=heading('OLAP y minería de datos','Explora un conjunto de ventas ficticias y segmenta clientes. Las agregaciones se calculan; los segmentos usan umbrales didácticos.', 'Práctica local')+'<section class="panel"><h2>Ventas por dimensión</h2><label for="dimension" class="muted">Agrupar por</label> <select class="field" id="dimension"><option value="categoria">Categoría</option><option value="region">Región</option><option value="mes">Mes</option><option value="cliente">Cliente</option></select><div id="olap-table"></div></section><section class="panel"><h2>Segmentación de clientes</h2><p class="muted">Clasificación por umbrales de gasto, no algoritmo K-Means. Sirve para distinguir agrupación de clasificación.</p><div id="segment-table"></div></section>';
+ $('#main').innerHTML=heading('OLAP y minería de datos','Explora '+PURCHASE_COUNT.toLocaleString('es-ES')+' ventas ficticias y segmenta clientes. Las agregaciones se calculan; los segmentos usan umbrales didácticos.', 'Práctica local')+'<section class="panel"><h2>Ventas por dimensión</h2><label for="dimension" class="muted">Agrupar por</label> <select class="field" id="dimension"><option value="categoria">Categoría</option><option value="region">Región</option><option value="mes">Mes</option><option value="cliente">Cliente</option></select><div id="olap-table"></div></section><section class="panel"><h2>Segmentación de clientes</h2><p class="muted">Clasificación por umbrales de gasto, no algoritmo K-Means. Sirve para distinguir agrupación de clasificación.</p><div id="segment-table"></div></section>';
  const render=()=>output($('#olap-table'),rollup($('#dimension').value));$('#dimension').onchange=render;render();output($('#segment-table'),segments());
 }
 function renderDistributed(){
- $('#main').innerHTML=heading('Consultas distribuidas','Compara cuánto se transferiría por red si filtramos los datos en origen o después de traerlos. Es una simulación.', 'Simulador')+'<section class="panel"><h2>Selección por región</h2><div class="row"><label for="region">Región</label><select class="field" id="region"><option>Centro</option><option>Sur</option><option>Este</option></select><label class="row"><input type="checkbox" checked id="pushdown">Aplicar filtro remoto (pushdown)</label></div><div id="distributed-info" style="margin-top:20px"></div></section><div class="pill warn">No hay clúster ni comunicación real. El número representa filas transferidas en el escenario propuesto.</div>';
+ $('#main').innerHTML=heading('Consultas distribuidas','Compara cuánto se transferiría por red sobre '+PURCHASE_COUNT.toLocaleString('es-ES')+' filas ficticias. Es una simulación.', 'Simulador')+'<section class="panel"><h2>Selección por región</h2><div class="row"><label for="region">Región</label><select class="field" id="region"><option>Centro</option><option>Sur</option><option>Este</option></select><label class="row"><input type="checkbox" checked id="pushdown">Aplicar filtro remoto (pushdown)</label></div><div id="distributed-info" style="margin-top:20px"></div></section><div class="pill warn">No hay clúster ni comunicación real. El número representa filas transferidas en el escenario propuesto.</div>';
  const show=()=>{const r=distributed({pushdown:$('#pushdown').checked,region:$('#region').value});output($('#distributed-info'),[r])};$('#pushdown').onchange=show;$('#region').onchange=show;show();
 }
 function render(){
