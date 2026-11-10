@@ -13,7 +13,7 @@ test('programación: editor vacío, pistas que completan código y traza real',a
  await page.locator('#flow-hint').click();await page.locator('#flow-hint').click();
  await expect(page.locator('#flow-hint-result p')).toHaveCount(3);
  await page.locator('#flow-insert').click();
- await expect(page.locator('#flow-code')).toContainText('for i in range');
+ await expect(page.locator('#flow-code')).toHaveValue(/for i in range/);
  await page.locator('#flow-run').click();
  await expect(page.locator('#lab-output')).toContainText('21');
  await page.locator('[data-range-for="max"]').fill('10');
@@ -27,7 +27,7 @@ test('OOP: código de método editable que modifica los resultados del objeto',a
  await expect(page.locator('#oop-hint-result')).toContainText('class Bicicleta');
  await page.locator('#oop-hint').click();await page.locator('#oop-hint').click();
  await page.locator('#oop-insert').click();
- await expect(page.locator('#oop-code')).toContainText('extends Vehiculo');
+ await expect(page.locator('#oop-code')).toHaveValue(/extends Vehiculo/);
  await page.locator('#oop-apply').click();
  await expect(page.locator('#lab-output')).toContainText('actualizado');
  await page.locator('#class').selectOption('Bicicleta');
