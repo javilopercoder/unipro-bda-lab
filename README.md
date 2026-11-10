@@ -1,45 +1,51 @@
-# UniPRO BDA Lab
+# UniPRO Lab · Campus interactivo
 
-Laboratorio interactivo de Bases de Datos Avanzadas, vinculado conceptualmente a UniPRO Quiz.
+**Proyecto no oficial de prácticas del Bachelor en Informática (UniPRO).**
 
-> **Estado: rama de desarrollo, sin publicar.** El repositorio es privado y no hay GitHub Pages activado.
+26 asignaturas técnicas, 53 laboratorios de interacción directa, sin cuestionarios tipo test ni calificaciones. Excluye el TFG y materias no técnicas. Las tres optativas técnicas están incluidas, sujetas a oferta académica.
 
-## Tecnologías y experiencias
+## Arquitectura
 
-- **SQL y PostgreSQL:** PGlite ejecuta SQL real en el navegador. Nueve retos de lectura, JOIN, GROUP BY, HAVING, CTE, funciones ventana, Data Warehouse e interpretación de EXPLAIN.
-- **MongoDB (simulador):** filtrar documentos, proyectar campos y agregar datos. Admite un subconjunto limitado de operaciones, no un servidor MongoDB real.
-- **XML/XPath (real):** edición de XML y consulta XPath del navegador. No valida DTD ni XSD.
-- **Redis (simulador):** SET, GET, DEL, INCR, EXPIRE, TTL y otros comandos clave-valor.
-- **Transacciones (simulador):** BEGIN, SAVEPOINT, transferencias, ROLLBACK, COMMIT y fallo simulado.
-- **Planes de ejecución:** EXPLAIN real de PostgreSQL sobre un dataset pequeño.
-- **OLAP y minería:** agrupaciones de ventas y segmentación por umbrales (no K-Means real).
-- **Bases distribuidas (simulador):** comparación pedagógica de filas transferidas con y sin filtrado en origen.
+- Portada: \`index.html\` → \`src/main.js\` → \`src/campus/*\`.
+- BDA original: \`bda.html\` → \`src/bda-main.js\` (se conserva el laboratorio anterior).
+- PostgreSQL: PGlite (WebAssembly) únicamente al abrir BDA.
+- Resto: motores locales JavaScript y SVG, sin cuentas, claves ni servidor de datos.
+- Progreso: localStorage del navegador. No se sincroniza entre dispositivos ni se envía a Google Sheets.
 
-La interfaz indica siempre qué es motor real y qué es simulación didáctica. Las prácticas utilizan datos inventados; **no acceden a las preguntas de Google Sheets ni a los apuntes privados**.
+## Qué se puede practicar
 
-## Desarrollo
+Álgebra (matrices, lógica), tecnología (ALU, jerarquía de caché), física (circuitos y campos), programación (trazas, estructuras, objetos y concurrencia), cálculo (derivadas, integrales, bisección), estadística (muestreo y Monte Carlo), UX (Fitts y accesibilidad), algoritmos (ordenación, BFS y Dijkstra), sistemas operativos (planificación, memoria, sistema de archivos virtual), redes (subredes y latencia), IA (reglas y búsqueda), bases de datos (PGlite, consultas, XML, documento, OLAP y datos sintéticos), requisitos (trazabilidad), ingeniería (Kanban y CI/CD), seguridad (SHA-256 y permisos), visualización (transformaciones 2D) y aprendizaje automático (K-means, regresión).
 
-Necesitas Node.js 22 o superior.
+Todas las simulaciones sin infraestructura real se identifican como tales. Los ejercicios son originales. Los documentos privados de Drive no se han copiado al código.
+
+### Base académica
+
+Plan del Bachelor: https://www.universidadunipro.com/bachelor-en-ingenieria-informatica-B21.html
+
+Para las materias con apuntes disponibles en el proyecto se han usado sus áreas temáticas verificadas; para las demás, la guía pública orienta los ejemplos provisionales. Programación Avanzada utiliza como referencia provisional una guía de otro bachelor: https://cms.unir.net/upbcida10_programacion_avanzada
+
+Estas prácticas no sustituyen el material oficial ni certifican el aprendizaje.
+
+## Desarrollar
+
+Node.js 22 o superior:
 
     npm install
     npm test
+    npm run build
     npm run dev
 
-Compilar:
+Las pruebas de navegador requieren Playwright:
 
-    npm run build
-    npm run preview
+    npx playwright install chromium
+    npm run test:e2e
 
-El build está diseñado para un servidor estático, pero no se ha activado ningún despliegue.
+El build produce \`dist/index.html\` (campus) y \`dist/bda.html\` (laboratorio BDA anterior). Vercel debe usar framework Vite, comando \`npm run build\` y directorio \`dist\`.
 
-## Privacidad y publicación
+## Privacidad y seguridad
 
-El repositorio privado **no garantiza que el sitio GitHub Pages sea privado**. Si se activa Pages, el contenido desplegado normalmente será público. No incluyas API keys, datos personales, soluciones privadas ni PDF originales en el repositorio.
+El repositorio puede ser privado, pero el sitio desplegado en Vercel será públicamente accesible salvo que se configure protección. No insertar información privada en el código ni en los datasets. Ningún formulario ejecuta shell real ni consulta datos de producción.
 
-## Integración prevista con UniPRO Quiz
+## Limitaciones
 
-Cuando la versión de prueba funcione y se decida alojarla, se añadirá un acceso desde BDA → Entrenar. No hemos modificado todavía V7.4.4 de Apps Script ni su hoja de datos.
-
-## Limitaciones importantes
-
-La corrección SQL compara filas y columnas del resultado en una base de datos pequeña; no certifica rendimiento ni ausencia de trampas en cualquier SQL. Los intérpretes documentales y de Redis no sustituyen instancias reales. En XML solo se controla sintaxis bien formada y XPath. La recuperación WAL, la replicación y el paralelismo reales exigen infraestructura que no se implementa aquí.
+Los simuladores de procesos, red, criptografía aplicada, sistemas distribuidos, caché y minería son didácticos, no sustituyen sistemas reales. Estadísticas y modelos se basan en datos sintéticos. Un laboratorio se marca como practicado al interactuar con él; no implica haberlo dominado ni corregido.
