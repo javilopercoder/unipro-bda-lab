@@ -21,7 +21,8 @@ export function checkMission(requirementText,root,events){
   const actual=field.type==='checkbox'?String(field.checked):String(field.value);
   const ok=actual===expected||(actual!==''&&Number.isFinite(Number(actual))&&Number.isFinite(Number(expected))&&Number(actual)===Number(expected));
   const changed=events['input:'+key]||0;
-  return{ok:ok&&changed>0,text:key+': '+actual+(ok&&changed>0?' ✓':' (objetivo: '+expected+'; cambia el control)')};
+  const practiced=changed>0||(events.button||0)>0;
+  return{ok:ok&&practiced,text:key+': '+actual+(ok&&practiced?' ✓':' (objetivo: '+expected+'; interactúa con la práctica)')};
  });
  return{ok:details.every(x=>x.ok),details:details.map(x=>x.text)};
 }
@@ -41,11 +42,12 @@ export function missionMarkup(lab){
 }
 export function mountMission(root,lab,complete){
  const lesson=lessonFor(lab),hintBox=document.querySelector('#mission-hints'),feedback=document.querySelector('#mission-feedback');
- const events=Object.create(null);let hintCount=0;
+ const events=Object.create(null);const touchedFields=new Set();let hintCount=0;
  const increment=name=>{events[name]=(events[name]||0)+1};
  const recordInput=ev=>{
   if(!ev.isTrusted)return;
-  increment('input');
+  const id=ev.target.id||'(sin-id)';
+  if(!touchedFields.has(id)){touchedFields.add(id);increment('input')}
   if(ev.target.id)increment('input:'+ev.target.id);
  };
  const recordClick=ev=>{
