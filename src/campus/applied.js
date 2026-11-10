@@ -4,7 +4,7 @@ const $=(root,selector)=>selector===undefined?document.querySelector(root):root.
 const val=(root,selector)=>Number($(root,selector).value);
 const esc=x=>String(x).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
 const fmt=(x,p=2)=>Number(x).toFixed(p);
-const slider=(id,label,min,max,v,step=1)=>'<label class="control">'+label+' <b>'+v+'</b><input id="'+id+'" type="range" min="'+min+'" max="'+max+'" step="'+step+'" value="'+v+'"></label>';
+const slider=(id,label,min,max,v,step=1)=>'<label class="control">'+label+' <b data-value="'+id+'">'+v+'</b><input id="'+id+'" type="range" min="'+min+'" max="'+max+'" step="'+step+'" value="'+v+'"></label>';
 const btn=(id,label)=>'<button class="btn" type="button" id="'+id+'">'+label+'</button>';
 const intro=(root,text,controls='')=>{root.innerHTML='<p class="lab-intro">'+text+'</p><div class="controls">'+controls+'</div><div class="output-card" id="lab-output"></div><div class="visual-card" id="lab-viz"></div>';return {out:$('#lab-output'),viz:$('#lab-viz')}};
 function table(data){if(!data.length)return'<p>Sin filas</p>';const names=Object.keys(data[0]);return '<div class="scroll-table"><table><thead><tr>'+names.map(k=>'<th>'+esc(k)+'</th>').join('')+'</tr></thead><tbody>'+data.slice(0,100).map(x=>'<tr>'+names.map(k=>'<td>'+esc(x[k])+'</td>').join('')+'</tr>').join('')+'</tbody></table></div>'}

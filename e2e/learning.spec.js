@@ -2,7 +2,7 @@ import {test,expect} from '@playwright/test';
 
 test('una persona sin conocimientos encuentra concepto, ejemplo y misión',async({page})=>{
  await page.goto('/#/practica/amd-1');
- await expect(page.getByRole('heading',{name:/Primero, entiende lo que estás haciendo/})).toBeVisible();
+ await expect(page.getByRole('heading',{name:/Así funciona. Mira este ejemplo/})).toBeVisible();
  await expect(page.locator('.lesson-example li')).toHaveCount(3);
  await expect(page.locator('.mission-challenge')).not.toBeEmpty();
  await expect(page.locator('#mission-hints')).toBeEmpty();
@@ -60,7 +60,7 @@ test('el BDA mantiene su motor e incorpora explicaciones en todos los modos',asy
  }
  await page.goto('/#/practica/bda-4');
  await expect(page.locator('.lesson-example li')).toHaveCount(3);
- await expect(page.getByRole('link',{name:/Abrir MongoDB/})).toHaveAttribute('href','./bda.html#mongo');
+ await expect(page.locator('.bda-bridge a.primary-button')).toHaveAttribute('href','./bda.html#mongo');
 });
 
 test('180 prácticas: modo oscuro legible en ejemplos y objetivos',async({page})=>{

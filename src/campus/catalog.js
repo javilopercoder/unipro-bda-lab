@@ -32,10 +32,8 @@ const original = [
   ["IGR","Informática gráfica y visualización",4,"guia","Geometría · Transformaciones · Imagen","graphics:Transformaciones 2D:Gráficos;calculus:Curvas y aproximaciones:Representación"],
   ["AAM","Aprendizaje automático y minería de datos",4,"guia","Clustering · Regresión · Evaluación","kmeans:Clustering K-means:No supervisado;regression:Regresión y error:Modelos supervisados"]
 ];
-const guide = 'https://www.universidadunipro.com/bachelor-en-ingenieria-informatica-B21.html';
-const names = {apuntes:'Basado en apuntes disponibles',guia:'Provisional según guía docente',alternativa:'Referencia de otro bachelor (provisional)'};
 export const SUBJECTS = original.map(([id,name,year,source,topics,list])=>({
- id,name,year,source,sourceLabel:names[source],topics:topics.split(' · '),guide,
+ id,name,year,source,topics:topics.split(' · '),
  labs:[
   ...list.split(';').map((row,index)=>{const [type,title,topic]=row.split(':');return {id:id.toLowerCase()+'-'+(index+1),type,title,topic,description:'Práctica original e interactiva · '+topic,level:'Primeros pasos'}}),
   ...(EXTRA_LABS[id]||[]).map((lab,index)=>({...lab,id:id.toLowerCase()+'-'+(list.split(';').length+index+1),description:lab.challenge,level:'Practicar'}))
@@ -43,7 +41,7 @@ export const SUBJECTS = original.map(([id,name,year,source,topics,list])=>({
 }));
 export const YEARS = [{id:1,label:'Primer curso'},{id:2,label:'Segundo curso'},{id:3,label:'Tercer curso'},{id:4,label:'Optativas'}];
 export const TOTAL_LABS=SUBJECTS.reduce((sum,s)=>sum+s.labs.length,0);
-// La hoja de UniPRO Quiz usa otros códigos en siete materias. Conservar las rutas antiguas evita perder enlaces y progreso.
+// Compatibilidad con identificadores previos: conservar rutas para que sigan funcionando los enlaces compartidos y el progreso.
 export const QUIZ_CODE_ALIASES=Object.freeze({FPR:'FPG',AYC:'ALC',EDD:'EDA',PRA:'PAD',EDC:'ESC',IGV:'IGR',AMD2:'AAM'});
 export const quizToLabSubject=id=>QUIZ_CODE_ALIASES[id]||id;
 export const getSubject=(id)=>SUBJECTS.find(s=>s.id===quizToLabSubject(id));

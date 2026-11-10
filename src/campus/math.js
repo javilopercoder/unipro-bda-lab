@@ -1,3 +1,4 @@
+import {renderMatrix} from './matrix-lab.js';
 // Simulaciones numéricas originales. Nada se evalúa mediante eval() ni Function().
 const $=(root,selector)=>selector===undefined?document.querySelector(root):root.querySelector(selector);
 const num=(r,s)=>Number($(r,s).value);
@@ -10,11 +11,7 @@ const button=(id,label)=>'<button type="button" id="'+id+'" class="btn">'+label+
 const htm=(x)=>String(x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 export function renderMath(root,lab,complete){
  const t=lab.type;
- if(t==='matrix'){
- const {out,viz}=shell(root,'Edita una matriz de 3×3. Calcula el determinante por Sarrus y comprueba cómo cambia al modificar una celda.',button('random','Generar matriz nueva'));
- let state=0;const draw=()=>{const M=[];for(let i=0;i<9;i++)M.push(Number(root.querySelector('#m'+i)?.value||0));const [a,b,c,d,e,f,g,h,i]=M;const positive=a*e*i+b*f*g+c*d*h,negative=c*e*g+b*d*i+a*f*h;out.innerHTML='<strong>Determinante: '+(positive-negative)+'</strong><p>Diagonales descendentes: '+positive+' · ascendentes: '+negative+'</p><p>det(A) = '+positive+' − ('+negative+') = '+(positive-negative)+'</p>';};
- const generate=()=>{state++;viz.innerHTML='<div class="matrix-grid">'+Array.from({length:9},(_,i)=>'<input aria-label="fila '+(Math.floor(i/3)+1)+' columna '+(i%3+1)+'" id="m'+i+'" type="number" value="'+(((i*7+state*3)%11)-5)+'"></input>').join('')+'</div>';viz.querySelectorAll('input').forEach(el=>el.oninput=draw);draw()};root.querySelector('#random').onclick=()=>{generate();complete()};generate();return;
- }
+ if(t==='matrix')return renderMatrix(root);
  if(t==='logic'){
  const {out,viz}=shell(root,'Cambia las entradas de la ALU y elige una puerta lógica. Se recalcula la tabla de verdad.',select('op','Operación',[['AND','AND'],['OR','OR'],['XOR','XOR'],['NAND','NAND'],['NOT','NOT A'],['ADD','Suma 8 bits']])+slider('a','A (0–255)',0,255,5)+slider('b','B (0–255)',0,255,3));
  const update=()=>{const A=num(root,'#a'),B=num(root,'#b'),op=$('#op').value;let val=op==='AND'?(A&B):op==='OR'?(A|B):op==='XOR'?(A^B):op==='NAND'?((~(A&B))&255):op==='NOT'?((~A)&255):((A+B)&255);out.innerHTML='<strong>Resultado decimal: '+val+'</strong><p>Resultado binario de 8 bits: <code>'+val.toString(2).padStart(8,'0')+'</code></p><p>A: '+A.toString(2).padStart(8,'0')+' · B: '+B.toString(2).padStart(8,'0')+'</p>';viz.innerHTML='<div class="bit-row">'+val.toString(2).padStart(8,'0').split('').map(x=>'<span class="bit '+(x==='1'?'on':'')+'">'+x+'</span>').join('')+'</div>';complete()};
