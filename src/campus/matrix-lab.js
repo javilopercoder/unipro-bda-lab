@@ -60,7 +60,7 @@ export function renderMatrix(root){
     root.querySelector('#mx-next').textContent=step===5?'Volver al inicio ↻':'Siguiente diagonal →';
     const sumEquation=positive.map(p=>p.value).join(' + '),minusEquation=negative.map(p=>p.value).join(' + ');
     const result=root.querySelector('#lab-output');
-    result.innerHTML='<div class="mx-result-main"><div><span>DETERMINANTE</span><strong id="mx-determinant">'+determinant+'</strong></div><div class="mx-result-status '+(determinant===0?'mx-singular':'mx-invertible')+'">'+(determinant===0?'⚠ Sin inversa':'✓ Tiene inversa')+'</div></div>'+
+    result.innerHTML='<div class="mx-result-main"><div><span>Determinante</span><strong id="mx-determinant">'+determinant+'</strong></div><div class="mx-result-status '+(determinant===0?'mx-singular':'mx-invertible')+'">'+(determinant===0?'⚠ Sin inversa':'✓ Tiene inversa')+'</div></div>'+
       '<div class="mx-formula"><div class="mx-formula-line"><span class="mx-positive-tag">↘ Suman</span><code>'+escapeHTML(sumEquation)+' = '+sumDown+'</code></div><div class="mx-formula-line"><span class="mx-negative-tag">↗ Restan</span><code>'+escapeHTML(minusEquation)+' = '+sumUp+'</code></div></div>'+
       '<p class="mx-formula-final">det(A) = '+sumDown+' − ('+sumUp+') = <strong>'+determinant+'</strong></p>';
   };
