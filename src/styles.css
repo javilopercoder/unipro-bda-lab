@@ -78,3 +78,45 @@ html[data-theme=dark] .bda-guide-example li{color:#deebfa}
 html[data-theme=dark] #bda-guide-counter{background:#30516c;color:#d9ecff}
 html[data-theme=dark] .bda-guide-example li b{color:#a1ceff}
 @media(max-width:680px){.bda-guide{padding:14px}.bda-example-nav{justify-content:space-between}.bda-example-nav button{min-width:105px}}
+
+
+/* Editores libres con consola integrada y ayuda por fragmentos. */
+.code-workbench{overflow:hidden}
+.code-workbench .code-console{border:1px solid #273e60;border-radius:15px;overflow:hidden;background:#0b1628}
+.code-console-bar{display:flex;align-items:center;gap:13px;background:#192842;border-bottom:1px solid #33486a;padding:11px 14px;color:#aac4df;font-size:11px;letter-spacing:.04em}
+.code-console-dots{display:flex;gap:6px}.code-console-dots i{height:9px;width:9px;border-radius:50%;background:#ff6b75}.code-console-dots i:nth-child(2){background:#f5c969}.code-console-dots i:nth-child(3){background:#5dd7a4}
+.code-console-local{margin-left:auto;color:#6fe0b8;font-size:10px}
+.code-workbench textarea#code{display:block;background:#0b1628;color:#e5f0fe;border:0;outline:0;border-radius:0;min-height:210px;margin:0;width:100%;padding:20px 18px;resize:vertical;box-shadow:none;font-size:13px;font-family:"JetBrains Mono",ui-monospace,monospace;line-height:1.65;tab-size:2;caret-color:#9df0c3}
+.code-workbench textarea#code:focus{background:#0d1b31}
+.code-workbench textarea#code::placeholder{color:#627e9d}
+.code-workbench textarea#code:focus-visible{outline:2px solid #4d93e5;outline-offset:-3px}
+.editor-hotkey{font-size:11px;color:#7385a0;margin:8px 2px 3px}
+.code-side-guide{background:linear-gradient(145deg,#fff,#f7faff)}
+.code-help{margin-top:18px;border-top:1px solid #e1e9f6;padding-top:16px}
+.code-help-head{display:flex;gap:12px;align-items:center;justify-content:space-between;color:#3c618f;font-size:10px;font-weight:850;letter-spacing:.08em}
+.code-help-counter{padding:4px 8px;border-radius:8px;background:#e6f1ff;color:#376eb7}
+.code-help-actions{display:flex;flex-wrap:wrap;gap:7px;margin:11px 0}
+.code-help-actions button{padding:9px 11px;border-radius:9px;border:1px solid #cadcf2;color:#315d9e;background:#eff5ff;font-size:11px;font-weight:750;cursor:pointer}
+.code-help-actions button:first-child{background:#2568db;color:#fff;border-color:#2568db}
+.code-help-actions button:hover{filter:brightness(.95)}
+.code-help-actions button:disabled{opacity:.5;cursor:default}
+.code-help-content{font-size:12px;line-height:1.65;color:#657b98}
+.code-help-content p{margin:7px 0}
+.code-help-snippet{background:#101c31;color:#b8ffcf;border:1px solid #324c68;border-radius:10px;padding:13px;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere;font:12px/1.7 "JetBrains Mono",ui-monospace,monospace}
+.code-help-note{color:#8b5d24;background:#fff2d9;padding:9px;border-radius:8px}
+.redis-console-scroll{min-height:230px;max-height:490px;overflow:auto;padding:19px 17px 24px;color:#c8dbf0;font:12px/1.75 "JetBrains Mono",ui-monospace,monospace;scrollbar-color:#597899 #0b1628}
+#redis-transcript{white-space:pre-wrap;overflow-wrap:anywhere;font:inherit;margin:0;color:#a5deeb}
+.redis-line{margin-bottom:5px}
+.redis-prompt{display:flex;align-items:center;gap:10px;min-width:0}
+.redis-prompt span{white-space:nowrap;flex:none;color:#78efb5;font-weight:750}
+.redis-prompt input,.redis-prompt input:focus{min-height:28px;padding:2px 0;border:0!important;outline:0!important;box-shadow:none!important;background:transparent!important;color:#f9fdff!important;caret-color:#81efb1;font:inherit;min-width:0;width:100%}
+.redis-prompt input::placeholder{color:#637e9b}
+html[data-theme=dark] .code-side-guide{background:#15253d}
+html[data-theme=dark] .code-help{border-color:#395371}
+html[data-theme=dark] .code-help-head{color:#b4d5fa}
+html[data-theme=dark] .code-help-counter{background:#2a4e75;color:#d1e8ff}
+html[data-theme=dark] .code-help-actions button{background:#233e5c;color:#e0edff;border-color:#3c6388}
+html[data-theme=dark] .code-help-actions button:first-child{background:#376fcc;border-color:#376fcc}
+html[data-theme=dark] .code-help-content{color:#bdd0e7}
+html[data-theme=dark] .editor-hotkey{color:#b7c7dd}
+@media(max-width:690px){.code-workbench textarea#code{font-size:12px;min-height:165px;padding:15px}.redis-console-scroll{padding:14px 11px}.redis-prompt{gap:6px}.redis-prompt span{font-size:10px}}
