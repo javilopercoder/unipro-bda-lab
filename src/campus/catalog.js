@@ -1,3 +1,4 @@
+import {EXTRA_LABS} from './curriculum.js';
 // Catálogo público de laboratorios originales. No contiene temarios privados.
 const original = [
   ["AMD","Álgebra y matemática discreta",1,"apuntes","Lógica · Conjuntos · Matrices · Sistemas lineales","matrix:Operar con matrices:Tema 6;logic:Laboratorio de lógica:Tema 1;graph:Rutas y grafos:Ampliación práctica"],
@@ -35,7 +36,10 @@ const guide = 'https://www.universidadunipro.com/bachelor-en-ingenieria-informat
 const names = {apuntes:'Basado en apuntes disponibles',guia:'Provisional según guía docente',alternativa:'Referencia de otro bachelor (provisional)'};
 export const SUBJECTS = original.map(([id,name,year,source,topics,list])=>({
  id,name,year,source,sourceLabel:names[source],topics:topics.split(' · '),guide,
- labs:list.split(';').map((row,index)=>{const [type,title,topic]=row.split(':');return {id:id.toLowerCase()+'-'+(index+1),type,title,topic,description:'Práctica original e interactiva · '+topic}})
+ labs:[
+  ...list.split(';').map((row,index)=>{const [type,title,topic]=row.split(':');return {id:id.toLowerCase()+'-'+(index+1),type,title,topic,description:'Práctica original e interactiva · '+topic,level:'Primeros pasos'}}),
+  ...(EXTRA_LABS[id]||[]).map((lab,index)=>({...lab,id:id.toLowerCase()+'-'+(list.split(';').length+index+1),description:lab.challenge,level:'Practicar'}))
+ ]
 }));
 export const YEARS = [{id:1,label:'Primer curso'},{id:2,label:'Segundo curso'},{id:3,label:'Tercer curso'},{id:4,label:'Optativas'}];
 export const TOTAL_LABS=SUBJECTS.reduce((sum,s)=>sum+s.labs.length,0);
