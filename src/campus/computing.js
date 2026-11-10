@@ -87,7 +87,32 @@ export function renderComputing(root,lab){
  let step=0,total=0;const draw=()=>{$out.innerHTML='<strong>Iteración '+step+' · suma acumulada '+total+'</strong><p>Algoritmo: suma de los enteros de 1 a N; resultado esperado = N(N+1)/2.</p>';$viz.innerHTML='<pre class="code-block">suma = 0\npara i desde 1 hasta '+n(root,'#max')+':\n    suma = suma + i\nimprimir(suma)</pre>'};$('#next').onclick=()=>{if(step<n(root,'#max')){step++;total+=step}draw()};$('#reset').onclick=()=>{step=0;total=0;draw()};$('#max').oninput=()=>{step=0;total=0;draw()};draw();return;
  }
  if(t==='terminal'){
- const { $out,$viz }=base(root,'Sistema de archivos ficticio en memoria. Los comandos no ejecutan una terminal real. Crea, lee, copia y mueve archivos sin riesgo.', '<label class="control terminal-input">Comando <input id="command" autocomplete="off" value="help"></label>'+action('run','Ejecutar')+action('clear','Reiniciar'));
+ // El campo se encuentra DENTRO de la consola, junto al prompt, como en una terminal.
+ root.innerHTML='<section class="terminal-workspace"><div class="terminal-window" role="group" aria-label="Terminal interactiva de archivos">'+
+ '<div class="terminal-window-title"><span class="terminal-dots" aria-hidden="true"><i></i><i></i><i></i></span><span>Terminal · práctica libre</span><span class="terminal-local">Local · simulada</span></div>'+
+ '<div class="terminal-scroll" id="terminal-scroll"><pre id="terminal-log" class="terminal-log" aria-live="polite"></pre>'+
+ '<label class="terminal-prompt"><span id="terminal-cwd">alumno@lab:~$</span><input id="command" autocomplete="off" spellcheck="false" aria-label="Comando de terminal, pulsa Intro para ejecutar" placeholder="Escribe un comando…" /></label></div></div>'+
+ '<div class="terminal-toolbar"><button type="button" id="run" class="btn">Ejecutar ↵</button><button type="button" id="clear" class="btn secondary">Reiniciar archivos</button><span>Intro para ejecutar · ↑ ↓ historial · <code>help</code> para comandos</span></div>'+
+ '<section class="terminal-coach"><div class="terminal-coach-title"><b>¿Con qué empiezo?</b><span id="terminal-hint-count">0/4</span></div>'+
+ '<p id="terminal-hint" aria-live="polite">Puedes escribir cualquier comando admitido, incluso aunque no corresponda a la misión.</p>'+
+ '<div class="terminal-coach-actions"><button type="button" id="terminal-hint-next" class="btn secondary">💡 Mostrar una pista</button><button type="button" id="terminal-hint-insert" class="btn secondary" hidden>Completar parte del comando</button></div></section></section>';
+ const $=selector=>root.querySelector(selector);
+ const commandInput=$('#command');
+ const history=[];let historyIndex=0,hintIndex=0;
+ const recipes={
+ 'soa-2':['mkdir ejercicios','touch ejercicios/notas.txt','write ejercicios/notas.txt hola','cat ejercicios/notas.txt'],
+ 'soa-6':['mkdir proyecto','touch proyecto/notas.txt','ls proyecto','cat proyecto/notas.txt'],
+ 'soa-4':['pwd','ls','cd home','pwd'],
+ 'soa-5':['ls','mkdir informes','touch informes/resumen.txt','tree'],
+ };
+ const recipe=recipes[lab.id]||['pwd','ls','mkdir pruebas','tree'];
+ const hints=[
+  {hint:'Empieza mirando dónde estás. En una terminal suele hacerse con un comando de tres letras.',snippet:recipe[0].split(' ')[0]},
+  {hint:'Puedes pedir ayuda escribiendo «help». Un comando se escribe seguido de argumentos separados por espacios.',snippet:recipe[0]},
+  {hint:'Después de crear una carpeta con mkdir, «touch» crea un archivo vacío. Usa rutas relativas para practicar.',snippet:recipe[1]||recipe[0]},
+  {hint:'Esta es una posible secuencia para explorar archivos. Puedes escribir otros comandos y crear rutas diferentes.',snippet:recipe.join('\n')}
+ ];
+
  const initialTree={type:'dir',children:{home:{type:'dir',children:{alumno:{type:'dir',children:{'leeme.txt':{type:'file',data:'Bienvenido al laboratorio'}}}}}}};let tree=structuredClone(initialTree),cwd=['home','alumno'],log=[];
  const normPath=p=>{const path=p.startsWith('/')?[]:[...cwd];for(const seg of p.split('/')){if(!seg||seg==='.')continue;if(seg==='..')path.pop();else path.push(seg)}return path};
  const lookup=path=>path.reduce((x,name)=>x?.type==='dir'?x.children[name]:null,tree);
@@ -105,8 +130,49 @@ export function renderComputing(root,lab){
  if(op==='tree'){const list=(o,d=0)=>Object.entries(o.children||{}).map(([k,v])=>'  '.repeat(d)+k+(v.type==='dir'?'/\n'+list(v,d+1):'')).join('\n');return list(tree)}
  return'Comando no reconocido';
  };
- const draw=()=>{$out.innerHTML='<strong>alumno@lab:'+'/'+cwd.join('/')+'$</strong><p>Sin ejecución real en el sistema operativo.</p>';$viz.innerHTML='<pre class="code-block terminal-log">'+escape(log.join('\n'))+'</pre>'};
- $('#run').onclick=()=>{const input=$('#command').value;const result=command(input);log.push('$ '+input+'\n'+result);log=log.slice(-50);draw()};$('#command').onkeydown=e=>{if(e.key==='Enter')$('#run').click()};$('#clear').onclick=()=>{tree=structuredClone(initialTree);log=[];cwd=['home','alumno'];draw()};draw();return;
+ const draw=()=>{
+  $('#terminal-cwd').textContent='alumno@lab:/'+cwd.join('/')+'
+ }
+}
+export const COMPUTING_TYPES=new Set(['graph','sorting','structures','scheduler','memory','network','packet','architecture','threads','flow','terminal']);
+export {shortest};
+;
+  $('#terminal-log').textContent=log.map(x=>x.command+'\n'+x.result).join('\n\n');
+  const scroller=$('#terminal-scroll');scroller.scrollTop=scroller.scrollHeight;
+ };
+ const run=()=>{
+  const input=commandInput.value.trim();
+  if(!input){commandInput.focus();return}
+  const result=command(input);
+  log.push({command:'alumno@lab:/'+cwd.join('/')+'$ '+input,result:result||'(sin salida)'});
+  log=log.slice(-70);
+  history.push(input);historyIndex=history.length;commandInput.value='';draw();commandInput.focus();
+ };
+ $('#run').onclick=run;
+ commandInput.onkeydown=e=>{
+  if(e.key==='Enter'){e.preventDefault();run()}
+  else if(e.key==='ArrowUp'){e.preventDefault();historyIndex=Math.max(0,historyIndex-1);commandInput.value=history[historyIndex]||''}
+  else if(e.key==='ArrowDown'){e.preventDefault();historyIndex=Math.min(history.length,historyIndex+1);commandInput.value=history[historyIndex]||''}
+ };
+ $('#clear').onclick=()=>{tree=structuredClone(initialTree);log=[];cwd=['home','alumno'];historyIndex=history.length;commandInput.value='';draw();commandInput.focus()};
+ $('#terminal-hint-next').onclick=()=>{
+  if(hintIndex>=hints.length)return;
+  const h=hints[hintIndex++];
+  $('#terminal-hint-count').textContent=hintIndex+'/'+hints.length;
+  $('#terminal-hint').textContent=h.hint;
+  const snip=$('#terminal-hint-insert');snip.hidden=!h.snippet;snip.dataset.fragment=h.snippet;
+  snip.textContent=hintIndex===hints.length?'Ver secuencia completa en la entrada':'Insertar fragmento en la entrada';
+  $('#terminal-hint-next').disabled=hintIndex>=hints.length;
+ };
+ $('#terminal-hint-insert').onclick=()=>{
+  const fragment=$('#terminal-hint-insert').dataset.fragment||'';
+  // Una lista multilinea es una referencia. No la ejecutamos automáticamente.
+  const first=fragment.split('\n')[0];
+  if(commandInput.value.trim())commandInput.value+=' '+first;
+  else commandInput.value=first;
+  commandInput.focus();
+ };
+ draw();return;
  }
 }
 export const COMPUTING_TYPES=new Set(['graph','sorting','structures','scheduler','memory','network','packet','architecture','threads','flow','terminal']);
