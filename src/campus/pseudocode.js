@@ -86,7 +86,7 @@ export function renderFlowEditor(root){
    $('lab-output').innerHTML='<strong>'+(!steps.length?'Sin pasos':'Paso '+Math.min(position+1,steps.length)+' de '+steps.length)+'</strong><p>'+ (selected?.label||'Programa terminado') +' · iteraciones: '+iterationsDone+'</p><p>'+(printed&&executed.output.length?'Salida: '+executed.output.join(' · '):'Observa cómo cambian las variables en cada paso.')+'</p>';
    $('lab-viz').innerHTML='<div class="flow-variable-grid">'+rows+'</div><p class="subtle">La traza muestra el estado de las variables tras cada instrucción.</p>';
  };
- const evaluate=()=>{try{executed=runPseudocode(editor.value,Number($('max').value));position=0;display();return true}catch(e){executed=null;$('lab-output').innerHTML='<strong>Revisa el código</strong><p>'+e.message.replace(/[<>&]/g,'')+'</p>';$('lab-viz').textContent='El código no se ha ejecutado.';return false}};
+ const evaluate=()=>{try{executed=runPseudocode(editor.value,Number($('max').value));position=0;editor.dataset.changed='false';display();return true}catch(e){executed=null;$('lab-output').innerHTML='<strong>Revisa el código</strong><p>'+e.message.replace(/[<>&]/g,'')+'</p>';$('lab-viz').textContent='El código no se ha ejecutado.';return false}};
  $('next').onclick=()=>{
    if(!executed||$('flow-code').dataset.changed==='true'){if(!evaluate())return}
    else position=Math.min(position+1,Math.max(0,executed.trace.length-1));
