@@ -45,3 +45,30 @@ html[data-theme="dark"] .route-node{background:#254369;color:#d8eaff}
 html[data-theme="dark"] .terminal-card,html[data-theme="dark"] .code-block{background:#080f1d}
 html[data-theme="dark"] .visual-card svg{color:#cbd9eb}
 html[data-theme="dark"] footer{color:#a2afc3}
+
+
+/* Talleres transversales: cronograma, valor ganado, privacidad y finanzas. */
+.mg-bars{display:grid;gap:14px;margin:12px 0}
+.mg-bars>div{display:grid;grid-template-columns:132px minmax(0,1fr) 88px;align-items:center;gap:12px;font-size:12px;color:#61728e}
+.mg-bars i{display:block;height:15px;border-radius:5px;background:linear-gradient(90deg,#568ce6,#4dc6b5);max-width:100%;min-width:2px}
+.mg-bars b{font-variant-numeric:tabular-nums;text-align:right;font-size:11px;white-space:nowrap}
+.mg-notes{margin:0;padding-left:22px;line-height:1.85;color:#526987;font-size:13px}
+.mg-notes li{padding:3px 0}
+.mg-risk{display:grid;gap:9px}
+.mg-risk>div{display:grid;grid-template-columns:100px minmax(0,1fr) 80px;align-items:center;gap:9px;font-size:12px}
+.mg-risk i{display:block;height:15px;border-radius:5px;background:#799be0;min-width:3px}
+.mg-risk span{text-align:right}
+.gantt-timeline{min-width:170px;min-height:18px;background:#eef3fb;border-radius:6px;display:flex;align-items:stretch;overflow:hidden}
+.gantt-timeline>span{display:block;min-height:18px;background:#75a2df;border-radius:4px}
+.gantt-timeline>span.critical{background:#e58a63}
+.plan-days{width:70px;padding:8px;border:1px solid #d1dbe9;border-radius:8px;text-align:center}
+.plan-deps{width:85px;padding:8px;border:1px solid #d1dbe9;border-radius:8px}
+.control-check{align-items:center;flex-direction:row;gap:9px;min-width:210px}
+.control-check input{accent-color:#2665db}
+html[data-theme="dark"] .mg-notes{color:#c3d7ee}
+html[data-theme="dark"] .mg-bars>div{color:#c6d7e9}
+html[data-theme="dark"] .gantt-timeline{background:#243954}
+html[data-theme="dark"] .gantt-timeline>span{background:#5a8cda}
+html[data-theme="dark"] .gantt-timeline>span.critical{background:#dc9169}
+html[data-theme="dark"] .plan-days,html[data-theme="dark"] .plan-deps{background:#152841;color:#edf5ff;border-color:#496589}
+@media(max-width:700px){.mg-bars>div{grid-template-columns:80px minmax(0,1fr) 72px;gap:8px}.mg-risk>div{grid-template-columns:80px minmax(0,1fr) 65px}.mg-notes{padding-left:18px}.plan-deps{width:75px}}

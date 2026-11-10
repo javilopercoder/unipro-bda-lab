@@ -1,9 +1,9 @@
 import {test,expect} from '@playwright/test';
-test('portada con 26 asignaturas y acceso BDA',async({page})=>{
+test('portada con 30 asignaturas y acceso BDA',async({page})=>{
  const errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.goto('/');
  await expect(page.getByRole('heading',{name:/Aprende haciendo/})).toBeVisible();
- await expect(page.locator('.subject-card')).toHaveCount(26);
+ await expect(page.locator('.subject-card')).toHaveCount(30);
  await page.locator('a[href="#/asignatura/BDA"]').first().click();
  await expect(page.getByRole('heading',{name:'Bases de datos avanzadas'})).toBeVisible();
  await page.locator('a[href="#/practica/bda-1"]').click();

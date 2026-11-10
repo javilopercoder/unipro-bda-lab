@@ -4,6 +4,7 @@ import {SUBJECTS,YEARS,TOTAL_LABS,getSubject,getLab} from './campus/catalog.js';
 import {MATH_TYPES,renderMath} from './campus/math.js';
 import {COMPUTING_TYPES,renderComputing} from './campus/computing.js';
 import {APPLIED_TYPES,renderApplied} from './campus/applied.js';
+import {MANAGEMENT_TYPES,renderManagement} from './campus/management.js';
 const app=document.querySelector('#app'),KEY='unipro-lab-progress-v1';
 let progress={};try{progress=JSON.parse(localStorage.getItem(KEY)||'{}')||{}}catch{}
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(progress))}catch{}};
@@ -29,7 +30,7 @@ function renderLab(id){const lab=getLab(id);if(!lab){page().textContent='Laborat
  page().innerHTML=breadcrumbs+'<section class="lab-heading"><div><span class="eyebrow">'+subject.id+' · '+esc(lab.topic)+'</span><h1>'+esc(lab.title)+'</h1><p>Manipula los controles y observa qué cambia. Datos ficticios, sin enviar información a Sheets.</p></div><span class="tag" data-progress="'+lab.id+'">'+(progress[lab.id]?'✓ Practicado':'Sin practicar')+'</span></section><section class="lab-shell"><div id="lab-root"></div></section><div class="lab-footer"><a href="#/asignatura/'+subject.id+'">← Más laboratorios de esta asignatura</a><span>Práctica original, sin nota</span></div>';
  const root=document.querySelector('#lab-root');
  for(const event of ['click','input','change'])root.addEventListener(event,e=>{if(e.isTrusted&&(e.target.closest('button,input,select,textarea,svg')))mark(lab.id)});
- try{if(MATH_TYPES.has(lab.type))renderMath(root,lab,()=>{});else if(COMPUTING_TYPES.has(lab.type))renderComputing(root,lab);else if(APPLIED_TYPES.has(lab.type))renderApplied(root,lab);else root.textContent='Motor pendiente'}catch(err){console.error(err);root.textContent='No se pudo abrir el laboratorio: '+String(err.message||err)}
+ try{if(MATH_TYPES.has(lab.type))renderMath(root,lab,()=>{});else if(COMPUTING_TYPES.has(lab.type))renderComputing(root,lab);else if(APPLIED_TYPES.has(lab.type))renderApplied(root,lab);else if(MANAGEMENT_TYPES.has(lab.type))renderManagement(root,lab);else root.textContent='Motor pendiente'}catch(err){console.error(err);root.textContent='No se pudo abrir el laboratorio: '+String(err.message||err)}
 }
 function render(){renderAside();const r=route();if(r.view==='asignatura')renderSubject(r.id);else if(r.view==='practica')renderLab(r.id);else renderHome();window.scrollTo(0,0)}
 window.addEventListener('hashchange',render);render();
