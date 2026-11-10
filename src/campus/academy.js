@@ -85,9 +85,9 @@ export function mountMission(root,lab,complete){
  const increment=name=>{events[name]=(events[name]||0)+1};
  const recordInput=ev=>{
   if(!ev.isTrusted)return;
-  const id=ev.target.id||'(sin-id)';
+  const id=ev.target.dataset.rangeFor||ev.target.id||'(sin-id)';
   if(!touchedFields.has(id)){touchedFields.add(id);increment('input')}
-  if(ev.target.id)increment('input:'+ev.target.id);
+  if(id!=='(sin-id)')increment('input:'+id);
  };
  const recordClick=ev=>{
   if(!ev.isTrusted)return;
