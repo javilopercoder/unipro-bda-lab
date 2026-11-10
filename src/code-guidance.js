@@ -39,7 +39,9 @@ export function attachCodeHints({container,editor,example,concept='',label='cons
   const stage=stages[level-1];if(!stage?.snippet)return;
   // No se sobrescribe trabajo previo. El alumno puede elegir conservarlo o editarlo.
   const current=editor.value;
-  if(current.trim()&&current!==stage.snippet)editor.value=current.trimEnd()+'\n'+stage.snippet;
+  if(current.trim()&&stage.snippet.startsWith(current.trimEnd()))editor.value=stage.snippet;
+  else if(current.trim()&&editor.selectionStart!==editor.selectionEnd){editor.setRangeText(stage.snippet,editor.selectionStart,editor.selectionEnd,'end')}
+  else if(current.trim()){display.insertAdjacentHTML('beforeend','<p class="code-help-note">Para conservar tu solución, no hemos sobrescrito el editor. Selecciona la parte que quieras reemplazar y pulsa «Insertar» de nuevo.</p>');return}
   else editor.value=stage.snippet;
   editor.dispatchEvent(new Event('input',{bubbles:true}));
   editor.focus();editor.setSelectionRange(editor.value.length,editor.value.length);
