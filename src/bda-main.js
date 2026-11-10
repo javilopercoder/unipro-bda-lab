@@ -112,13 +112,31 @@ function renderXML(){
  bindEditorShortcut(()=>run(false));
 }
 function renderRedis(){
- editUI({title:'Redis · Clave-valor',description:'Simula un almacén clave-valor local. Prueba SET, GET, DEL, EXISTS, INCR, EXPIRE, TTL y KEYS *.'});
- $('#exercise-title').textContent='Consola clave-valor';
- $('#goal').textContent='Crea una clave alumno con tu nombre, recupérala con GET, y después elimínala con DEL.';
- $('#task-buttons').replaceChildren();$('#code').value='SET alumno Ana';$('#help').textContent='Los datos solo viven en la sesión de esta pestaña. Es un simulador educativo de Redis.';
- const log=[];$('#results').replaceChildren(create('pre','output','Aún no se han ejecutado comandos.'));
- const exec=()=>{try{const input=$('#code').value.trim(),out=state.redis.execute(input);log.push('> '+input+'\n'+out);$('#results').replaceChildren(create('pre','output',log.slice(-30).join('\n\n')));status('Comando interpretado','good')}catch(e){status(e.message,'bad')}};
- $('#buttons').append(createButton('▶ Ejecutar',exec),createButton('↻ Limpiar',()=>{state.redis=new RedisSim;log.length=0;$('#results').replaceChildren(create('pre','output','Memoria reiniciada.'));status('')} ,'btn secondary'));
+ editUI({title:'Redis · Clave-valor',description:'Consola local de claves y valores. No ejecuta un servidor Redis real.'});
+ $('#exercise-title').textContent='Explora Redis a tu manera';
+ $('#goal').textContent='Por ejemplo, crea una clave con SET, recupérala con GET y elimínala con DEL. También puedes inventar tus propias claves y probar otros comandos.';
+ $('#task-buttons').replaceChildren();
+ $('#help').textContent='Comandos disponibles: SET, GET, DEL, EXISTS, INCR, EXPIRE, TTL, KEYS *. La memoria empieza vacía y solo existe en esta sesión.';
+ $('#hint-mount').replaceChildren();
+ const shell=$('#main .code-console');
+ shell.innerHTML='<div class="code-console-bar"><span class="code-console-dots"><i></i><i></i><i></i></span><strong>redis-cli · consola libre</strong><span class="code-console-local">Simulado</span></div>'+
+ '<div class="redis-console-scroll" id="redis-scroll"><pre id="redis-transcript" aria-live="polite"></pre>'+
+ '<label class="redis-prompt"><span>127.0.0.1:6379&gt;</span><input id="code" aria-label="Comando Redis. Pulsa Intro para ejecutar" autocomplete="off" spellcheck="false" placeholder="Escribe un comando…"></label></div>';
+ const field=$('#code'),transcript=$('#redis-transcript'),scroll=$('#redis-scroll'),history=[];let cursor=0;
+ $('#results').replaceChildren(create('p','muted','La respuesta aparecerá dentro de la consola y también aquí.'));
+ const draw=text=>{const line=document.createElement('div');line.className='redis-line';line.textContent=text;transcript.append(line);scroll.scrollTop=scroll.scrollHeight};
+ const exec=()=>{const input=field.value.trim();if(!input){field.focus();return}
+  draw('127.0.0.1:6379> '+input);history.push(input);cursor=history.length;field.value='';
+  try{const outputText=state.redis.execute(input);draw(String(outputText));$('#results').replaceChildren(create('pre','output',String(outputText)));status('Comando ejecutado en la simulación local','good')}
+  catch(e){draw('(error) '+String(e.message||e));status(e.message||String(e),'bad')}
+  field.focus();
+ };
+ field.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();exec()}
+  else if(e.key==='ArrowUp'){e.preventDefault();cursor=Math.max(0,cursor-1);field.value=history[cursor]||''}
+  else if(e.key==='ArrowDown'){e.preventDefault();cursor=Math.min(history.length,cursor+1);field.value=history[cursor]||''}};
+ $('#buttons').append(createButton('Ejecutar ↵',exec),createButton('↻ Reiniciar memoria',()=>{state.redis=new RedisSim;transcript.replaceChildren();field.value='';$('#results').replaceChildren(create('p','muted','Memoria reiniciada.'));status('Memoria reiniciada','good');field.focus()},'btn secondary'));
+ const helper=document.createElement('div');$('#hint-mount').append(helper);
+ attachCodeHints({container:helper,editor:field,example:'SET alumno Ana',concept:'Escribe SET, deja un espacio, elige el nombre de una clave y escribe su valor. Luego usa GET con el nombre de esa clave.',label:'comando Redis'});
 }
 function renderTransactions(){
  $('#main').innerHTML=heading('Transacciones bancarias','Simula operaciones sobre dos cuentas. SAVEPOINT y ROLLBACK modifican una copia temporal; COMMIT confirma.', 'Simulador')+'<section class="panel"><h2>Dos cuentas de prueba</h2><p class="muted">Empieza una transacción, transfiere dinero, guarda un punto de control y prueba cómo se revierten los cambios.</p><div id="balances" class="grid"></div><div class="toolbar" id="buttons"></div><p class="status" id="state" role="status"></p></section><section class="panel"><h2>Registro de operaciones</h2><pre id="history" class="output"></pre></section><div class="pill warn">Simulación pedagógica. No son transacciones PostgreSQL reales ni un WAL real.</div>';
