@@ -4,9 +4,9 @@ const GUIDES={
     "title": "SQL: pregunta a una base de datos",
     "what": "Una consulta SELECT pide filas y columnas. WHERE filtra, JOIN relaciona tablas, GROUP BY agrupa y HAVING filtra grupos.",
     "steps": [
-      "Ejemplo: SELECT nombre FROM clientes WHERE ciudad='Madrid';",
-      "El motor busca en clientes y conserva solo registros cuya ciudad es Madrid.",
-      "Verás una fila por cliente que cumple la condición. Cambia el filtro y compara."
+      "Ejemplo distinto del reto: SELECT nombre FROM clientes LIMIT 5;",
+      "SELECT elige la columna; FROM señala la tabla; LIMIT evita mostrar miles de filas.",
+      "El resultado contiene hasta cinco nombres. Después puedes añadir tu propio filtro."
     ],
     "hints": [
       "Empieza por SELECT: qué columnas quieres.",
@@ -19,9 +19,9 @@ const GUIDES={
     "title": "Documentos: encuentra y agrupa JSON",
     "what": "MongoDB guarda documentos flexibles. En este simulador puedes probar una parte de find y aggregate sin instalar un servidor.",
     "steps": [
-      "Ejemplo: db.clientes.find({\"ciudad\":\"Madrid\"})",
-      "El filtro busca el campo ciudad con valor Madrid.",
-      "La colección devuelve los documentos coincidentes; puedes proyectar solo campos concretos."
+      "Empieza explorando: db.clientes.find({})",
+      "Las llaves vacías significan que todavía no aplicas ningún filtro.",
+      "Prueba después una condición propia para reducir los documentos devueltos."
     ],
     "hints": [
       "Comprueba el nombre de la colección: clientes.",
@@ -34,9 +34,9 @@ const GUIDES={
     "title": "XML y XPath desde cero",
     "what": "XML representa datos anidados mediante elementos y atributos. XPath permite seleccionar nodos mediante rutas.",
     "steps": [
-      "Ejemplo: <paciente codigo='P001'><nombre>Alba</nombre></paciente>.",
-      "//nombre localiza elementos nombre en cualquier nivel.",
-      "//nombre/text() recupera sus textos, en este caso Alba."
+      "Ejemplo: <paciente><prioridad>alta</prioridad></paciente>.",
+      "La ruta //prioridad localiza esos elementos en cualquier profundidad.",
+      "//prioridad/text() recupera sus textos, como alta. Prueba tú la ruta de otros campos."
     ],
     "hints": [
       "Empieza por observar las etiquetas XML.",
@@ -79,9 +79,9 @@ const GUIDES={
     "title": "Planes: cómo decide buscar PostgreSQL",
     "what": "EXPLAIN muestra una estimación de los pasos que el motor utilizaría para ejecutar una consulta. Una tabla pequeña puede recorrerse completa sin que sea un fallo.",
     "steps": [
-      "Prueba EXPLAIN SELECT * FROM pedidos WHERE importe > 100;",
-      "Observa nodos como Seq Scan y sus costes estimados.",
-      "Compara un plan de consulta filtrada con otra sin filtro."
+      "Ejemplo independiente: EXPLAIN SELECT * FROM pedidos WHERE importe > 200;",
+      "El plan describe qué operaciones estima hacer el motor.",
+      "Compara el coste y los operadores con otra consulta que propongas."
     ],
     "hints": [
       "Escribe EXPLAIN antes de SELECT.",
