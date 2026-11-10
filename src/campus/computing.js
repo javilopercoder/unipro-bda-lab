@@ -6,7 +6,7 @@ function base(root,description,controls=''){root.innerHTML='<p class="lab-intro"
 const slider=(id,label,min,max,v,step=1)=>'<label class="control">'+label+' <b data-value="'+id+'">'+v+'</b><input id="'+id+'" type="range" min="'+min+'" max="'+max+'" value="'+v+'" step="'+step+'"></label>';
 const action=(id,text)=>'<button type="button" id="'+id+'" class="btn">'+text+'</button>';
 const pick=(id,options)=>'<select id="'+id+'">'+options.map(([v,l])=>'<option value="'+v+'">'+l+'</option>').join('')+'</select>';
-const escape=x=>String(x).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;':'&quot;',"'":'&#39;'}[c]));
+const escape=x=>String(x).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
 const nodes=['A','B','C','D','E','F','G'];const edges=[['A','B',4],['A','C',2],['B','D',5],['B','E',1],['C','B',1],['C','E',8],['C','F',7],['D','G',1],['E','D',2],['E','G',5],['F','G',2]];
 function shortest(start,end,algo){const dist=Object.fromEntries(nodes.map(x=>[x,Infinity])),prev={},queue=[start],visited=[],seen=new Set;dist[start]=0;while(queue.length){if(algo==='dijkstra')queue.sort((a,b)=>dist[a]-dist[b]);const v=queue.shift();if(seen.has(v))continue;seen.add(v);visited.push(v);if(v===end)break;for(const [a,b,w]of edges){if(a!==v)continue;if(algo==='bfs'&&!seen.has(b)&&!queue.includes(b)){queue.push(b);prev[b]=v;dist[b]=dist[v]+1}else if(algo==='dijkstra'&&dist[v]+w<dist[b]){dist[b]=dist[v]+w;prev[b]=v;queue.push(b)}}}const path=[];for(let cur=end;cur!=null&&Number.isFinite(dist[cur]);cur=prev[cur]){path.unshift(cur);if(cur===start)break}return {dist:dist[end],path:path[0]===start?path:[],visited}}
 export function renderComputing(root,lab){
