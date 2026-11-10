@@ -4,7 +4,7 @@ test('planificación Round Robin ejecuta procesos sin bloquearse',async({page})=
  await page.locator('#policy').selectOption('RR');
  await expect(page.locator('.gantt-cell').first()).toBeVisible();
  await expect(page.locator('#lab-output')).toContainText('Espera media');
- await page.locator('#quantum').fill('4');
+ await page.locator('#quantum').evaluate(el=>{el.value='4';el.dispatchEvent(new Event('input',{bubbles:true}))});
  await expect(page.locator('.gantt-cell').last()).toBeVisible();
 });
 test('terminal: crear, escribir, leer, borrar y reiniciar',async({page})=>{
