@@ -1,5 +1,5 @@
 // Simulaciones numéricas originales. Nada se evalúa mediante eval() ni Function().
-const $=(r,s)=>r.querySelector(s);
+const $=(root,selector)=>selector===undefined?document.querySelector(root):root.querySelector(selector);
 const num=(r,s)=>Number($(r,s).value);
 const clamp=(x,lo,hi)=>Math.min(hi,Math.max(lo,x));
 const fixed=(n,d=3)=>Number.isFinite(n)?Number(n).toFixed(d):'—';
