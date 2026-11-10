@@ -1,6 +1,6 @@
 // Laboratorios transversales: gestión, economía, comunicación y ética profesional.
 // Ejemplos originales y datos ficticios. Las heurísticas no son evaluaciones legales ni personales.
-const $=(root,id)=>root.querySelector('#'+id);
+const $=(root,id)=>id===undefined?document.querySelector(root):root.querySelector('#'+id);
 const number=(root,id)=>Number($(root,id).value);
 const fmt=(n,dec=2)=>Number.isFinite(n)?n.toLocaleString('es-ES',{minimumFractionDigits:dec,maximumFractionDigits:dec}):'—';
 const safe=x=>String(x??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
