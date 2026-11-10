@@ -55,3 +55,26 @@ html[data-theme="dark"] .bda-guide-example h3{color:#b7d7ff}
 html[data-theme="dark"] #bda-guide-hints p{background:#243d5b;color:#d9eaff;border-color:#7cb0f0}
 html[data-theme="dark"] .bda-guide details{border-color:#3c536f}
 @media(max-width:680px){.bda-guide{padding:16px}.bda-guide-heading h2{font-size:18px}.bda-guide-example{padding:11px}}
+
+
+/* Guías de BDA: un paso visible, el entorno de consulta siempre a mano */
+.bda-guide{padding:19px 22px}
+.bda-guide-heading h2{font-size:19px}
+.bda-guide>p{font-size:13px;max-width:900px;line-height:1.65}
+.bda-guide-example{padding:13px 17px;margin-bottom:8px}
+.bda-example-head{display:flex;align-items:center;justify-content:space-between;gap:15px}
+.bda-example-head h3{margin:0;font-size:14px}
+#bda-guide-counter{color:#5c7cb3;font-size:11px;font-weight:800;background:#dcecff;border-radius:8px;padding:4px 8px}
+.bda-guide-example ol{padding:0;list-style:none;min-height:47px;margin:9px 0}
+.bda-guide-example li{display:none;font-size:13px;line-height:1.7;color:#3a587d}
+.bda-guide-example li.is-current{display:block}
+.bda-guide-example li b{color:#3879c7;margin-right:9px}
+.bda-example-nav{display:flex;gap:10px;justify-content:flex-end}
+.bda-example-nav button{min-width:116px;font-size:11px;padding:8px 10px}
+.bda-example-nav button:disabled{opacity:.35;cursor:default}
+.bda-guide-actions{margin:8px 0}
+.bda-guide-actions .btn{font-size:11px;min-height:34px}
+html[data-theme=dark] .bda-guide-example li{color:#deebfa}
+html[data-theme=dark] #bda-guide-counter{background:#30516c;color:#d9ecff}
+html[data-theme=dark] .bda-guide-example li b{color:#a1ceff}
+@media(max-width:680px){.bda-guide{padding:14px}.bda-example-nav{justify-content:space-between}.bda-example-nav button{min-width:105px}}
