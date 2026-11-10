@@ -1,6 +1,6 @@
 import {test,expect} from '@playwright/test';
 test('inicio y PostgreSQL en navegador',async({page})=>{
- await page.goto('/');
+ await page.goto('/bda.html');
  await expect(page.getByRole('heading',{name:'SQL y PostgreSQL'})).toBeVisible();
  await page.getByRole('button',{name:'▶ Ejecutar'}).click();
  await expect(page.locator('#results tbody tr')).toHaveCount(3,{timeout:60000});
@@ -8,7 +8,7 @@ test('inicio y PostgreSQL en navegador',async({page})=>{
  await expect(page.locator('#state')).toContainText('Resultado correcto');
 });
 test('MongoDB, XML y Redis responden',async({page})=>{
- await page.goto('/');
+ await page.goto('/bda.html');
  await page.getByRole('button',{name:/Documentos \/ MongoDB/}).click();
  await page.getByRole('button',{name:'▶ Ejecutar'}).click();
  await expect(page.locator('#results tbody tr')).toHaveCount(3);
@@ -20,7 +20,7 @@ test('MongoDB, XML y Redis responden',async({page})=>{
  await expect(page.locator('#results')).toContainText('OK');
 });
 test('transacciones y OLAP',async({page})=>{
- await page.goto('/');
+ await page.goto('/bda.html');
  await page.getByRole('button',{name:/Transacciones/}).click();
  await page.getByRole('button',{name:'BEGIN'}).click();
  await page.getByRole('button',{name:'TRANSFERIR 100 €'}).click();
@@ -32,7 +32,7 @@ test('transacciones y OLAP',async({page})=>{
 });
 test('pantalla móvil sin desbordamiento horizontal',async({page})=>{
  await page.setViewportSize({width:390,height:844});
- await page.goto('/');
+ await page.goto('/bda.html');
  await expect(page.getByRole('heading',{name:'SQL y PostgreSQL'})).toBeVisible();
  const width=await page.evaluate(()=>({body:document.documentElement.scrollWidth,viewport:innerWidth}));
  expect(width.body).toBeLessThanOrEqual(width.viewport+1);
