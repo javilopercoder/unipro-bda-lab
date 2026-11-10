@@ -1,4 +1,5 @@
 import './styles.css';
+import {mountThemeToggle} from './theme.js';
 import {SQL_TASKS,MONGO_TASKS,XML_TASKS,SAMPLE_XML} from './challenges.js';
 import {runSQL,evaluateSQL,resetSQL} from './postgres.js';
 import {runMongo,evaluateMongo,mongoData} from './mongo.js';
@@ -19,6 +20,7 @@ const MODULES=[
 ];
 const app=document.querySelector('#app');
 app.innerHTML='<header class="topbar"><div class="topbar-inner"><div class="brand"><span class="logo">U</span><span>UniPRO <b>Lab</b> <span class="subtle">/ Bases de Datos Avanzadas</span></span></div><div class="top-right"><span class="privacy">🔒 Datos ficticios · ejecución local</span><a href="https://javilopercoder.github.io/unipro-quiz/" target="_blank" rel="noopener noreferrer">UniPRO Quiz</a></div></div></header><div class="layout"><aside class="sidebar"><h2>Laboratorios</h2><nav id="nav" aria-label="Tecnologías"></nav><div class="sidebar-note">Los ejercicios SQL se ejecutan en tu navegador. Los otros módulos indican cuando son simulaciones. No se usa ninguna base de datos real de la universidad.</div></aside><main id="main" aria-live="polite"></main></div>';
+mountThemeToggle(document.querySelector('.top-right'));
 const $=selector=>document.querySelector(selector);
 const create=(tag,cls,text)=>{const el=document.createElement(tag);if(cls)el.className=cls;if(text!==undefined)el.textContent=String(text);return el};
 const qs=(element,selector)=>element.querySelector(selector);
