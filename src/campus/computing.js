@@ -29,16 +29,39 @@ export function renderComputing(root,lab){
  }
  if(t==='scheduler'){
  const processes=[{id:'P1',arrival:0,burst:7},{id:'P2',arrival:2,burst:4},{id:'P3',arrival:4,burst:1},{id:'P4',arrival:5,burst:4}];
- const { $out,$viz }=base(root,'Compara FCFS, SJF no expulsivo y Round Robin sobre los mismos procesos. Ajusta el quantum para ver las diferencias.', '<label class="control">Planificador '+pick('policy',[['FCFS','FCFS'],['SJF','SJF (no expulsivo)'],['RR','Round Robin']])+'</label>'+slider('quantum','Quantum RR',1,8,2));
- function run(){const pol=$('#policy').value,quantum=n(root,'#quantum'),remain=processes.map(p=>({...p,remaining:p.burst})),blocks=[],finish={},queue=[];let time=0,guard=0;while(Object.keys(finish).length<remain.length&&guard++<200){let avail=remain.filter(p=>p.arrival<=time&&p.remaining>0);if(!avail.length){time++;continue}let p;if(pol==='FCFS')p=avail.sort((a,b)=>a.arrival-b.arrival)[0];else if(pol==='SJF')p=avail.sort((a,b)=>a.burst-b.burst||a.arrival-b.arrival)[0];else{for(const x of avail)if(!queue.includes(x.id))queue.push(x.id);p=remain.find(x=>x.id===queue.shift());}
- const dur=pol==='RR'?Math.min(quantum,p.remaining):p.remaining;blocks.push({id:p.id,from:time,to:time+dur});time+=dur;p.remaining-=dur;if(p.remaining===0)finish[p.id]=time;else if(pol==='RR'){for(const x of remain)if(x.arrival<=time&&x.remaining>0&&!queue.includes(x.id))queue.push(x.id);queue.push(p.id)}
- }const waits=processes.map(p=>({id:p.id,wait:finish[p.id]-p.arrival-p.burst,turnaround:finish[p.id]-p.arrival}));$out.innerHTML='<strong>Espera media: '+f(waits.reduce((a,b)=>a+b.wait,0)/waits.length)+' · retorno medio: '+f(waits.reduce((a,b)=>a+b.turnaround,0)/waits.length)+'</strong><p>'+waits.map(x=>x.id+': '+x.wait+' espera').join(' · ')+'</p>';$viz.innerHTML='<div class="gantt">'+blocks.map(b=>'<div class="gantt-cell" style="flex:'+Math.max(1,b.to-b.from)+'" title="'+b.id+': '+b.from+'–'+b.to+'">'+b.id+'<small>'+b.from+'–'+b.to+'</small></div>').join('')+'</div><p class="subtle">Procesos: '+processes.map(p=>p.id+' (llegada '+p.arrival+', duración '+p.burst+')').join(', ')+'</p>'}
+ const { $out,$viz }=base(root,'Compara FCFS, SJF no expulsivo y Round Robin sobre los mismos procesos. Modifica el quantum para ver cambios en la espera.', '<label class="control">Planificador '+pick('policy',[['FCFS','FCFS'],['SJF','SJF no expulsivo'],['RR','Round Robin']])+'</label>'+slider('quantum','Quantum RR',1,8,2));
+ function run(){
+ const pol=$('#policy').value,quantum=n(root,'#quantum'),jobs=processes.map(p=>({...p,remaining:p.burst})),blocks=[],finish={};
+ let time=0;
+ if(pol==='RR'){
+  const incoming=[...jobs].sort((a,b)=>a.arrival-b.arrival),queue=[];
+  let cursor=0,guard=0;
+  const arrived=()=>{while(cursor<incoming.length&&incoming[cursor].arrival<=time)queue.push(incoming[cursor++])};
+  while(Object.keys(finish).length<jobs.length&&guard++<100){
+   arrived();if(!queue.length){time=incoming[cursor].arrival;arrived()}
+   const p=queue.shift(),duration=Math.min(quantum,p.remaining);
+   blocks.push({id:p.id,from:time,to:time+duration});time+=duration;p.remaining-=duration;
+   arrived();if(p.remaining>0)queue.push(p);else finish[p.id]=time;
+  }
+ }else{
+  let guard=0;
+  while(Object.keys(finish).length<jobs.length&&guard++<50){
+   const available=jobs.filter(p=>p.arrival<=time&&p.remaining>0);
+   if(!available.length){time=Math.min(...jobs.filter(p=>p.remaining>0).map(p=>p.arrival));continue}
+   available.sort((a,b)=>pol==='FCFS'?a.arrival-b.arrival:a.burst-b.burst||a.arrival-b.arrival);
+   const p=available[0];blocks.push({id:p.id,from:time,to:time+p.remaining});time+=p.remaining;p.remaining=0;finish[p.id]=time;
+  }
+ }
+ const waits=processes.map(p=>({id:p.id,wait:finish[p.id]-p.arrival-p.burst,turnaround:finish[p.id]-p.arrival}));
+ $out.innerHTML='<strong>Espera media: '+f(waits.reduce((a,b)=>a+b.wait,0)/waits.length)+' · retorno medio: '+f(waits.reduce((a,b)=>a+b.turnaround,0)/waits.length)+'</strong><p>'+waits.map(x=>x.id+': '+x.wait+' de espera').join(' · ')+'</p>';
+ $viz.innerHTML='<div class="gantt">'+blocks.map(b=>'<div class="gantt-cell" style="flex:'+Math.max(1,b.to-b.from)+'" title="'+b.id+': '+b.from+'–'+b.to+'">'+b.id+'<small>'+b.from+'–'+b.to+'</small></div>').join('')+'</div><p class="subtle">Procesos: '+processes.map(p=>p.id+' (llegada '+p.arrival+', duración '+p.burst+')').join(', ')+'</p>';
+ }
  $('#policy').onchange=run;$('#quantum').oninput=run;run();return;
  }
  if(t==='memory'){
  const pages=[7,0,1,2,0,3,0,4,2,3,0,3,2,1,2,0,1,7,0,1],{ $out,$viz }=base(root,'Observa los aciertos y fallos de página con FIFO o LRU y un número ajustable de marcos.', '<label class="control">Sustitución '+pick('policy',[['FIFO','FIFO'],['LRU','LRU']])+'</label>'+slider('frames','Marcos físicos',2,6,3)+action('step','Referencia siguiente')+action('reset','Reiniciar'));
  let i=0,frames=[],age=[],hits=0,faults=0;function reset(){i=0;frames=[];age=[];hits=faults=0;draw()}function draw(){const x=pages[i]??'fin';$out.innerHTML='<strong>Referencia '+i+' / '+pages.length+': '+x+'</strong><p>Fallos: '+faults+' · aciertos: '+hits+' · tasa de fallos: '+f(i?faults/i*100:0)+' %</p>';$viz.innerHTML='<div class="structure-row">'+Array.from({length:n(root,'#frames')},(_,j)=>'<span class="structure-node">'+(frames[j]??'—')+'</span>').join('')+'</div><p class="subtle">Secuencia: '+pages.join(' → ')+'</p>'}
- $('#step').onclick=()=>{if(i>=pages.length)return;const p=pages[i];if(frames.includes(p)){hits++;age[frames.indexOf(p)]=i}else{faults++;if(frames.length<n(root,'#frames')){frames.push(p);age.push(i)}else{const j=age.indexOf(Math.min(...age));frames[j]=p;age[j]=i}}i++;draw()};$('#policy').onchange=reset;$('#frames').oninput=reset;$('#reset').onclick=reset;reset();return;
+ $('#step').onclick=()=>{if(i>=pages.length)return;const p=pages[i];if(frames.includes(p)){hits++;if($('#policy').value==='LRU')age[frames.indexOf(p)]=i}else{faults++;if(frames.length<n(root,'#frames')){frames.push(p);age.push(i)}else{const j=age.indexOf(Math.min(...age));frames[j]=p;age[j]=i}}i++;draw()};$('#policy').onchange=reset;$('#frames').oninput=reset;$('#reset').onclick=reset;reset();return;
  }
  if(t==='network'){
  const { $out,$viz }=base(root,'Introduce una IPv4 y un prefijo CIDR. Calcula red, máscara, broadcast y tamaño de subred.', '<label class="control">Dirección IPv4 <input id="ip" value="192.168.10.42" inputmode="decimal"></label>'+slider('cidr','Prefijo CIDR',8,30,24)+action('calc','Calcular'));
@@ -65,7 +88,7 @@ export function renderComputing(root,lab){
  }
  if(t==='terminal'){
  const { $out,$viz }=base(root,'Sistema de archivos ficticio en memoria. Los comandos no ejecutan una terminal real. Crea, lee, copia y mueve archivos sin riesgo.', '<label class="control terminal-input">Comando <input id="command" autocomplete="off" value="help"></label>'+action('run','Ejecutar')+action('clear','Reiniciar'));
- const tree={type:'dir',children:{home:{type:'dir',children:{alumno:{type:'dir',children:{'leeme.txt':{type:'file',data:'Bienvenido al laboratorio'}}}}}}};let cwd=['home','alumno'],log=[];
+ const initialTree={type:'dir',children:{home:{type:'dir',children:{alumno:{type:'dir',children:{'leeme.txt':{type:'file',data:'Bienvenido al laboratorio'}}}}}}};let tree=structuredClone(initialTree),cwd=['home','alumno'],log=[];
  const normPath=p=>{const path=p.startsWith('/')?[]:[...cwd];for(const seg of p.split('/')){if(!seg||seg==='.')continue;if(seg==='..')path.pop();else path.push(seg)}return path};
  const lookup=path=>path.reduce((x,name)=>x?.type==='dir'?x.children[name]:null,tree);
  const getParent=p=>{const path=normPath(p);return {path,parent:lookup(path.slice(0,-1)),name:path.at(-1)}};
@@ -83,7 +106,7 @@ export function renderComputing(root,lab){
  return'Comando no reconocido';
  };
  const draw=()=>{$out.innerHTML='<strong>alumno@lab:'+'/'+cwd.join('/')+'$</strong><p>Sin ejecución real en el sistema operativo.</p>';$viz.innerHTML='<pre class="code-block terminal-log">'+escape(log.join('\n'))+'</pre>'};
- $('#run').onclick=()=>{const input=$('#command').value;const result=command(input);log.push('$ '+input+'\n'+result);log=log.slice(-50);draw()};$('#command').onkeydown=e=>{if(e.key==='Enter')$('#run').click()};$('#clear').onclick=()=>{log=[];cwd=['home','alumno'];draw()};draw();return;
+ $('#run').onclick=()=>{const input=$('#command').value;const result=command(input);log.push('$ '+input+'\n'+result);log=log.slice(-50);draw()};$('#command').onkeydown=e=>{if(e.key==='Enter')$('#run').click()};$('#clear').onclick=()=>{tree=structuredClone(initialTree);log=[];cwd=['home','alumno'];draw()};draw();return;
  }
 }
 export const COMPUTING_TYPES=new Set(['graph','sorting','structures','scheduler','memory','network','packet','architecture','threads','flow','terminal']);
