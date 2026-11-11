@@ -42,9 +42,9 @@ function table(rows,fields=null){const box=create('div','result-scroll');if(!row
 function output(node,rows,fields=null){node.replaceChildren(table(rows,fields))}
 function exportCsv(){
  const result=state.lastResult;if(!result?.fields?.length)return status('Ejecuta una consulta con columnas antes de exportar.','warn');
- const escape=value=>{const raw=fmt(value);return '"'+raw.replaceAll('"','""')+'"';};
- const csv=[result.fields.map(escape).join(','),...result.values.map(row=>row.map(escape).join(','))].join('\\r\\n');
- const blob=new Blob(['\\uFEFF',csv],{type:'text/csv;charset=utf-8'});
+ const escape=value=>{const raw=fmt(value);const safe=/^[=+@\\t\\r\\n]/.test(raw)?"'"+raw:raw;return '"'+safe.replaceAll('"','""')+'"';};
+ const csv=[result.fields.map(escape).join(','),...result.values.map(row=>row.map(escape).join(','))].join('\r\n');
+ const blob=new Blob(['\uFEFF',csv],{type:'text/csv;charset=utf-8'});
  const link=document.createElement('a'),url=URL.createObjectURL(blob);
  link.href=url;link.download='laboratorio_consulta.csv';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
