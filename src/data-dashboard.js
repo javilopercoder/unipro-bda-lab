@@ -3,6 +3,7 @@ import {getMongoCatalog,mongoData} from './mongo.js';
 import {PURCHASES} from './analytics.js';
 
 export const LAB_NOTE='Tamaños del motor SQL: bytes que informa PostgreSQL local. Mongo/OLAP: bytes aproximados de JSON en memoria. No existe ningún servidor remoto.';
+export const formatCount=n=>String(Math.trunc(Number(n)||0)).replace(/\B(?=(\d{3})+(?!\d))/g,'.');
 export function formatBytes(value){
  if(value===null||value===undefined||!Number.isFinite(Number(value)))return 'No disponible';
  const n=Number(value);if(n<1024)return n+' B';
@@ -96,10 +97,10 @@ export async function mountDataExplorer(host,{mode='sql',history,openQuery,redis
   const entities=isSQL?catalog.tables:isMongo?catalog.collections:[
     {name:'operaciones_olap',count:PURCHASES.length,bytes:byteLength(PURCHASES),columns:Object.keys(PURCHASES[0]||{}).map(name=>({columna:name,tipo:typeof PURCHASES[0][name]}))}
   ];
-  stats.append(metric('Conjuntos de datos',entities.length),metric('Registros',entities.reduce((a,x)=>a+x.count,0).toLocaleString('es-ES')),metric('Última consulta',history?.last()?new Date(history.last().date).toLocaleTimeString('es-ES'):'Sin consultas'));
+  stats.append(metric('Conjuntos de datos',entities.length),metric('Registros',formatCount(entities.reduce((a,x)=>a+x.count,0))),metric('Última consulta',history?.last()?new Date(history.last().date).toLocaleTimeString('es-ES'):'Sin consultas'));
   intro.append(stats,E('p','data-hint',LAB_NOTE));host.append(intro);
   for(const entry of entities){
-   const block=section(entry.name,entry.count.toLocaleString('es-ES')+' registros · '+formatBytes(entry.bytes)+(entry.bytes===null?' (no medible en este motor)':''));
+   const block=section(entry.name,formatCount(entry.count)+' registros · '+formatBytes(entry.bytes)+(entry.bytes===null?' (no medible en este motor)':''));
    const actions=E('div','data-table-actions');
    if(openQuery){const btn=E('button','btn secondary','Abrir consulta');btn.onclick=()=>openQuery(isSQL?'SELECT * FROM '+entry.name+' LIMIT 25;':isMongo?'db.clientes.find({})':'');actions.append(btn)}
    const details=E('details','data-table-details');
