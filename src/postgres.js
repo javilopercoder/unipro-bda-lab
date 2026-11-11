@@ -42,10 +42,10 @@ export function safeQuery(sql){
   return value;
 }
 export async function runSQL(sql){
-  const db=await connect(),start=performance.now(),result=await db.query(safeQuery(sql)),fields=(result.fields||[]).map(x=>x.name);
-  // El modo array conserva todas las columnas, incluso cuando SELECT c.*, p.* repite «id».
-  const values=fields.length?(await db.query(safeQuery(sql),[],{rowMode:'array'})).rows||[]:[];
-  return{fields,rows:result.rows||[],values,duration:Math.round(performance.now()-start)};
+  const db=await connect(),start=performance.now(),result=await db.query(safeQuery(sql),[],{rowMode:'array'}),fields=(result.fields||[]).map(x=>x.name);
+  // PGlite en modo array conserva las columnas con nombre repetido y ejecuta SQL una sola vez.
+  const values=result.rows||[],rows=values.map(values=>Object.fromEntries(fields.map((name,i)=>[name,values[i]])));
+  return{fields,rows,values,duration:Math.round(performance.now()-start)};
 }
 function normalize(result){return result.rows.map(row=>JSON.stringify(Object.values(row).map(x=>typeof x==='bigint'?String(x):x))).sort()}
 export async function evaluateSQL(sql,expected){
