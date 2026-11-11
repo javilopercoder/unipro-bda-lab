@@ -62,11 +62,32 @@ function addHistory(host,history,onRepeat){
  }
  block.append(wrap);host.append(block);
 }
-export async function mountDataExplorer(host,{mode='sql',history,openQuery}={}){
+export async function mountDataExplorer(host,{mode='sql',history,openQuery,redis,xml}={}){
  host.replaceChildren();
  const loading=E('p','data-hint','Preparando el catálogo local…');host.append(loading);
  try{
   const isSQL=mode==='sql',isMongo=mode==='mongo';
+  if(mode==='redis'||mode==='xml'){
+   host.replaceChildren();
+   if(mode==='redis'){
+    const info=redis?.snapshot()||[];
+    const intro=section('Redis · claves en memoria','Este módulo es un simulador local. Los tamaños son bytes UTF-8 de los valores, no memoria de Redis real.');
+    const stats=E('div','data-metrics');stats.append(metric('Claves',info.length),metric('Bytes de valores',formatBytes(info.reduce((sum,x)=>sum+x.bytes,0))),metric('TTL activas',info.filter(x=>x.ttl>=0).length));intro.append(stats);
+    const btn=E('button','btn secondary','Cargar 10 claves de ejemplo');btn.onclick=()=>{redis.seedDemo();mountDataExplorer(host,{mode,history,openQuery,redis,xml})};intro.append(btn);host.append(intro);
+    const keys=section('Inventario de claves','Utiliza la consola Redis para editar valores, incrementar contadores o aplicar EXPIRE.');keys.append(resultTable(info,['clave','tipo','valor','bytes','ttl'],80));host.append(keys);
+   }else{
+    const source=String(xml||'');const bytes=new TextEncoder().encode(source).byteLength;
+    let documentCount=0,attributes=0,tags=[];
+    if(typeof DOMParser!=='undefined'){
+     const parsed=new DOMParser().parseFromString(source,'application/xml');
+     if(!parsed.querySelector('parsererror')){const nodes=[...parsed.getElementsByTagName('*')];documentCount=nodes.length;attributes=nodes.reduce((n,node)=>n+node.attributes.length,0);tags=[...new Set(nodes.map(x=>x.tagName))]}
+    }
+    const intro=section('XML · estructura del documento','Metadatos del documento XML ficticio editable: estos valores se calculan en tu navegador.');const stats=E('div','data-metrics');stats.append(metric('Elementos',documentCount),metric('Atributos',attributes),metric('Tamaño del XML',formatBytes(bytes)));intro.append(stats);host.append(intro);
+    const tagsBox=section('Etiquetas existentes','Usa estas etiquetas para construir tus expresiones XPath.');tagsBox.append(resultTable(tags.map(nombre=>({nombre})),['nombre'],60));host.append(tagsBox);
+   }
+   if(openQuery){const b=E('button','btn secondary',mode==='redis'?'Ir a la consola Redis':'Ir al editor XPath');b.onclick=()=>openQuery('');host.append(b)}
+   if(history)addHistory(host,history,null);return;
+  }
   const catalog=isSQL?await getSQLCatalog():isMongo?getMongoCatalog():null;
   host.replaceChildren();
   const intro=section('Explorador de datos',isSQL?'Metadatos obtenidos del catálogo PostgreSQL real que se ejecuta en el navegador.':isMongo?'Colecciones y esquema inferido del simulador documental; el tamaño es una estimación del JSON.':'Inventario de los datos ficticios usados por las prácticas.');
