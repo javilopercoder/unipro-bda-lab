@@ -29,7 +29,7 @@ const $=selector=>document.querySelector(selector);
 const create=(tag,cls,text)=>{const el=document.createElement(tag);if(cls)el.className=cls;if(text!==undefined)el.textContent=String(text);return el};
 const qs=(element,selector)=>element.querySelector(selector);
 const startMode=decodeURIComponent((location.hash||'').slice(1)).toLowerCase();
-const state={module:startMode==='data'?'data':BDA_GUIDES[startMode]?startMode:'sql',task:{sql:0,mongo:0,xml:0},redis:new RedisSim,bank:new BankSim,history:createQueryHistory(),lastResult:null};
+const state={module:startMode==='data'?'data':BDA_GUIDES[startMode]?startMode:'sql',task:{sql:0,mongo:0,xml:0},redis:new RedisSim,bank:new BankSim,history:createQueryHistory(),lastResult:null,xmlContent:SAMPLE_XML};
 const fmt=value=>value==null?'NULL':value instanceof Date?value.toISOString().slice(0,10):typeof value==='object'?JSON.stringify(value):String(value);
 function status(message,type=''){
  const el=$('#state');if(el){el.className='status '+type;el.textContent=message}
@@ -51,14 +51,14 @@ function exportCsv(){
 function renderData(){
  state.module='data';
  $('#main').innerHTML=heading('Explorador de datos','Consulta tablas, columnas, tamaños, relaciones, vistas previas y el historial local de consultas.','Catálogo')+
- '<div class="data-dashboard-head"><label for="data-mode">Conjunto de datos</label> <select id="data-mode" class="field"><option value="sql">PostgreSQL · SQL real</option><option value="mongo">Documentos · simulación MongoDB</option><option value="olap">Ventas · OLAP local</option></select></div><div id="data-explorer"></div>';
+ '<div class="data-dashboard-head"><label for="data-mode">Conjunto de datos</label> <select id="data-mode" class="field"><option value="sql">PostgreSQL · SQL real</option><option value="mongo">Documentos · simulación MongoDB</option><option value="olap">Ventas · OLAP local</option><option value="redis">Claves · Redis simulado</option><option value="xml">Etiquetas · XML y XPath</option></select></div><div id="data-explorer"></div>';
  const select=$('#data-mode'),host=$('#data-explorer');
  const openQuery=sql=>{
   const mode=select.value;
-  state.module=mode==='mongo'?'mongo':'sql';history.replaceState(null,'','#'+state.module);render();
+  state.module=['mongo','redis','xml'].includes(mode)?mode:'sql';history.replaceState(null,'','#'+state.module);render();
   if(sql){$('#code').value=sql;$('#code').focus()}
  };
- const load=()=>mountDataExplorer(host,{mode:select.value,history:state.history,openQuery});
+ const load=()=>mountDataExplorer(host,{mode:select.value,history:state.history,openQuery,redis:state.redis,xml:state.xmlContent});
  select.onchange=load;load();
 }
 function heading(name,description,tag){return '<div class="heading"><div><span class="eyebrow">LABORATORIO INTERACTIVO</span><h1>'+name+'</h1><p>'+description+'</p></div><span class="tag">'+tag+'</span></div>'}
@@ -159,7 +159,7 @@ function renderXML(){
  editUI({title:'XML y XPath',description:'El navegador ejecuta XPath sobre XML real. Cambia el documento de ejemplo o escribe tus propias rutas; no implementa XQuery.'});
  const doc=create('div','panel xml-document-panel');
  doc.append(create('h2','','Documento XML (editable)'));
- const docEditor=create('textarea','editor');docEditor.value=SAMPLE_XML;docEditor.style.minHeight='205px';docEditor.setAttribute('aria-label','Documento XML');
+ const docEditor=create('textarea','editor');docEditor.value=state.xmlContent;docEditor.addEventListener('input',()=>{state.xmlContent=docEditor.value});docEditor.style.minHeight='205px';docEditor.setAttribute('aria-label','Documento XML');
  doc.append(docEditor);
  $('#main .main-columns > div').prepend(doc);
  const coach=createCodeCoach({host:$('#help'),editor:$('#code'),language:'xpath'});
