@@ -1,6 +1,17 @@
 import { PGlite } from '@electric-sql/pglite';
 import {FIRST_NAMES,LAST_NAMES} from './demo-data.js';
 const sqlArray=items=>'ARRAY['+items.map(s=>"'"+s.replaceAll("'","''")+"'").join(',')+']';
+const products={
+  'Informática':['Teclado Orión TKL','Ratón Delta inalámbrico','Monitor Lumen 27','SSD Cometa 1 TB','Webcam Alba Full HD','Hub USB Horizonte','Altavoces Prisma','Soporte portátil Zenith','Auriculares Boreal','Dock Nebulosa USB-C','Micrófono Eclipse','Tableta gráfica Pulsar','Cable trenzado Atlas','Funda portátil Nómada','Disco externo Aurora'],
+  'Lectura':['La isla de los mapas','Cuentos de la estación','El código del faro','Cartas desde el norte','Los días de mercurio','Manual de mundos posibles','El archivo olvidado','Tiempo entre algoritmos','Crónicas de un pixel','La última biblioteca','El atlas de cristal','La teoría de las cosas','Rutas de papel','El jardín binario','Historia de una órbita'],
+  'Papelería':['Cuaderno Índigo A5','Bolígrafo Vértice gel','Bloc de notas Prisma','Agenda Horizonte 2026','Rotuladores Aurora','Carpeta de anillas Cobalto','Estuche Origami','Papel reciclado Marea','Marcadores Nébula','Lápiz grafito Atlas','Regla Horizonte','Libreta Selene A4','Notas adhesivas Loto','Archivador Lumen','Set dibujo Eclipse'],
+  'Hogar':['Lámpara Ámbar LED','Taza Horizonte cerámica','Planta decorativa Arrecife','Organizador Cerezo','Manta Boreal algodón','Reloj Péndulo','Bandeja Bambú','Difusor Nube','Jarra Prisma cristal','Cojín Nébula','Vela Bosque','Lámpara Luna','Maceta Terracota','Portafotos Atlas','Caja Ordena Marea']
+};
+const productCategories=['Informática','Lectura','Papelería','Hogar'];
+const syntheticProducts=Array.from({length:60},(_,i)=>{
+ const id=i+5,category=productCategories[id%4],name=products[category][Math.floor(i/4)];
+ return "("+id+",'"+name.replaceAll("'","''")+"','"+category+"')";
+}).join(',');
 const schema = [
   "CREATE TABLE clientes(id integer primary key,nombre text not null,ciudad text not null,correo text,segmento text,fecha_alta date,activo boolean)",
   "INSERT INTO clientes(id,nombre,ciudad) VALUES (1,'Ana','Madrid'),(2,'Luis','Sevilla'),(3,'Marta','Madrid'),(4,'Eva','Valencia'),(5,'Pablo','Madrid')",
@@ -22,7 +33,7 @@ const schema = [
      date '2024-01-01'+(s%900), s%11<>0
    FROM generate_series(6,1205) s`,
   "INSERT INTO pedidos SELECT s, 1+(s * 17 % 1205), (10+(s * 37 % 900))::numeric(10,2), date '2026-01-01' + (s % 300) FROM generate_series(8,6007) s",
-  "INSERT INTO dim_producto SELECT s, 'Producto ' || s, (ARRAY['Informática','Lectura','Papelería','Hogar'])[1+(s % 4)] FROM generate_series(5,64) s",
+  "INSERT INTO dim_producto VALUES "+syntheticProducts,
   "INSERT INTO fact_ventas SELECT s, 1+(s * 11 % 64), (15+(s * 29 % 800))::numeric(10,2) FROM generate_series(7,8006) s"
 
 ];
