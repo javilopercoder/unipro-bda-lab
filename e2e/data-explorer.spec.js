@@ -2,7 +2,7 @@ import {test,expect} from '@playwright/test';
 
 test('Explorador: catálogo real, metadatos, tamaños y vistas previas',async({page})=>{
  await page.goto('/bda.html#data');
- await expect(page.getByRole('heading',{name:'Explorador de datos'})).toBeVisible();
+ await expect(page.locator('h1').filter({hasText:'Explorador de datos'})).toBeVisible();
  await expect(page.locator('#data-explorer')).toContainText('clientes',{timeout:60000});
  await expect(page.locator('#data-explorer')).toContainText('pedidos');
  await expect(page.locator('#data-explorer')).toContainText('dim_producto');
