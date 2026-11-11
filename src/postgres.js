@@ -14,7 +14,7 @@ const schema = [
   "UPDATE clientes SET correo='persona'||lpad(id::text,4,'0')||'@ejemplo.test', segmento=CASE WHEN id%3=0 THEN 'Empresa' WHEN id%3=1 THEN 'Particular' ELSE 'Profesional' END, fecha_alta=date '2024-01-01'+(id%900), activo=(id%11<>0)",
   `INSERT INTO clientes(id,nombre,ciudad,correo,segmento,fecha_alta,activo)
    SELECT s, (${sqlArray(FIRST_NAMES)})[1+((s*17+3)%${FIRST_NAMES.length})] || ' ' ||
-     (${sqlArray(LAST_NAMES)})[1+((s*13+7)%${LAST_NAMES.length})] ||
+     (${sqlArray(LAST_NAMES)})[1+(((s/40)*7+s*13+7)%${LAST_NAMES.length})] ||
      CASE WHEN s%5=0 THEN ' ' || (${sqlArray(LAST_NAMES)})[1+((s*19+11)%${LAST_NAMES.length})] ELSE '' END,
      (ARRAY['Madrid','Sevilla','Valencia','Bilbao','Zaragoza','Málaga','Granada','Vigo'])[1+(s%8)],
      'persona'||lpad(s::text,4,'0')||'@ejemplo.test',
