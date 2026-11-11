@@ -1,3 +1,4 @@
+import {fictionalName} from './demo-data.js';
 export const PURCHASES=[
  {cliente:'Ana',region:'Centro',categoria:'Informática',importe:170,mes:1},
  {cliente:'Luis',region:'Sur',categoria:'Lectura',importe:120,mes:1},
@@ -9,7 +10,7 @@ export const PURCHASES=[
 ];
 // 4.000 operaciones adicionales, generadas siempre con la misma semilla.
 export const PURCHASE_COUNT=4007;
-const names=Array.from({length:400},(_,i)=>'Cliente '+String(i+1).padStart(3,'0'));
+const names=Array.from({length:400},(_,i)=>fictionalName(i+100));
 const regions=['Centro','Sur','Este'],categories=['Informática','Lectura','Papelería','Hogar'];
 for(let i=0;i<4000;i++)PURCHASES.push({
  cliente:names[(i*17)%names.length],region:regions[(i*7)%regions.length],

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {runMongo,evaluateMongo,MONGO_DATA_COUNT} from '../src/mongo.js';
+import {runMongo,evaluateMongo,MONGO_DATA_COUNT,getMongoCatalog} from '../src/mongo.js';
 import {RedisSim} from '../src/redis.js';
 import {BankSim} from '../src/transactions.js';
 import {rollup,segments,distributed,PURCHASE_COUNT} from '../src/analytics.js';
@@ -20,4 +20,17 @@ test('Transferencias y rollback',()=>{
 });
 test('OLAP y particiones didácticas',()=>{
  assert.equal(PURCHASE_COUNT,4007);assert.ok(rollup('region').find(x=>x.dimension==='Centro').total>650);assert.ok(segments().length>100);assert.ok(distributed({pushdown:true}).rowsTransferred<distributed({pushdown:false}).rowsTransferred);
+});
+
+test('Metadatos del simulador Mongo y nombres variados, sin alterar las consultas existentes',()=>{
+ const catalog=getMongoCatalog(),collection=catalog.collections[0];
+ assert.equal(collection.name,'clientes');
+ assert.equal(collection.count,2505);
+ assert.ok(collection.bytes>0);
+ assert.ok(collection.fields.some(x=>x.name==='correo'));
+ assert.ok(collection.fields.some(x=>x.name==='activo'));
+ const preview=runMongo('db.clientes.find({"_id":6})');
+ assert.equal(preview.length,1);
+ assert.ok(!preview[0].nombre.startsWith('Cliente '));
+ assert.ok(preview[0].correo.endsWith('@ejemplo.test'));
 });

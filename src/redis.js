@@ -1,5 +1,7 @@
 export class RedisSim{
  constructor(){this.data=new Map}
+ snapshot(){const now=Date.now();return[...this.data.entries()].filter(([key,entry])=>{if(entry.expires&&entry.expires<=now){this.data.delete(key);return false}return true}).map(([key,entry])=>({clave:key,tipo:'string',valor:entry.value,bytes:new TextEncoder().encode(entry.value).byteLength,ttl:entry.expires?Math.ceil((entry.expires-now)/1000):-1}))}
+ seedDemo(){const items=[['cache:producto:teclado','49.95'],['cache:producto:raton','24.50'],['sesion:alumno:vega','activa'],['sesion:alumno:gael','activa'],['visitas:portada','187'],['visitas:lab:sql','64'],['config:tema','oscuro'],['cola:reportes','3'],['curso:actual','bases_de_datos'],['servicio:estado','operativo']];for(const [key,value]of items)this.data.set(key,{value,expires:null});return items.length}
  execute(input){
   const args=String(input||'').trim().match(/"[^"]*"|'[^']*'|\S+/g)?.map(x=>/^["']/.test(x)?x.slice(1,-1):x)||[];
   if(!args.length)throw Error('Escribe un comando.');if(args.length>5||args.some(x=>x.length>300))throw Error('Comando demasiado largo.');
