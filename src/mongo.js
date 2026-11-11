@@ -1,3 +1,4 @@
+import {fictionalName,fictionalEmail} from './demo-data.js';
 const base=[
  {_id:1,nombre:'Ana',ciudad:'Madrid',edad:27,gasto:170},
  {_id:2,nombre:'Luis',ciudad:'Sevilla',edad:31,gasto:120},
@@ -10,9 +11,9 @@ const cities=['Madrid','Sevilla','Valencia','Bilbao','Zaragoza','Málaga','Grana
 export const MONGO_DATA_COUNT=2505;
 const data=base.concat(Array.from({length:MONGO_DATA_COUNT-base.length},(_,k)=>{
  const id=k+6;
- return {_id:id,nombre:'Cliente '+String(id).padStart(4,'0'),ciudad:cities[(id*7)%cities.length],edad:18+(id%52),gasto:(id*37)%1800};
+ return {_id:id,nombre:fictionalName(id),ciudad:cities[(id*7)%cities.length],edad:18+(id%52),gasto:(id*37)%1800,correo:fictionalEmail(id),segmento:['Particular','Profesional','Empresa'][id%3],activo:id%11!==0};
 }));
-const columns=new Set(['_id','nombre','ciudad','edad','gasto']);
+const columns=new Set(['_id','nombre','ciudad','edad','gasto','correo','segmento','activo']);
 function object(x){if(!x||typeof x!=='object'||Array.isArray(x))throw Error('Se esperaba un objeto JSON.');return x}
 function match(x,f){return Object.entries(object(f)).every(([k,v])=>{
  if(!columns.has(k))throw Error('Campo desconocido: '+k);
@@ -26,7 +27,7 @@ export function mongoData(){return data.map(x=>({...x}))}
 export function runMongo(input){
  const code=String(input||'').trim();if(code.length>3000)throw Error('Consulta demasiado larga.');
  const m=/^db\.clientes\.(find|aggregate)\(([\s\S]*)\)\s*;?$/.exec(code);
- if(!m)throw Error('Usa db.clientes.find(filtro, proyección) o aggregate([...]).');
+ if(!m)throw Error('Este simulador dispone de db.clientes.find(filtro, proyección) y aggregate([...]).');
  if(m[1]==='find'){
   let args;try{args=JSON.parse('['+m[2]+']')}catch{throw Error('Usa argumentos JSON (comillas dobles).')}
   if(!args.length||args.length>2)throw Error('find admite filtro y proyección opcional.');
@@ -73,4 +74,16 @@ export function evaluateMongo(command,id){
   return results.length===counts.size&&results.every(row=>Object.keys(row).length===2&&row.total===counts.get(row._id));
  }
  return null;
+}
+
+export function getMongoCatalog(){
+ const fields=[...new Set(data.flatMap(Object.keys))];
+ const totalBytes=data.reduce((n,row)=>n+new TextEncoder().encode(JSON.stringify(row)).byteLength,0);
+ return{
+  engine:'Documentos · simulador local (no MongoDB real)',
+  collections:[{name:'clientes',count:data.length,bytes:totalBytes,
+    fields:fields.map(name=>({name,types:[...new Set(data.map(x=>typeof x[name]).filter(Boolean))],present:data.filter(row=>Object.hasOwn(row,name)).length}))}],
+  measuredAt:new Date().toISOString(),
+  sizeDescription:'Bytes de JSON serializado en memoria, no almacenamiento de MongoDB ni índices'
+ };
 }
