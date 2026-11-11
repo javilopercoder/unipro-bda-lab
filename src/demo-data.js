@@ -5,7 +5,7 @@ export const FIRST_NAMES=Object.freeze(given);
 export const LAST_NAMES=Object.freeze(surnames);
 export function fictionalName(id){
   const n=Number(id)||1;
-  const a=given[(n*17+3)%given.length],b=surnames[(n*13+7)%surnames.length];
+  const a=given[(n*17+3)%given.length],b=surnames[(Math.floor(n/40)*7+n*13+7)%surnames.length];
   const c=surnames[(n*19+11)%surnames.length];
   return a+' '+b+(n%5===0?' '+c:'');
 }
