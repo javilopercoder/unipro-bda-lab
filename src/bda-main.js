@@ -9,8 +9,10 @@ import {renderBdaGuide,BDA_GUIDES} from './campus/bda-guides.js';
 import {createCodeCoach,REDIS_MISSIONS} from './campus/code-coach.js';
 import {BankSim} from './transactions.js';
 import {rollup,segments,distributed,PURCHASE_COUNT} from './analytics.js';
+import {mountDataExplorer,createQueryHistory} from './data-dashboard.js';
 
 const MODULES=[
+  {id:'data',icon:'▤',name:'Explorador de datos',subtitle:'Esquemas, tamaños, historial',label:'Catálogo de datos'},
  {id:'sql',icon:'⌘',name:'SQL / PostgreSQL',subtitle:'Consultas reales · Tema 9',label:'Motor real'},
  {id:'mongo',icon:'{}',name:'Documentos / MongoDB',subtitle:'Consultas simuladas · Tema 10',label:'Simulador'},
  {id:'xml',icon:'</>',name:'XML y XPath',subtitle:'Procesador real · Temas 2 y 3',label:'Procesador real'},
@@ -27,17 +29,38 @@ const $=selector=>document.querySelector(selector);
 const create=(tag,cls,text)=>{const el=document.createElement(tag);if(cls)el.className=cls;if(text!==undefined)el.textContent=String(text);return el};
 const qs=(element,selector)=>element.querySelector(selector);
 const startMode=decodeURIComponent((location.hash||'').slice(1)).toLowerCase();
-const state={module:BDA_GUIDES[startMode]?startMode:'sql',task:{sql:0,mongo:0,xml:0},redis:new RedisSim,bank:new BankSim};
+const state={module:startMode==='data'?'data':BDA_GUIDES[startMode]?startMode:'sql',task:{sql:0,mongo:0,xml:0},redis:new RedisSim,bank:new BankSim,history:createQueryHistory(),lastResult:null};
 const fmt=value=>value==null?'NULL':value instanceof Date?value.toISOString().slice(0,10):typeof value==='object'?JSON.stringify(value):String(value);
 function status(message,type=''){
  const el=$('#state');if(el){el.className='status '+type;el.textContent=message}
 }
-function table(rows){const box=create('div','result-scroll');if(!rows?.length){box.append(create('p','muted','Sin filas'));return box}
- const keys=Object.keys(rows[0]),t=create('table');const head=create('thead'),tr=create('tr');
+function table(rows,fields=null){const box=create('div','result-scroll');if(!rows?.length){box.append(create('p','muted','Sin filas'));return box}
+ const keys=fields||Object.keys(rows[0]),t=create('table');const head=create('thead'),tr=create('tr');
  for(const k of keys)tr.append(create('th','',k));head.append(tr);t.append(head);
- const body=create('tbody');for(const row of rows.slice(0,100)){const tr=create('tr');for(const k of keys)tr.append(create('td','',fmt(row[k])));body.append(tr)}t.append(body);box.append(t);if(rows.length>100)box.append(create('p','subtle','Se muestran 100 de '+rows.length+' filas.'));return box;
+ const body=create('tbody');for(const row of rows.slice(0,100)){const tr=create('tr');keys.forEach((k,i)=>tr.append(create('td','',fmt(Array.isArray(row)?row[i]:row[k]))));body.append(tr)}t.append(body);box.append(t);if(rows.length>100)box.append(create('p','subtle','Se muestran 100 de '+rows.length+' filas. Exporta CSV para obtener todas las filas devueltas.'));return box;
 }
-function output(node,rows){node.replaceChildren(table(rows))}
+function output(node,rows,fields=null){node.replaceChildren(table(rows,fields))}
+function exportCsv(){
+ const result=state.lastResult;if(!result?.fields?.length)return status('Ejecuta una consulta con columnas antes de exportar.','warn');
+ const escape=value=>{const raw=fmt(value);return '"'+raw.replaceAll('"','""')+'"';};
+ const csv=[result.fields.map(escape).join(','),...result.values.map(row=>row.map(escape).join(','))].join('\\r\\n');
+ const blob=new Blob(['\\uFEFF',csv],{type:'text/csv;charset=utf-8'});
+ const link=document.createElement('a'),url=URL.createObjectURL(blob);
+ link.href=url;link.download='laboratorio_consulta.csv';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+function renderData(){
+ state.module='data';
+ $('#main').innerHTML=heading('Explorador de datos','Consulta tablas, columnas, tamaños, relaciones, vistas previas y el historial local de consultas.','Catálogo')+
+ '<div class="data-dashboard-head"><label for="data-mode">Conjunto de datos</label> <select id="data-mode" class="field"><option value="sql">PostgreSQL · SQL real</option><option value="mongo">Documentos · simulación MongoDB</option><option value="olap">Ventas · OLAP local</option></select></div><div id="data-explorer"></div>';
+ const select=$('#data-mode'),host=$('#data-explorer');
+ const openQuery=sql=>{
+  const mode=select.value;
+  state.module=mode==='mongo'?'mongo':'sql';history.replaceState(null,'','#'+state.module);render();
+  if(sql){$('#code').value=sql;$('#code').focus()}
+ };
+ const load=()=>mountDataExplorer(host,{mode:select.value,history:state.history,openQuery});
+ select.onchange=load;load();
+}
 function heading(name,description,tag){return '<div class="heading"><div><span class="eyebrow">LABORATORIO INTERACTIVO</span><h1>'+name+'</h1><p>'+description+'</p></div><span class="tag">'+tag+'</span></div>'}
 function renderNav(){
  const nav=$('#nav');nav.replaceChildren();
@@ -76,6 +99,8 @@ function pickTasks(tasks,selected,onSelect){
 function renderSQL(plan=false){
  state.module=plan?'plans':'sql';
  editUI({title:plan?'Planes de ejecución':'SQL y PostgreSQL',description:plan?'Observa un plan de PostgreSQL sobre datos ficticios. EXPLAIN es real, aunque este conjunto de datos es pequeño.':'Escribe consultas y comprueba el resultado. Aceptamos soluciones diferentes si devuelven las filas correctas.'});
+ const browse=createButton('▤ Ver tablas, columnas y tamaños',()=>{state.module='data';history.replaceState(null,'','#data');render()},'btn secondary');
+ const bar=create('div','data-quick-access');bar.append(browse);$('#main .code-column').prepend(bar);
  const coach=createCodeCoach({host:$('#help'),editor:$('#code'),language:'sql'});
  if(plan){
   $('#exercise-title').textContent='Tarea: leer el plan';
@@ -97,15 +122,18 @@ function renderSQL(plan=false){
   onSelect(state.task.sql);
  }
  const run=async(grade=false)=>{const code=$('#code').value;const b=$('#buttons');b.querySelectorAll('button').forEach(x=>x.disabled=true);status('Cargando PostgreSQL / ejecutando…');
- try{const result=await runSQL(code);output($('#results'),result.rows);status('Consulta ejecutada en '+result.duration+' ms · '+result.rows.length+' filas','good');
+ try{const result=await runSQL(code);output($('#results'),result.values,result.fields);state.lastResult=result;state.history.add({engine:'SQL',sql:code,rows:result.rows.length,duration:result.duration});status('Consulta ejecutada en '+result.duration+' ms · '+result.rows.length+' filas','good');
   if(grade&&!plan){const task=SQL_TASKS[state.task.sql];if(!task)status('Modo libre: la consulta se ha ejecutado. Explora los resultados y prueba otra.','good');else if(task.expected){const check=await evaluateSQL(code,task.expected);status(check.pass?'✓ Resultado correcto. ¡Bien!':'No coincide con el resultado esperado. Prueba otra consulta o mira la pista.',check.pass?'good':'warn')}
   else status('Plan mostrado. Comprueba los operadores y sus costes; este reto no lleva nota.','good')}
- }catch(e){status(e.message||String(e),'bad');$('#results').replaceChildren(create('p','muted','No se ejecutó la consulta.'))}finally{b.querySelectorAll('button').forEach(x=>x.disabled=false)}};
- const b=$('#buttons');b.append(createButton('▶ Ejecutar',()=>run(false)),createButton('✓ Comprobar',()=>run(true),'btn secondary'),createButton('↻ Reiniciar base',async()=>{status('Reiniciando…');try{await resetSQL();status('Base de datos reiniciada','good')}catch(e){status(e.message,'bad')}},'btn secondary'));
+ }catch(e){state.lastResult=null;state.history.add({engine:'SQL',sql:code,error:e.message||String(e)});status(e.message||String(e),'bad');$('#results').replaceChildren(create('p','muted','No se ejecutó la consulta.'))}finally{b.querySelectorAll('button').forEach(x=>x.disabled=false)}};
+ const b=$('#buttons');b.append(createButton('▶ Ejecutar',()=>run(false)),createButton('✓ Comprobar',()=>run(true),'btn secondary'),createButton('↓ CSV',exportCsv,'btn secondary'),createButton('↻ Reiniciar base',async()=>{status('Reiniciando…');try{await resetSQL();state.lastResult=null;status('Base de datos reiniciada','good')}catch(e){status(e.message,'bad')}},'btn secondary'));
+
  if(plan)b.querySelectorAll('button')[1].disabled=true;
 }
 function renderMongo(){
  editUI({title:'MongoDB · Documentos',description:'Interpreta consultas sobre documentos JSON ficticios. Puedes explorar sin resolver un reto; no hay conexión con un servidor MongoDB.'});
+ const browse=createButton('▤ Explorar colección y metadatos',()=>{state.module='data';history.replaceState(null,'','#data');render();$('#data-mode').value='mongo';$('#data-mode').dispatchEvent(new Event('change'))},'btn secondary');
+ const bar=create('div','data-quick-access');bar.append(browse);$('#main .code-column').prepend(bar);
  const coach=createCodeCoach({host:$('#help'),editor:$('#code'),language:'mongo'});
  const select=index=>{
   state.task.mongo=index;
@@ -219,9 +247,9 @@ function renderDistributed(){
 function render(){
  renderNav();
  try{
- if(state.module==='sql')renderSQL();else if(state.module==='plans')renderSQL(true);else if(state.module==='mongo')renderMongo();else if(state.module==='xml')renderXML();else if(state.module==='redis')renderRedis();else if(state.module==='transactions')renderTransactions();else if(state.module==='analytics')renderAnalytics();else if(state.module==='distributed')renderDistributed();
+ if(state.module==='data')renderData();else if(state.module==='sql')renderSQL();else if(state.module==='plans')renderSQL(true);else if(state.module==='mongo')renderMongo();else if(state.module==='xml')renderXML();else if(state.module==='redis')renderRedis();else if(state.module==='transactions')renderTransactions();else if(state.module==='analytics')renderAnalytics();else if(state.module==='distributed')renderDistributed();
   renderBdaGuide($('#main'),state.module);
  }catch(error){$('#main').replaceChildren(create('div','panel','Error de interfaz: '+(error.message||String(error))))}
 }
-window.addEventListener('hashchange',()=>{const requested=decodeURIComponent((location.hash||'').slice(1)).toLowerCase();if(BDA_GUIDES[requested]&&requested!==state.module){state.module=requested;render()}});
+window.addEventListener('hashchange',()=>{const requested=decodeURIComponent((location.hash||'').slice(1)).toLowerCase();if((requested==='data'||BDA_GUIDES[requested])&&requested!==state.module){state.module=requested;render()}});
 render();
