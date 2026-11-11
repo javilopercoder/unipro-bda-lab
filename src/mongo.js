@@ -82,7 +82,7 @@ export function getMongoCatalog(){
  return{
   engine:'Documentos · simulador local (no MongoDB real)',
   collections:[{name:'clientes',count:data.length,bytes:totalBytes,
-    fields:fields.map(name=>({name,types:[...new Set(data.map(x=>typeof x[name]).filter(Boolean))],present:data.filter(row=>Object.hasOwn(row,name)).length}))}],
+    fields:fields.map(name=>({name,types:[...new Set(data.filter(x=>Object.hasOwn(x,name)).map(x=>typeof x[name]))],present:data.filter(row=>Object.hasOwn(row,name)).length}))}],
   measuredAt:new Date().toISOString(),
   sizeDescription:'Bytes de JSON serializado en memoria, no almacenamiento de MongoDB ni índices'
  };
